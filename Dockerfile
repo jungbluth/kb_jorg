@@ -28,13 +28,18 @@ RUN wget http://eddylab.org/infernal/infernal-1.1.3-linux-intel-gcc.tar.gz && \
 RUN git clone https://github.com/lmlui/Jorg && \
     chmod +x /Jorg/jorg
 
+RUN cd /Jorg/Example && \
+    wget https://zenodo.org/record/3889132/files/SRX3307784_clean.fastq.gz && \
+    gunzip SRX3307784_clean.fastq.gz && \
+    mv SRX3307784_clean.fastq bin.186.fastq
+
 COPY ./ /kb/module
 RUN mkdir -p /kb/module/work
 RUN chmod -R a+rw /kb/module
 
 WORKDIR /kb/module
 
-ENV PATH=/mira_4.0.2_linux-gnu_x86_64_static/bin:$PATH
+ENV PATH=/mira_V5rc1_linux-gnu_x86_64_static/bin:$PATH
 ENV PATH=/pilon-1.2.3:$PATH
 ENV PATH=/infernal-1.1.3-linux-intel-gcc/binaries:$PATH
 ENV PATH=/Jorg:$PATH
