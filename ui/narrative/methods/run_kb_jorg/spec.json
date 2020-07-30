@@ -117,8 +117,8 @@
                     "target_property": "assembly_ref"
                 },
                 {
-                    "input_parameter": "reads_list",
-                    "target_property": "reads_list"
+                    "input_parameter": "reads_file",
+                    "target_property": "reads_file"
                 },
                 {
                     "input_parameter": "read_mapping_tool",
