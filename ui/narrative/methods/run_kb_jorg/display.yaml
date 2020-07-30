@@ -2,10 +2,10 @@
 # define display information
 #
 name     : Circularize MAGs using Jorg - v1.0
-subtitle : Group assembled metagenomic contigs into lineages (Bins) using depth-of-coverage and nucleotide composition
-tooltip  : Groups metagenomic contigs into genome bins using depth-of-coverage and nucleotide composition
+subtitle : Improve and circularize individual genomes from shotgun metagenomics data
+tooltip  : Improve and circularize individual genomes from shotgun metagenomics data
 
-icon: concoct.png
+icon: jorg.png
 
 screenshots: []
 
@@ -15,7 +15,7 @@ screenshots: []
 suggestions:
     apps:
         related:
-            [kb_maxbin, kbase-metabat, kb_cocacola]
+            [kb_maxbin, kbase-metabat, kb_concoct, kb_cocacola]
         next:
             [kb_Msuite, MetaAnnot]
     methods:
@@ -30,23 +30,18 @@ suggestions:
 parameters :
     assembly_ref :
         ui-name : Assembly
-        short-hint : Metagenome assembly object
-        long-hint  : Metagenome assembly that you want to bin
-
-    binned_contig_name :
-        ui-name : Output Bins
-        short-hint : Output BinnedContig object name
-        long-hint  : The name of the resulting bin object
+        short-hint : Genome assembly object
+        long-hint  : Genome assembly or bin that you want to improve
 
     reads_list :
         ui-name : Reads
-        short-hint : A list of reads object (PairedEndLibrary/SingleEndLibrary) upon which CONCOCT will be run
-        long-hint  : A list of reads object (PairedEndLibrary/SingleEndLibrary) upon which CONCOCT will be run
+        short-hint : Reads object (PairedEndLibrary/SingleEndLibrary) upon which Jorg will be run
+        long-hint  : Reads object (PairedEndLibrary/SingleEndLibrary) upon which Jorg will be run
 
     read_mapping_tool :
         ui-name : Read Mapping Tool
         short-hint : tool to use for read mapping (default bowtie2)
-        long-hint  : tool to use for read mapping - options BBmap, Bowtie2 (default), Bowtie2 (very-sensitive), HISAT2, minimap2 - (default bowtie2 default mode)
+        long-hint  : tool to use for read mapping - options BBmap, Bowtie2 (default), Bowtie2 (very-sensitive) - (default bowtie2 default mode)
 
     min_contig_length :
         ui-name : Minimum Contig Length (>1000bp)
