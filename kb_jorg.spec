@@ -36,6 +36,10 @@ module kb_jorg {
         int kmer_size;
         int min_coverage;
         int num_iterations;
+        int num_iterations;
+        int num_iterations;
+        string high_contig_num;
+        string single_end_reads;
 
     } jorgInputParams;
 

@@ -99,6 +99,30 @@
                 "min_int" : 1,
                 "validate_as" : "int"
             }
+        },
+        {
+            "id": "high_contig_num",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ " " ],
+            "field_type": "checkbox",
+            "checkbox_options": {
+                "checked_value": "--high_contig_num yes",
+                "unchecked_value": " "
+              }
+        },
+        {
+            "id": "single_end_reads",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ " " ],
+            "field_type": "checkbox",
+            "checkbox_options": {
+                "checked_value": "--single_end_reads yes",
+                "unchecked_value": " "
+              }
         }
     ],
     "behavior": {
@@ -135,6 +159,14 @@
                 {
                     "input_parameter": "num_iterations",
                     "target_property": "num_iterations"
+                },
+                {
+                    "input_parameter": "high_contig_num",
+                    "target_property": "high_contig_num"
+                },
+                {
+                    "input_parameter": "single_end_reads",
+                    "target_property": "single_end_reads"
                 }
             ],
             "output_mapping": [

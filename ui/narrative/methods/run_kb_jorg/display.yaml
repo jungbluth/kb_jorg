@@ -1,7 +1,7 @@
 #
 # define display information
 #
-name     : Circularize MAGs using Jorg - v1.0
+name     : Improve and circularize genomes and MAGs using Jorg - v1.0.0
 subtitle : Improve and circularize individual genomes from shotgun metagenomics data
 tooltip  : Improve and circularize individual genomes from shotgun metagenomics data
 
@@ -58,6 +58,16 @@ parameters :
         short-hint : specify a number of iterations to use (default 5)
         long-hint  : specify a number of iterations to use (default 5)
 
+    high_contig_num :
+        ui-name : High Contig Count Run
+        short-hint : if high number of contigs detected (>1000 contigs), are you certain that you want to try running Jorg? (default no)
+        long-hint  : if high number of contigs detected (>1000 contigs), are you certain that you want to try running Jorg? (default no)
+
+    single_end_reads :
+        ui-name : Single-End Library
+        short-hint : are the input reads a single-end library? (default no)
+        long-hint  : are the input reads a single-end library? (default no)
+
 description : |
 
     <p>Jorg is a tool to help improve or circularize genomes from shotgun metagenomics data.</p>
@@ -69,16 +79,10 @@ description : |
     <p><hr></p>
     <p><b>Configuration:</b></p>
     <p><b><i>Assembly Object:</i></b> The Assembly object is a collection of assembled genome fragments, called "contigs".  These are the items that CONCOCT will bin.  Currently only a single Assembly object is accepted by the CONCOCT App.</p>
-    <p><b><i>BinnedContig Object Name:</i></b> The BinnedContig Object represents the directory of binned contigs created by CONCOCT. This object can be used for downstream analysis</p>
-    <p><b><i>Read Library Object:</i></b> The read libraries are aligned to the assembly using bbmap, and provide the abundance information for each contig that roughly follows the species abundance.</p>
-    <p><b><i>Minimum Contig Length:</i></b> Contigs that are too short may slow down analysis and not give statistically meaningful nucleotide composition profiles.  A value of 1000 - 2500 bp is a reasonable cutoff.</p>
-    <p><b><i>Contig Split Size:</i></b> Contigs are split before clustering to minimize the bias imposed by very large contigs. A value of 5000-10000 bp is a reasonable cutoff.</p>
-    <p><b><i>Contig Split Overlap:</i></b> Contigs split before clustering can have varying degrees of overlap.  A value of 0 is most often used.</p>
-    <p><b><i>Kmer Length:</i></b> Size of the kmers used during profiling.  A default value of 4 is reasonable to start with.</p>
     <p><hr></p>
     <p><b>Output:</b></p>
-    <p><b><i>Output Object:</i></b>The BinnedContig Object represents the directory of binned contigs created by CONCOCT. This object can be used for downstream analysis.</p>
-    <p><b><i>Output Bin Summary Report:</i></b>The number of bins produced, the number of contigs that were binned and the total number of contigs in the assembly.</p>
+    <p><b><i>Output Object:</i></b>The Assembly Object represents improved or cirularized assembly. This object can be used for downstream analysis.</p>
+    <p><b><i>Output Jorg Summary Report:</i></b>The size and total GC of the contigs across Jorg iterations.</p>
     <p><b><i>Downloadable files:</i></b> The enitre output of the CONCOCT run may be downloaded as a zip file. This zip file also contains a table of read-depth coverage per contig ("*.depth.txt")</p>
 
 publications:
