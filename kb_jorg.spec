@@ -15,37 +15,27 @@ module kb_jorg {
 
     /*
         required params:
-        assembly_ref: Genome assembly object reference
-        binned_contig_name: BinnedContig object name and output file header
+        assembly_ref: Genome assembly object
+        reads_file: reads object (PairedEndLibrary/SingleEndLibrary) upon which jorg will be run
         workspace_name: the name of the workspace it gets saved to.
-        reads_list: list of reads object (PairedEndLibrary/SingleEndLibrary) upon which jorg will be run
 
         optional params:
-        thread: number of threads; default 1
-        min_contig_length: minimum contig length; default 1000bp
-        contig_split_size: length to split long contigs; default 10000bp
-        contig_split_overlap: length to split long contigs; default 0bp
-        ref: https://github.com/BinPro/jorg
+        read_mapping_tool: tool to use for read mapping
+        kmer_size: specify kmer length for baiting
+        min_coverage: minimum coverage value
+        num_iterations: specify a number of iterations to use
+        ref: https://github.com/jungbluth/jorg
 
     */
     typedef structure {
         obj_ref assembly_ref;
-        string binned_contig_name;
         string workspace_name;
-        list<obj_ref> reads_list;
+        obj_ref reads_list;
 
-        int thread;
         string read_mapping_tool;
-        int min_contig_length;
-        int contig_split_size;
-        int contig_split_overlap;
         int kmer_size;
-        int max_clusters_for_vgmm;
-        int max_iterations_for_vgmm;
-        int total_percentage_pca;
-        string no_cov_normalization;
-        string no_total_coverage;
-
+        int min_coverage;
+        int num_iterations;
 
     } jorgInputParams;
 
@@ -56,7 +46,7 @@ module kb_jorg {
     */
     typedef structure{
         string result_directory;
-        obj_ref binned_contig_obj_ref;
+        obj_ref assembly_obj_ref;
         string report_name;
         string report_ref;
     }jorgResult;

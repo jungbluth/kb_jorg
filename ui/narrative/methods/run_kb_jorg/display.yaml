@@ -33,70 +33,39 @@ parameters :
         short-hint : Genome assembly object
         long-hint  : Genome assembly or bin that you want to improve
 
-    reads_list :
+    reads_file :
         ui-name : Reads
         short-hint : Reads object (PairedEndLibrary/SingleEndLibrary) upon which Jorg will be run
         long-hint  : Reads object (PairedEndLibrary/SingleEndLibrary) upon which Jorg will be run
 
     read_mapping_tool :
         ui-name : Read Mapping Tool
-        short-hint : tool to use for read mapping (default bowtie2)
-        long-hint  : tool to use for read mapping - options BBmap, Bowtie2 (default), Bowtie2 (very-sensitive) - (default bowtie2 default mode)
-
-    min_contig_length :
-        ui-name : Minimum Contig Length (>1000bp)
-        short-hint : minimum contig length (default 2500bp)
-        long-hint  : minimum contig length should not be less than 1000bp
-
-    contig_split_size :
-        ui-name : Contig Split Size (>=5000bp)
-        short-hint : contig split size (default 10000bp)
-        long-hint  : split contigs longer than 10000bp into chunks of 10000bp during binning
-
-    contig_split_overlap :
-        ui-name : Contig Split Overlap (>=0bp)
-        short-hint : contig split overlap (default 0bp)
-        long-hint  : split contig overlap to use for binning input
+        short-hint : tool to use for read mapping (default BBmap)
+        long-hint  : tool to use for read mapping - options BBmap, Bowtie2 (default), Bowtie2 (very-sensitive) - (default BBmap)
 
     kmer_size :
         ui-name : Kmer Length
-        short-hint : specify kmer length (default 4)
-        long-hint  : specify kmer length (default 4)
+        short-hint : specify kmer length for baiting (default 33)
+        long-hint  : specify kmer length for baiting (default 33)
 
-    max_clusters_for_vgmm :
-        ui-name : Maximum Number of Clusters for VGMM
-        short-hint : specify a maximum number of clusters for VGMM (default 400)
-        long-hint  : specify a maximum number of clusters for VGMM (default 400)
+    min_coverage :
+        ui-name : Minimum Coverage Value
+        short-hint : minimum coverage value (default 50x)
+        long-hint  : minimum coverage value of the genome you want to improve (default 50x)
 
-    max_iterations_for_vgmm :
-        ui-name : Maximum Number of Iterations for VGMM
-        short-hint : specify a maximum number of iterations for VGMM (default 500)
-        long-hint  : specify a maximum number of iterations for VGMM (default 500)
-
-    total_percentage_pca :
-        ui-name : Percent of Total PCA Used
-        short-hint : percentage of variance explained by the principal components of the combined data (default 90)
-        long-hint  : percentage of variance explained by the principal components of the combined data (default 90)
-
-    no_cov_normalization :
-        ui-name : Skip Coverage Normalization
-        short-hint : skip coverage normalization step (default false)
-        long-hint  : skip coverage normalization step (default false)
-
-    no_total_coverage :
-        ui-name : Skip Using Total Coverage
-        short-hint : skip adding total coverage to the covergae data matrix (default false)
-        long-hint  : skip adding total coverage to the covergae data matrix (default false)
+    num_iterations :
+        ui-name : Number of Iterations
+        short-hint : specify a number of iterations to use (default 5)
+        long-hint  : specify a number of iterations to use (default 5)
 
 description : |
-    <p>CONCOCT clusters metagenomic contigs into different "bins", each of which should correspond to a putative genome.</p>
 
-    <p>CONCOCT uses nucleotide composition information and source strain abundance (measured by depth-of-coverage by aligning the reads to the contigs) to perform binning.</p>
+    <p>Jorg is a tool to help improve or circularize genomes from shotgun metagenomics data.</p>
     <p><hr></p>
     <p><hr></p>
     <p><i>Implemented for KBase by <a href="mailto:sjungbluth@lbl.gov">Sean Jungbluth(sjungbluth@lbl.gov)</a></i></p>
     <p><hr></p>
-    <p>CONCOCT takes a metagenome assembly and the reads that produced the assembly and organizes the contigs into putative genomes, called "bins".</p>
+    <p>This method assumes that you already have a pipeline that you like to use for assembling your metagenomes and creating bins.</p>
     <p><hr></p>
     <p><b>Configuration:</b></p>
     <p><b><i>Assembly Object:</i></b> The Assembly object is a collection of assembled genome fragments, called "contigs".  These are the items that CONCOCT will bin.  Currently only a single Assembly object is accepted by the CONCOCT App.</p>
@@ -114,12 +83,11 @@ description : |
 
 publications:
     -
-        pmid : 25218180
         display-text : |
-            Alneberg J, Bjarnason BS, de Bruijn I, Schirmer M, Quick J, Ijaz UZ, Lahti L, Loman NJ, Andersson AF, Quince C. Binning metagenomic contigs by coverage and composition. Nature Methods. 2014;11: 1144-1146. doi:10.1038/nmeth.3103
-        link: https://doi.org/10.1038/nmeth.3103
+            Lui LM, Nielsen TN, Arkin AP. A method for achieving complete microbial genomes and better quality bins from metagenomics data. bioRxiv. 2020. doi:10.1101/2020.03.05.979740
+        link: https://doi.org/10.1101/2020.03.05.979740
 
     -
         display-text : |
-            CONCOCT source:
-        link: https://github.com/BinPro/CONCOCT
+            Jorg source:
+        link: https://github.com/jungbluth/Jorg
