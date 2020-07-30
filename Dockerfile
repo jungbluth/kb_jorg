@@ -8,7 +8,7 @@ MAINTAINER KBase Developer
 
 RUN apt-get update && apt-get install -y wget git
 
-RUN wget https://zenodo.org/record/3889132/files/SRX3307784_clean.fastq.gz
+# RUN wget https://zenodo.org/record/3889132/files/SRX3307784_clean.fastq.gz
 
 RUN apt-get update && apt-get install -y build-essential make flex libexpat1-dev libboost-all-dev xxd zlib1g-dev
 
@@ -34,8 +34,9 @@ RUN wget http://eddylab.org/infernal/infernal-1.1.3-linux-intel-gcc.tar.gz && \
     rm infernal-1.1.3-linux-intel-gcc.tar.gz
 
 RUN git clone https://github.com/jungbluth/Jorg && \
-    chmod +x /Jorg/jorg && \
-    mv SRX3307784_clean.fastq.gz /Jorg/Example
+    chmod +x /Jorg/jorg
+
+RUN mv SRX3307784_clean.fastq.gz /Jorg/Example
 
 COPY ./ /kb/module
 RUN mkdir -p /kb/module/work
