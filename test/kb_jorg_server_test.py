@@ -78,7 +78,7 @@ class kb_jorgTest(unittest.TestCase):
         #
         # READS 1
         # building paired-end library
-        pe1_reads_filename = 'bin.186_paired-end_10K-seqs.fastq.gz'
+        pe1_reads_filename = 'bin.186_paired-end_10K-seqs.fastq'
         pe1_reads_path = os.path.join(cls.scratch, pe1_reads_filename)
 
         # gets put on scratch. "work/tmp" is scratch
@@ -96,62 +96,65 @@ class kb_jorgTest(unittest.TestCase):
 
         cls.int1_oldstyle_reads_ref = cls.ru.upload_reads(int1_reads_params)['obj_ref']
 
-        # READS 2
-        # building paired-end library
-        pe2_reads_filename = 'bin.186_paired-end_100K-seqs.fastq.gz'
-        pe2_reads_path = os.path.join(cls.scratch, pe2_reads_filename)
+        #
+        # # READS 2
+        # # building paired-end library
+        # pe2_reads_filename = 'bin.186_paired-end_100K-seqs.fastq.gz'
+        # pe2_reads_path = os.path.join(cls.scratch, pe2_reads_filename)
+        #
+        # # gets put on scratch. "work/tmp" is scratch
+        # shutil.copy(os.path.join("data", pe2_reads_filename), pe2_reads_path)
+        #
+        # int2_reads_params = {
+        #     'fwd_file': pe2_reads_path,
+        #     'sequencing_tech': 'Unknown',
+        #     'wsname': cls.ws_info[1],
+        #     'name': 'MyInterleavedLibrary2',
+        #     'interleaved': 'true'
+        # }
+        #
+        # #from scratch upload to workspace
+        # cls.int2_oldstyle_reads_ref = cls.ru.upload_reads(int2_reads_params)['obj_ref']
+        #
+        # # READS 3
+        # # building paired-end library
+        # pe3_reads_filename = 'bin.186_paired-end_500K-seqs.fastq.gz'
+        # pe3_reads_path = os.path.join(cls.scratch, pe3_reads_filename)
+        #
+        # # gets put on scratch. "work/tmp" is scratch
+        # shutil.copy(os.path.join("data", pe3_reads_filename), pe3_reads_path)
+        #
+        # int3_reads_params = {
+        #     'fwd_file': pe3_reads_path,
+        #     'sequencing_tech': 'Unknown',
+        #     'wsname': cls.ws_info[1],
+        #     'name': 'MyInterleavedLibrary3',
+        #     'interleaved': 'true'
+        # }
+        #
+        # #from scratch upload to workspace
+        # cls.int3_oldstyle_reads_ref = cls.ru.upload_reads(int3_reads_params)['obj_ref']
+        #
+        # # READS 4
+        # # building Interleaved library
+        # pe4_reads_filename = 'bin.186.fastq.gz'
+        # pe4_reads_path = os.path.join(cls.scratch, pe4_reads_filename)
+        #
+        # # gets put on scratch. "work/tmp" is scratch
+        # shutil.copy(os.path.join("data", pe4_reads_filename), pe4_reads_path)
+        #
+        # int4_reads_params = {
+        #     'fwd_file': pe4_reads_path,
+        #     'sequencing_tech': 'Unknown',
+        #     'wsname': cls.ws_info[1],
+        #     'name': 'MyInterleavedLibrary4',
+        #     'interleaved': 'true'
+        # }
+        #
+        # #from scratch upload to workspace
+        # cls.int4_oldstyle_reads_ref = cls.ru.upload_reads(int4_reads_params)['obj_ref']
 
-        # gets put on scratch. "work/tmp" is scratch
-        shutil.copy(os.path.join("data", pe2_reads_filename), pe2_reads_path)
 
-        int2_reads_params = {
-            'fwd_file': pe2_reads_path,
-            'sequencing_tech': 'Unknown',
-            'wsname': cls.ws_info[1],
-            'name': 'MyInterleavedLibrary2',
-            'interleaved': 'true'
-        }
-
-        #from scratch upload to workspace
-        cls.int2_oldstyle_reads_ref = cls.ru.upload_reads(int2_reads_params)['obj_ref']
-
-        # READS 3
-        # building paired-end library
-        pe3_reads_filename = 'bin.186_paired-end_500K-seqs.fastq.gz'
-        pe3_reads_path = os.path.join(cls.scratch, pe3_reads_filename)
-
-        # gets put on scratch. "work/tmp" is scratch
-        shutil.copy(os.path.join("data", pe3_reads_filename), pe3_reads_path)
-
-        int3_reads_params = {
-            'fwd_file': pe3_reads_path,
-            'sequencing_tech': 'Unknown',
-            'wsname': cls.ws_info[1],
-            'name': 'MyInterleavedLibrary3',
-            'interleaved': 'true'
-        }
-
-        #from scratch upload to workspace
-        cls.int3_oldstyle_reads_ref = cls.ru.upload_reads(int3_reads_params)['obj_ref']
-
-        # READS 4
-        # building Interleaved library
-        pe4_reads_filename = 'bin.186.fastq.gz'
-        pe4_reads_path = os.path.join(cls.scratch, pe4_reads_filename)
-
-        # gets put on scratch. "work/tmp" is scratch
-        shutil.copy(os.path.join("data", pe4_reads_filename), pe4_reads_path)
-
-        int4_reads_params = {
-            'fwd_file': pe4_reads_path,
-            'sequencing_tech': 'Unknown',
-            'wsname': cls.ws_info[1],
-            'name': 'MyInterleavedLibrary4',
-            'interleaved': 'true'
-        }
-
-        #from scratch upload to workspace
-        cls.int4_oldstyle_reads_ref = cls.ru.upload_reads(int4_reads_params)['obj_ref']
 
         #
         # building Assembly
