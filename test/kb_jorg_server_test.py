@@ -86,7 +86,7 @@ class kb_jorgTest(unittest.TestCase):
 
         int1_reads_params = {
             'fwd_file': pe1_reads_path,
-            'sequencing_tech': 'Unknown',
+            'sequencing_tech': 'Illumina',
             'wsname': cls.ws_info[1],
             'name': 'MyInterleavedLibrary1',
             'interleaved': 'true'
