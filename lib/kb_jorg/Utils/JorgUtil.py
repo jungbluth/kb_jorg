@@ -130,14 +130,14 @@ class JorgUtil:
 
         return contig_file
     #
-    # def retrieve_assembly(self, task_params):
-    #     if os.path.exists(task_params['contig_file_path']):
-    #         assembly = task_params['contig_file_path']
-    #         print("FOUND ASSEMBLY ON LOCAL SCRATCH")
-    #     else:
-    #         # we are on njsw so lets copy it over to scratch
-    #         assembly = self._get_contig_file(task_params['assembly_ref'])
-    #     return assembly
+    def retrieve_assembly(self, task_params):
+        if os.path.exists(task_params['contig_file_path']):
+            assembly = task_params['contig_file_path']
+            print("FOUND ASSEMBLY ON LOCAL SCRATCH")
+        else:
+            # we are on njsw so lets copy it over to scratch
+            assembly = self._get_contig_file(task_params['assembly_ref'])
+        return assembly
 
     def deinterlace_raw_reads(self, fastq):
         fastq_forward = fastq.split('.fastq')[0] + "_forward.fastq"
@@ -571,8 +571,8 @@ class JorgUtil:
         task_params['contig_file_path'] = contig_file
 
         # clean the assembly file so that there are no spaces in the fasta headers
-        # assembly = self.retrieve_assembly(task_params)
-        # task_params['contig_file_path'] = assembly_clean
+        assembly = self.retrieve_assembly(task_params)
+        task_params['contig_file_path'] = assembly
 
         # get reads
         (reads_list_file, read_type) = self.stage_reads_file(task_params['reads_file'])
