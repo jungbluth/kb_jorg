@@ -296,7 +296,7 @@ class JorgUtil:
 
         (read_scratch_path, read_type) = self.stage_reads_file(reads_file)
 
-        sorted_bam_file_list = []
+        # sorted_bam_file_list = []
 
         # list of reads files, can be 1 or more. assuming reads are either type unpaired or interleaved
         # will not handle unpaired forward and reverse reads input as seperate (non-interleaved) files
@@ -317,14 +317,13 @@ class JorgUtil:
 
             sorted_bam = self.convert_sam_to_sorted_and_indexed_bam(sam)
 
-            sorted_bam_file_list.append(sorted_bam)
+            # sorted_bam_file_list.append(sorted_bam)
 
-        return sorted_bam_file_list
+        return sorted_bam
 
-    def generate_make_coverage_table_command(self, task_params, sorted_bam_file_list):
+    def generate_make_coverage_table_command(self, task_params, sorted_bam):
         # create the depth file for this bam
         #
-        sorted_bam = task_params['sorted_bam']
 
         depth_file_path = os.path.join(self.scratch, str('jorg_depth.txt'))
         command = '/kb/module/lib/kb_jorg/bin/jgi_summarize_bam_contig_depths '
@@ -596,10 +595,10 @@ class JorgUtil:
         #
         # self.set_up_parallel_tasks(task_params)
 
-        sorted_bam_file_list = self.generate_alignment_bams(task_params, assembly)
+        sorted_bam = self.generate_alignment_bams(task_params, assembly)
 
         # not used right now
-        depth_file_path = self.generate_make_coverage_table_command(task_params, sorted_bam_file_list)
+        depth_file_path = self.generate_make_coverage_table_command(task_params, sorted_bam)
         # depth_dict = self.create_dict_from_depth_file(depth_file_path)
 
         # run jorg prep and jorg
