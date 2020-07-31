@@ -200,6 +200,6 @@ class kb_jorgTest(unittest.TestCase):
                                              'kmer_size': 33,
                                              'min_coverage': 30,
                                              'num_iterations': 5,
-                                             'high_contig_num': 'no',
-                                             'single_end_reads': 'no',
+                                             'high_contig_num': '--high_contig_num no',
+                                             'single_end_reads': '--single_end_reads no',
                                              'reads_file': [self.int1_oldstyle_reads_ref] })
