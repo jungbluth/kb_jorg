@@ -604,28 +604,8 @@ class JorgUtil:
         depth_file_path = self.generate_make_coverage_table_command(task_params, sorted_bam_file_list)
         # depth_dict = self.create_dict_from_depth_file(depth_file_path)
 
-        # run jorg prep, cut up fasta input
-        self.generate_jorg_cut_up_fasta_command(task_params)
-
-        # run jorg make coverage table from bam
-        self.generate_jorg_coverage_table_from_bam(task_params)
-
         # run jorg prep and jorg
         self.generate_jorg_command(task_params)
-
-        # run jorg post cluster merging command
-        self.generate_jorg_post_clustering_merging_command(task_params)
-
-        # run extract bins command
-        self.generate_jorg_extract_fasta_bins_command(task_params)
-
-        # run fasta renaming
-        self.rename_and_standardize_bin_names(task_params)
-
-        # revert fasta headers in bins
-        self.revert_fasta_headers(task_params)
-
-        self.make_binned_contig_summary_file_for_binning_apps(task_params)
 
         # file handling and management
         os.chdir(cwd)
@@ -635,15 +615,16 @@ class JorgUtil:
         log('Generated files:\n{}'.format('\n'.join(os.listdir(result_directory))))
 
         # make new BinnedContig object and upload to KBase
-        generate_binned_contig_param = {
-            'file_directory': os.path.join(result_directory, self.BINNER_BIN_RESULT_DIR),
-            'assembly_ref': task_params['assembly_ref'],
-            'binned_contig_name': task_params['binned_contig_name'],
-            'workspace_name': task_params['workspace_name']
-        }
+        # generate_binned_contig_param = {
+        #     'file_directory': os.path.join(result_directory, self.BINNER_BIN_RESULT_DIR),
+        #     'assembly_ref': task_params['assembly_ref'],
+        #     'binned_contig_name': task_params['binned_contig_name'],
+        #     'workspace_name': task_params['workspace_name']
+        # }
 
-        binned_contig_obj_ref = \
-            self.mgu.file_to_binned_contigs(generate_binned_contig_param).get('binned_contig_obj_ref')
+        # binned_contig_obj_ref = \
+        #     self.mgu.file_to_binned_contigs(generate_binned_contig_param).get('binned_contig_obj_ref')
+        binned_contig_obj_ref = NULL
 
         # generate report
         reportVal = self.generate_report(binned_contig_obj_ref, task_params)
