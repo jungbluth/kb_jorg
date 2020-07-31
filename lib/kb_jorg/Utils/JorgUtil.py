@@ -149,7 +149,7 @@ class JorgUtil:
             raise Exception("Cannot deinterlace fastq file!")
         return (fastq_forward, fastq_reverse)
 
-    def run_read_mapping_interleaved_pairs_mode(self, task_params, assembly_clean, fastq, sam):
+    def run_read_mapping_interleaved_pairs_mode(self, task_params, assembly, fastq, sam):
         read_mapping_tool = task_params['read_mapping_tool']
         log("running {} mapping in interleaved mode.".format(read_mapping_tool))
         random_seed_int = randint(0, 999999999)
@@ -158,14 +158,14 @@ class JorgUtil:
             log("Warning: bbmap does not support setting random seeds, so results are not reproducible.")
             command = 'bbmap.sh -Xmx{} '.format(self.BBMAP_MEM)
             command += 'threads={} '.format(self.MAPPING_THREADS)
-            command += 'ref={} '.format(assembly_clean)
+            command += 'ref={} '.format(assembly)
             command += 'in={} '.format(fastq)
             command += 'out={} '.format(sam)
             command += 'fast interleaved=true mappedonly nodisk overwrite'
         elif task_params['read_mapping_tool'] == 'bowtie2_default':
             (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
-            bt2index = os.path.basename(assembly_clean) + '.bt2'
-            command = 'bowtie2-build -f {} '.format(assembly_clean)
+            bt2index = os.path.basename(assembly) + '.bt2'
+            command = 'bowtie2-build -f {} '.format(assembly)
             command += '--threads {} '.format(self.MAPPING_THREADS)
             command += '--seed {} '.format(random_seed_int)
             command += '{} && '.format(bt2index)
@@ -176,8 +176,8 @@ class JorgUtil:
             command += '-S {}'.format(sam)
         elif task_params['read_mapping_tool'] == 'bowtie2_very_sensitive':
             (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
-            bt2index = os.path.basename(assembly_clean) + '.bt2'
-            command = 'bowtie2-build -f {} '.format(assembly_clean)
+            bt2index = os.path.basename(assembly) + '.bt2'
+            command = 'bowtie2-build -f {} '.format(assembly)
             command += '--threads {} '.format(self.MAPPING_THREADS)
             command += '--seed {} '.format(random_seed_int)
             command += '{} && '.format(bt2index)
@@ -190,14 +190,14 @@ class JorgUtil:
             (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
             command = 'minimap2 -ax sr -t {} '.format(self.MAPPING_THREADS)
             command += '--seed {} '.format(random_seed_int)
-            command += '{} '.format(assembly_clean)
+            command += '{} '.format(assembly)
             command += '{} '.format(fastq_forward)
             command += '{} > '.format(fastq_reverse)
             command += '{}'.format(sam)
         elif task_params['read_mapping_tool'] == 'hisat2':
             (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
-            ht2index = os.path.basename(assembly_clean) + '.ht2'
-            command = 'hisat2-build {} '.format(assembly_clean)
+            ht2index = os.path.basename(assembly) + '.ht2'
+            command = 'hisat2-build {} '.format(assembly)
             command += '{} && '.format(ht2index)
             command += 'hisat2 -x {} '.format(ht2index)
             command += '-1 {} '.format(fastq_forward)
@@ -208,7 +208,7 @@ class JorgUtil:
         log('running alignment command: {}'.format(command))
         out, err = self._run_command(command)
     #
-    # def run_read_mapping_unpaired_mode(self, task_params, assembly_clean, fastq, sam):
+    # def run_read_mapping_unpaired_mode(self, task_params, assembly, fastq, sam):
     #     read_mapping_tool = task_params['read_mapping_tool']
     #     log("running {} mapping in single-end (unpaired) mode.".format(read_mapping_tool))
     #     random_seed_int = randint(0, 999999999)
@@ -217,14 +217,14 @@ class JorgUtil:
     #         log("Warning: bbmap does not support setting random seeds, so results are not reproducible.")
     #         command = 'bbmap.sh -Xmx{} '.format(self.BBMAP_MEM)
     #         command += 'threads={} '.format(self.MAPPING_THREADS)
-    #         command += 'ref={} '.format(assembly_clean)
+    #         command += 'ref={} '.format(assembly)
     #         command += 'in={} '.format(fastq)
     #         command += 'out={} '.format(sam)
     #         command += 'fast interleaved=false mappedonly nodisk overwrite'
     #         # BBMap is deterministic without the deterministic flag if using single-ended reads
     #     elif task_params['read_mapping_tool'] == 'bowtie2_default':
-    #         bt2index = os.path.basename(assembly_clean) + '.bt2'
-    #         command = 'bowtie2-build -f {} '.format(assembly_clean)
+    #         bt2index = os.path.basename(assembly) + '.bt2'
+    #         command = 'bowtie2-build -f {} '.format(assembly)
     #         command += '--threads {} '.format(self.MAPPING_THREADS)
     #         command += '--seed {} '.format(random_seed_int)
     #         command += '{} && '.format(bt2index)
@@ -233,8 +233,8 @@ class JorgUtil:
     #         command += '--threads {} '.format(self.MAPPING_THREADS)
     #         command += '-S {}'.format(sam)
     #     elif task_params['read_mapping_tool'] == 'bowtie2_very_sensitive':
-    #         bt2index = os.path.basename(assembly_clean) + '.bt2'
-    #         command = 'bowtie2-build -f {} '.format(assembly_clean)
+    #         bt2index = os.path.basename(assembly) + '.bt2'
+    #         command = 'bowtie2-build -f {} '.format(assembly)
     #         command += '--threads {} '.format(self.MAPPING_THREADS)
     #         command += '--seed {} '.format(random_seed_int)
     #         command += '{} && '.format(bt2index)
@@ -245,12 +245,12 @@ class JorgUtil:
     #     elif task_params['read_mapping_tool'] == 'minimap2':
     #         command = 'minimap2 -ax sr -t {} '.format(self.MAPPING_THREADS)
     #         command += '--seed {} '.format(random_seed_int)
-    #         command += '{} '.format(assembly_clean)
+    #         command += '{} '.format(assembly)
     #         command += '{} > '.format(fastq)
     #         command += '{}'.format(sam)
     #     elif task_params['read_mapping_tool'] == 'hisat2':
-    #         ht2index = os.path.basename(assembly_clean) + '.ht2'
-    #         command = 'hisat2-build {} '.format(assembly_clean)
+    #         ht2index = os.path.basename(assembly) + '.ht2'
+    #         command = 'hisat2-build {} '.format(assembly)
     #         command += '{} && '.format(ht2index)
     #         command += 'hisat2 -x {} '.format(ht2index)
     #         command += '-U {} '.format(fastq)
@@ -286,7 +286,7 @@ class JorgUtil:
 
         return sorted_bam
 
-    def generate_alignment_bams(self, task_params, assembly_clean):
+    def generate_alignment_bams(self, task_params, assembly):
         """
             This function runs the selected read mapper and creates the
             sorted and indexed bam files from sam files using samtools.
@@ -310,10 +310,10 @@ class JorgUtil:
 
             if fastq_type == 'interleaved':  # make sure working - needs tests
                 log("Running interleaved read mapping mode")
-                self.run_read_mapping_interleaved_pairs_mode(task_params, assembly_clean, fastq, sam)
+                self.run_read_mapping_interleaved_pairs_mode(task_params, assembly, fastq, sam)
             else:  # running read mapping in single-end mode
                 log("Running unpaired read mapping mode")
-                self.run_read_mapping_unpaired_mode(task_params, assembly_clean, fastq, sam)
+                self.run_read_mapping_unpaired_mode(task_params, assembly, fastq, sam)
 
             sorted_bam = self.convert_sam_to_sorted_and_indexed_bam(sam)
 
@@ -598,7 +598,7 @@ class JorgUtil:
         #
         # self.set_up_parallel_tasks(task_params)
 
-        self.generate_alignment_bams(task_params, assembly_clean)
+        self.generate_alignment_bams(task_params, assembly)
 
         # not used right now
         depth_file_path = self.generate_make_coverage_table_command(task_params, sorted_bam_file_list)
