@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y wget git
 
 # RUN wget https://zenodo.org/record/3889132/files/SRX3307784_clean.fastq.gz
 
-RUN apt-get update && apt-get install -y build-essential make flex libexpat1-dev libboost-all-dev xxd zlib1g-dev
+RUN apt-get update && apt-get install -y build-essential make flex libexpat1-dev libboost-all-dev xxd zlib1g-dev bowtie2
 
 RUN wget https://github.com/bachev/mira/releases/download/V5rc2/mira-V5rc2.tar.bz2 && \
     tar -xvf mira-* && \
@@ -44,6 +44,9 @@ RUN chmod -R a+rw /kb/module
 
 WORKDIR /kb/module
 
+ENV PATH=/kb/module/lib/kb_jorg/bin:$PATH
+ENV PATH=/kb/module/lib/kb_jorg/bin/bbmap:$PATH
+ENV PATH=/kb/module/lib/kb_jorg/bin/samtools/bin:$PATH
 ENV PATH=/pilon-1.2.3:$PATH
 ENV PATH=/infernal-1.1.3-linux-intel-gcc/binaries:$PATH
 ENV PATH=/Jorg:$PATH
