@@ -24,6 +24,8 @@ module kb_jorg {
         kmer_size: specify kmer length for baiting
         min_coverage: minimum coverage value
         num_iterations: specify a number of iterations to use
+        high_contig_num: are there more than 2500 contigs and is this expected
+        single_end_reads: is the input library single-end type
         ref: https://github.com/jungbluth/jorg
 
     */

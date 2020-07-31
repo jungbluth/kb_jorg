@@ -1,9 +1,9 @@
 #
 # define display information
 #
-name     : Improve and circularize genomes and MAGs using Jorg - v1.0.0
-subtitle : Improve and circularize individual genomes from shotgun metagenomics data
-tooltip  : Improve and circularize individual genomes from shotgun metagenomics data
+name     : Improve and circularize single-genome assemblies and MAGs using Jorg - v1.0.0
+subtitle : Improve and circularize single-genome assemblies and MAGs from shotgun metagenomics data
+tooltip  : Improve and circularize single-genome assemblies and MAGs from shotgun metagenomics data
 
 icon: jorg.png
 
@@ -60,8 +60,8 @@ parameters :
 
     high_contig_num :
         ui-name : High Contig Count Run
-        short-hint : if high number of contigs detected (>1000 contigs), are you certain that you want to try running Jorg? (default no)
-        long-hint  : if high number of contigs detected (>1000 contigs), are you certain that you want to try running Jorg? (default no)
+        short-hint : if high number of contigs detected (>2500 contigs), are you certain that you want to try running Jorg? (default no)
+        long-hint  : if high number of contigs detected (>2500 contigs), are you certain that you want to try running Jorg? (default no)
 
     single_end_reads :
         ui-name : Single-End Library
