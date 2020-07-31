@@ -598,7 +598,7 @@ class JorgUtil:
         #
         # self.set_up_parallel_tasks(task_params)
 
-        self.generate_alignment_bams(task_params, assembly)
+        sorted_bam_file_list = self.generate_alignment_bams(task_params, assembly)
 
         # not used right now
         depth_file_path = self.generate_make_coverage_table_command(task_params, sorted_bam_file_list)
