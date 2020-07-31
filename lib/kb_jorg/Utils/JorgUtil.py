@@ -324,13 +324,11 @@ class JorgUtil:
     def generate_make_coverage_table_command(self, task_params, sorted_bam_file_list):
         # create the depth file for this bam
         #
-        min_contig_length = task_params['min_contig_length']
         sorted_bam = task_params['sorted_bam']
 
         depth_file_path = os.path.join(self.scratch, str('jorg_depth.txt'))
         command = '/kb/module/lib/kb_jorg/bin/jgi_summarize_bam_contig_depths '
         command += '--outputDepth {} '.format(depth_file_path)
-        command += '--minContigLength {} '.format(min_contig_length)
         command += '--minContigDepth 1 {}'.format(sorted_bam)
 
         log('running summarize_bam_contig_depths command: {}'.format(command))
@@ -557,7 +555,7 @@ class JorgUtil:
             upon which JORG will be run
 
         optional params:
-            min_contig_length: minimum contig length; default 1000
+            TBD
 
             ref: https://github.com/BinPro/JORG/blob/develop/README.md
         """
