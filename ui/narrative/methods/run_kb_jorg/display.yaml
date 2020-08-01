@@ -68,6 +68,12 @@ parameters :
         short-hint : are the input reads a single-end library? (default no)
         long-hint  : are the input reads a single-end library? (default no)
 
+    assembly_selection_criteria :
+        ui-name : Output Assembly Selection Criteria
+        short-hint : select the assembly statistics criteria used to decide which assembly to output
+        long-hint  : select the assembly statistics criteria used to decide which assembly to output
+
+
 description : |
 
     <p>Jorg is a tool to help improve or circularize genomes from shotgun metagenomics data.</p>

@@ -26,6 +26,8 @@ module kb_jorg {
         num_iterations: specify a number of iterations to use
         high_contig_num: are there more than 2500 contigs and is this expected
         single_end_reads: is the input library single-end type
+        assembly_selection_criteria: criteria to select the final assembly output from Jorg
+
         ref: https://github.com/jungbluth/jorg
 
     */
@@ -40,6 +42,7 @@ module kb_jorg {
         int num_iterations;
         string high_contig_num;
         string single_end_reads;
+        string assembly_selection_criteria;
 
     } jorgInputParams;
 

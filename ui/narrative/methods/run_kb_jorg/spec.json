@@ -123,6 +123,48 @@
                 "checked_value": "--single_end_reads yes",
                 "unchecked_value": " "
               }
+        },
+        {
+            "id": "assembly_selection_criteria",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "longest_single_fragment" ],
+            "field_type": "dropdown",
+            "dropdown_options": {
+                "options": [
+                    {
+                        "value": "longest_single_fragment",
+                        "display": "Longest Single Fragment Assembly",
+                        "id": "longest_single_fragment",
+                        "ui_name": "Longest Single Fragment Assembly"
+                    },
+                    {
+                        "value": "longest_single_fragment_filter",
+                        "display": "Longest Single Fragment Assembly Minus Short Contigs (<1% cumulative assembly length)",
+                        "id": "longest_single_fragment_filter",
+                        "ui_name": "Longest Single Fragment Assembly Minus Short Contigs (<1% cumulative assembly length)"
+                    },
+                    {
+                        "value": "longest_cumulative_assembly_length",
+                        "display": "Longest Cumulative Assembly Length",
+                        "id": "longest_cumulative_assembly_length",
+                        "ui_name": "Longest Cumulative Assembly Length"
+                    },
+                    {
+                        "value": "longest_cumulative_assembly_length_filter",
+                        "display": "Longest Cumulative Assembly Length Minus Short Contigs (<1% cumulative assembly length)",
+                        "id": "longest_cumulative_assembly_length_filter",
+                        "ui_name": "Longest Cumulative Assembly Length Minus Short Contigs (<1% cumulative assembly length)"
+                    },
+                    {
+                        "value": "final_iteration_assembly",
+                        "display": "Assembly Generated at the Final Iteration of Jorg (note: not necessarily the best or longest assembly)",
+                        "id": "final_iteration_assembly",
+                        "ui_name": "Assembly Generated at the Final Iteration of Jorg (note: not necessarily the best or longest assembly)"
+                    }
+                ]
+            }
         }
     ],
     "behavior": {
@@ -167,6 +209,10 @@
                 {
                     "input_parameter": "single_end_reads",
                     "target_property": "single_end_reads"
+                },
+                {
+                    "input_parameter": "assembly_selection_criteria",
+                    "target_property": "assembly_selection_criteria"
                 }
             ],
             "output_mapping": [
