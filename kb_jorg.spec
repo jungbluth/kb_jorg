@@ -18,6 +18,7 @@ module kb_jorg {
         assembly_ref: Genome assembly object
         reads_file: reads object (PairedEndLibrary/SingleEndLibrary) upon which jorg will be run
         workspace_name: the name of the workspace it gets saved to.
+        output_assembly_name: name of the output assembly
 
         optional params:
         read_mapping_tool: tool to use for read mapping
@@ -35,6 +36,7 @@ module kb_jorg {
         obj_ref assembly_ref;
         string workspace_name;
         obj_ref reads_file;
+        string output_assembly_name;
 
         string read_mapping_tool;
         int kmer_size;

@@ -38,6 +38,11 @@ parameters :
         short-hint : Reads object (PairedEndLibrary/SingleEndLibrary) upon which Jorg will be run
         long-hint  : Reads object (PairedEndLibrary/SingleEndLibrary) upon which Jorg will be run
 
+    output_assembly_name :
+        ui-name : Output Assembly Name
+        short-hint : name for the output assembly
+        long-hint  : name for the output assembly
+
     read_mapping_tool :
         ui-name : Read Mapping Tool
         short-hint : tool to use for read mapping (default BBmap)
