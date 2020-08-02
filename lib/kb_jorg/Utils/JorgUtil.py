@@ -7,6 +7,7 @@ import time
 import uuid
 import zipfile
 import copy
+import shutil
 
 from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.DataFileUtilClient import DataFileUtil
@@ -369,6 +370,14 @@ class JorgUtil:
 
     # def prepare_jorg_files(self, task_params):
 
+    def move_jorg_example_files_to_cwd(self):
+        depth_file_source = "/Jorg/Example/depth.txt"
+        depth_file_destination = os.path.join(self.scratch, str('depth.txt'))
+        manifest_template_file_source = "/Jorg/Example/manifest_template.conf"
+        manifest_template_file_destination = os.path.join(self.scratch, str('manifest_template.conf'))
+        shutil.move(depth_file_source,depth_file_destination)
+        shutil.move(manifest_template_file_source,manifest_template_file_destination)
+
 
     def generate_jorg_command(self, task_params):
         """
@@ -384,15 +393,19 @@ class JorgUtil:
             self.fix_generate_jorg_command_ui_bug(task_params)
 
         log("\n\nRunning generate_jorg_command")
-        command = '{}/jorg '.format(self.JORG_BASE_PATH)
-        command += '--bin_fasta_file {} '.format(assembly_ref)
-        command += '--reads_file {} '.format(reads_file)
-        command += '--kmer_length {} '.format(kmer_size)
-        command += '--min_coverage {} '.format(min_coverage)
-        command += '--iterations {} '.format(num_iterations)
-        command += ' {} '.format(parameter_high_contig_num)
-        command += ' {}'.format(parameter_single_end_reads)
+        command = 'bash {}/jorg '.format(self.JORG_BASE_PATH)
+        command += '--bin_fasta_file bin.186.fa '
+        command += '--reads_file bin.186_paired-end_10K-seqs.fastq '
+        # command += '--reads_file {} '.format(reads_file)
+        # command += '--kmer_length {} '.format(kmer_size)
+        # command += '--min_coverage {} '.format(min_coverage)
+        # command += '--iterations {} '.format(num_iterations)
+        # command += ' {} '.format(parameter_high_contig_num)
+        # command += ' {}'.format(parameter_single_end_reads)
         log('Generated jorg command: {}'.format(command))
+
+        self.move_jorg_example_files_to_cwd()
+        print(os.listdir())
 
         self._run_command(command)
 

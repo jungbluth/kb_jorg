@@ -86,7 +86,7 @@ class kb_jorgTest(unittest.TestCase):
 
         int1_reads_params = {
             'fwd_file': pe1_reads_path,
-            'sequencing_tech': 'Illumina',
+            'sequencing_tech': 'Unknown',
             'wsname': cls.ws_info[1],
             'name': 'MyInterleavedLibrary1',
             'interleaved': 'true'
@@ -185,7 +185,6 @@ class kb_jorgTest(unittest.TestCase):
     def getContext(self):
         return self.__class__.ctx
 
-
     def test_run_jorg_default(self):
         method_name = 'test_run_jorg_default'
         print ("\n=================================================================")
@@ -196,10 +195,12 @@ class kb_jorgTest(unittest.TestCase):
         ret = self.getImpl().run_kb_jorg(self.getContext(),
                                             {'workspace_name': self.getWsName(),
                                              'assembly_ref': self.assembly_ref1,
+                                             'output_assembly_name': 'test.assembly',
                                              'read_mapping_tool': 'bbmap',
                                              'kmer_size': 33,
                                              'min_coverage': 30,
                                              'num_iterations': 5,
                                              'high_contig_num': '--high_contig_num no',
                                              'single_end_reads': '--single_end_reads no',
+                                             'assembly_selection_criteria': 'longest_cumulative_assembly_length',
                                              'reads_file': [self.int1_oldstyle_reads_ref] })

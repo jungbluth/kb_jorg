@@ -35,7 +35,7 @@ module kb_jorg {
     typedef structure {
         obj_ref assembly_ref;
         string workspace_name;
-        obj_ref reads_file;
+        list<obj_ref> reads_file;
         string output_assembly_name;
 
         string read_mapping_tool;
