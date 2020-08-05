@@ -448,29 +448,30 @@ class JorgUtil:
         print("select_jorg_output_genome")
         # running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly
         if task_params["assembly_selection_criteria"] == "longest_single_fragment":
-            output_jorg_genome = assembly_with_longest_single_fragment
-            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_genome.split(".")[0]))
+            output_jorg_assembly = assembly_with_longest_single_fragment
+            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
         elif task_params["assembly_selection_criteria"] == "longest_single_fragment_filter":
-            output_jorg_genome = assembly_with_longest_single_fragment
-            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_genome.split(".")[0]))
+            output_jorg_assembly = assembly_with_longest_single_fragment
+            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
             print("running_longest_single_fragment is {}bp long".format(running_longest_single_fragment))
         elif task_params["assembly_selection_criteria"] == "longest_cumulative_assembly_length":
-            output_jorg_genome = assembly_with_longest_cumulative_assembly_length
-            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_genome.split(".")[0]))
+            output_jorg_assembly = assembly_with_longest_cumulative_assembly_length
+            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
         elif task_params["assembly_selection_criteria"] == "longest_cumulative_assembly_length_filter":
-            output_jorg_genome = assembly_with_longest_cumulative_assembly_length
-            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_genome.split(".")[0]))
+            output_jorg_assembly = assembly_with_longest_cumulative_assembly_length
+            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
             print("running_longest_single_fragment is {}bp long".format(running_longest_single_fragment))
         elif task_params["assembly_selection_criteria"] == "final_iteration_assembly":
-            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_genome.split(".")[0]))
-            output_jorg_genome = final_iteration_assembly
-        return output_jorg_genome
+            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
+            output_jorg_assembly = final_iteration_assembly
+        return output_jorg_assembly
 
-    def run_circle_check_using_last(self, output_jorg_genome):
+    def run_circle_check_using_last(self, output_jorg_assembly):
         print("run_circle_check_using_last")
         command = 'bash {}/lib/circle_check_using_last '.format(self.JORG_BASE_PATH)
-        command += 'iteration/{}.fasta '.format(output_jorg_genome)
+        command += 'iteration/{} '.format(output_jorg_assembly)
         self._run_command(command)
+
 
     def generate_jorg_command(self, task_params, jorg_working_coverage):
         """
@@ -504,12 +505,13 @@ class JorgUtil:
 
         running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
 
-        output_jorg_genome = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
+        output_jorg_assembly = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
-        self.run_circle_check_using_last(output_jorg_genome)
+        self.run_circle_check_using_last(output_jorg_assembly)
 
         self.move_jorg_output_files_to_output_dir()
 
+        return output_jorg_assembly
 
 
     def generate_output_file_list(self, result_directory):
@@ -639,25 +641,25 @@ class JorgUtil:
 
         return report_output
 
-    def create_dict_from_depth_file(self, depth_file_path):
-        # keep contig order (required by metabat2)
-        depth_file_dict = {}
-        with open(depth_file_path, 'r') as f:
-            header = f.readline().rstrip().split("\t")
-            # print('HEADER1 {}'.format(header))
-            # map(str.strip, header)
-            for line in f:
-                # deal with cases were fastq name has spaces.Assume first
-                # non white space word is unique and use this as ID.
-                # line = line.rstrip()
-                vals = line.rstrip().split("\t")
-                if ' ' in vals[0]:
-                    ID = vals[0].split()[0]
-                else:
-                    ID = vals[0]
-                depth_file_dict[ID] = vals[1:]
-            depth_file_dict['header'] = header
-        return depth_file_dict
+    # def create_dict_from_depth_file(self, depth_file_path):
+    #     # keep contig order (required by metabat2)
+    #     depth_file_dict = {}
+    #     with open(depth_file_path, 'r') as f:
+    #         header = f.readline().rstrip().split("\t")
+    #         # print('HEADER1 {}'.format(header))
+    #         # map(str.strip, header)
+    #         for line in f:
+    #             # deal with cases were fastq name has spaces.Assume first
+    #             # non white space word is unique and use this as ID.
+    #             # line = line.rstrip()
+    #             vals = line.rstrip().split("\t")
+    #             if ' ' in vals[0]:
+    #                 ID = vals[0].split()[0]
+    #             else:
+    #                 ID = vals[0]
+    #             depth_file_dict[ID] = vals[1:]
+    #         depth_file_dict['header'] = header
+    #     return depth_file_dict
 
     def run_jorg(self, task_params):
         """
@@ -711,7 +713,7 @@ class JorgUtil:
         jorg_working_coverage = self.check_input_assembly_for_minimum_coverage(task_params)
 
         # run jorg prep and jorg
-        self.generate_jorg_command(task_params, jorg_working_coverage)
+        output_jorg_assembly = self.generate_jorg_command(task_params, jorg_working_coverage)
 
         # file handling and management
         #os.chdir(cwd)
@@ -721,10 +723,9 @@ class JorgUtil:
         # log('Generated files:\n{}'.format('\n'.join(os.listdir(result_directory))))
 
 
-        output_contigs = 'NULL'
 
         self.au.save_assembly_from_fasta(
-            {'file': {'path': output_contigs},
+            {'file': {'path': JORG_RESULT_DIRECTORY + '/iterations/' + output_jorg_assembly},
         #     'file_directory': os.path.join(result_directory, self.BINNER_BIN_RESULT_DIR),
              'workspace_name': task_params['workspace_name'],
              'assembly_name': task_params['output_assembly_name']
