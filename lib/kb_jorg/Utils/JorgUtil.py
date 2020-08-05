@@ -8,6 +8,7 @@ import uuid
 import zipfile
 import copy
 import shutil
+import math
 
 from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.DataFileUtilClient import DataFileUtil
