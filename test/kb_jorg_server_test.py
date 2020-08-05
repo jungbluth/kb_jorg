@@ -78,7 +78,7 @@ class kb_jorgTest(unittest.TestCase):
         #
         # READS 1
         # building paired-end library
-        pe1_reads_filename = 'bin.186_paired-end_10K-seqs.fastq'
+        pe1_reads_filename = 'bin.186_paired-end_100K-seqs.fastq'
         pe1_reads_path = os.path.join(cls.scratch, pe1_reads_filename)
 
         # gets put on scratch. "work/tmp" is scratch
@@ -198,9 +198,9 @@ class kb_jorgTest(unittest.TestCase):
                                              'output_assembly_name': 'test.assembly',
                                              'read_mapping_tool': 'bbmap',
                                              'kmer_size': 33,
-                                             'min_coverage': 30,
-                                             'num_iterations': 5,
+                                             'min_coverage': 5,
+                                             'num_iterations': 1,
                                              'high_contig_num': '--high_contig_num no',
                                              'single_end_reads': '--single_end_reads no',
-                                             'assembly_selection_criteria': 'longest_cumulative_assembly_length',
+                                             'assembly_selection_criteria': 'longest_single_fragment_filter',
                                              'reads_file': [self.int1_oldstyle_reads_ref] })
