@@ -78,6 +78,11 @@ parameters :
         short-hint : select the assembly statistics criteria used to decide which assembly to output
         long-hint  : select the assembly statistics criteria used to decide which assembly to output
 
+    circle_min_overlap_length :
+        ui-name : Minimum Overlap Length Required to Circularize
+        short-hint : specify minimum overlap length required to check for if output contigs cirularized
+        long-hint  : specify minimum overlap length required to check for if output contigs cirularized
+
 
 description : |
 

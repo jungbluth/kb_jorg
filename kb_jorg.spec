@@ -28,6 +28,7 @@ module kb_jorg {
         high_contig_num: are there more than 2500 contigs and is this expected
         single_end_reads: is the input library single-end type
         assembly_selection_criteria: criteria to select the final assembly output from Jorg
+        circle_min_overlap_length: specify overlap length when checking for circularized contig
 
         ref: https://github.com/jungbluth/jorg
 
@@ -45,6 +46,7 @@ module kb_jorg {
         string high_contig_num;
         string single_end_reads;
         string assembly_selection_criteria;
+        int circle_min_overlap_length;
 
     } jorgInputParams;
 
