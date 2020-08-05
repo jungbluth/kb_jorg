@@ -343,7 +343,7 @@ class JorgUtil:
         detected_coverage_in_longest_contig = float(lines[1].split()[2])
         if detected_coverage_in_longest_contig >= float(task_params["min_coverage"]):
             log("The longest contig in the input assembly passes the input minimum coverage criteria (value: {}). Setting Jorg coverage parameter to 75% of this value.".format(detected_coverage_in_longest_contig))
-            jorg_working_coverage = floor(float(lines[1].split()[2]) * 0.75)
+            jorg_working_coverage = math.floor(float(lines[1].split()[2]) * 0.75)
             log("Working Jorg minimum coverage set to {}.".format(jorg_working_coverage))
         else:
             log("The longest contig in the input assembly has a coverage value of {}, which does not meet the minimum coverage criteria. Exiting Jorg.".format(float(lines[1].split()[2])))
