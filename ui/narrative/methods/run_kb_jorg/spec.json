@@ -189,7 +189,7 @@
                 "min_int" : 20,
                 "validate_as" : "int"
             }
-        },
+        }
     ],
     "behavior": {
         "service-mapping": {
