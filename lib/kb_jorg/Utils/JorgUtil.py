@@ -453,14 +453,14 @@ class JorgUtil:
         elif task_params["assembly_selection_criteria"] == "longest_single_fragment_filter":
             output_jorg_assembly = assembly_with_longest_single_fragment
             log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
-            print("running_longest_single_fragment is {}bp long".format(running_longest_single_fragment))
+            print("running_longest_single_fragment is {} bp long".format(running_longest_single_fragment))
         elif task_params["assembly_selection_criteria"] == "longest_cumulative_assembly_length":
             output_jorg_assembly = assembly_with_longest_cumulative_assembly_length
             log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
         elif task_params["assembly_selection_criteria"] == "longest_cumulative_assembly_length_filter":
             output_jorg_assembly = assembly_with_longest_cumulative_assembly_length
             log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
-            print("running_longest_single_fragment is {}bp long".format(running_longest_single_fragment))
+            print("running_longest_single_fragment is {} bp long".format(running_longest_single_fragment))
         elif task_params["assembly_selection_criteria"] == "final_iteration_assembly":
             log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
             output_jorg_assembly = final_iteration_assembly
@@ -469,9 +469,64 @@ class JorgUtil:
     def run_circle_check_using_last(self, output_jorg_assembly):
         print("run_circle_check_using_last")
         command = 'bash {}/lib/circle_check_using_last '.format(self.JORG_BASE_PATH)
-        command += 'iteration/{} '.format(output_jorg_assembly)
+        command += 'Iterations/{} '.format(output_jorg_assembly)
         self._run_command(command)
 
+    def process_last_output(path_to_last_output):
+        file1 = open(path_to_last_output, 'r')
+        remember_query = ""
+        forward_circle_match = ""
+        reverse_circle_match = ""
+        lines = file1.readlines()
+        circularized_contigs = []
+        query_start = 0
+        query_end = 0
+        subject_start = 0
+        subject_end = 0
+        minimum_length_threshold = 100
+
+        for line in lines:
+            print("line is {}".format(line))
+            if line.startswith('#'):
+                pass
+            else:
+                print("remember_query and line.split()[0] are {} and {}".format(remember_query,line.split()[0]))
+                if not remember_query == line.split()[0]: # clear this variable if different contig
+                    remember_query = ""
+                    longest_contig_length = 0
+                    print("checkpoint 0")
+                remember_query = line.split()[0]
+                if line.split()[0] == line.split()[1]: # if query and subject the same
+                    print("checkpoint 1")
+                    if int(line.split()[14]) >= minimum_length_threshold: # if the match is above the minimum length threshold
+                        print("checkpoint 2")
+                        if line.split()[2] == "100.00": # if a 100% match identified
+                            print("checkpoint 3")
+                            if float(line.split()[10]) <= 10e-5: # if the expected value is significant
+                                print("checkpoint 4")
+                                if line.split()[13] == line.split()[14]: # if the self last match
+                                    longest_contig_length = int(line.split()[14])
+                                    print("longest_contig_length is {}".format(longest_contig_length))
+                                    print("checkpoint 5")
+                                if forward_circle_match == "TRUE":
+                                    print("checkpoint 6")
+                                    print("query_start is {} ".format(query_start))
+                                    print("format_line_split6 is {} ".format(line.split()[6]))
+                                    print("subject_end and longest_contig_length are {} {}".format(int(subject_end),int(longest_contig_length)))
+                                    if (query_start == line.split()[8]) and (query_end == line.split()[9]) and (subject_start == line.split()[6]) and (subject_end == line.split()[7]) and (int(subject_end) == int(longest_contig_length)) and (int(line.split()[7]) == int(longest_contig_length)):
+                                        print("checkpoint 7")
+                                        reverse_circle_match = "TRUE"
+                                        circularized_contigs.append(line.split()[0])
+                                elif line.split()[13] != line.split()[14]:
+                                    if (int(line.split()[7]) - int(line.split()[6])) == (int(line.split()[9]) - int(line.split()[8])):
+                                        print("checkpoint 8")
+                                        forward_circle_match = "TRUE"
+                                        remember_query = line.split()[0]
+                                        query_start = line.split()[6]
+                                        query_end = line.split()[7]
+                                        subject_start = line.split()[8]
+                                        subject_end = line.split()[9]
+        print("circularized contigs are {}".format(circularized_contigs))
 
     def generate_jorg_command(self, task_params, jorg_working_coverage):
         """
