@@ -464,6 +464,7 @@ class JorgUtil:
         elif task_params["assembly_selection_criteria"] == "final_iteration_assembly":
             log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
             output_jorg_assembly = final_iteration_assembly
+        log("jorg assembly selected: {}".format(output_jorg_assembly))
         return output_jorg_assembly
 
     def run_circle_check_using_last(self, output_jorg_assembly):
@@ -567,6 +568,14 @@ class JorgUtil:
         self.move_jorg_output_files_to_output_dir()
 
         return output_jorg_assembly
+
+    def make_circos_karyotype_file(output_jorg_assembly):
+        from Bio import SeqIO
+        for record in SeqIO.parse(output_jorg_assembly, "fasta"):
+            print("%s %i" % (record.id, len(record)))
+
+    def generate_circos_plot():
+
 
 
     def generate_output_file_list(self, result_directory):
@@ -780,7 +789,7 @@ class JorgUtil:
 
 
         self.au.save_assembly_from_fasta(
-            {'file': {'path': JORG_RESULT_DIRECTORY + '/iterations/' + output_jorg_assembly},
+            {'file': {'path': self.JORG_RESULT_DIRECTORY + '/iterations/' + output_jorg_assembly},
         #     'file_directory': os.path.join(result_directory, self.BINNER_BIN_RESULT_DIR),
              'workspace_name': task_params['workspace_name'],
              'assembly_name': task_params['output_assembly_name']
