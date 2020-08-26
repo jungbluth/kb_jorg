@@ -533,7 +533,7 @@ class JorgUtil:
 
     def draw_circos_plot(self):
         command = 'circos -conf '
-        command += '/kb/module/lib/kb_jorg/circos/circos_new.conf'
+        command += '/kb/module/lib/kb_jorg/circos/circos.conf'
         log('draw_circos_plot: {}'.format(command))
         self._run_command(command)
 
