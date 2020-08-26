@@ -308,7 +308,7 @@ class JorgUtil:
             fastq_type = read_type[i]
 
             sam = os.path.basename(fastq).split('.fastq')[0] + ".sam"
-            sam = os.path.join(self.JORG_RESULT_DIRECTORY, sam)
+            #sam = os.path.join(self.JORG_RESULT_DIRECTORY, sam)
 
             if fastq_type == 'interleaved':  # make sure working - needs tests
                 log("Running interleaved read mapping mode")
@@ -383,8 +383,6 @@ class JorgUtil:
     #     self._run_command(command)
 # *******************
 
-    # def prepare_jorg_files(self, task_params):
-
     def move_jorg_example_files_to_cwd(self):
         #depth_file_source = "/Jorg/Example/depth.txt"
         #depth_file_destination = os.path.join(self.scratch, str('depth.txt'))
@@ -392,6 +390,14 @@ class JorgUtil:
         manifest_template_file_destination = os.path.join(self.scratch, str('manifest_template.conf'))
         #shutil.move(depth_file_source,depth_file_destination)
         shutil.move(manifest_template_file_source,manifest_template_file_destination)
+        iterations_folder_source = "/kb/module/test/data/output/example1/Iterations"
+        iterations_folder_destination = os.path.join(self.scratch, str('Iterations'))
+        shutil.move(iterations_folder_source,iterations_folder_destination)
+        iterations_file_source = "/kb/module/test/data/output/example1/iterations.txt"
+        iterations_file_destination = os.path.join(self.scratch, str('iterations.txt'))
+        shutil.move(iterations_file_source,iterations_file_destination)
+
+
 
 
     def process_jorg_iteration_output_and_calc_stats(self):
@@ -467,13 +473,89 @@ class JorgUtil:
         log("jorg assembly selected: {}".format(output_jorg_assembly))
         return output_jorg_assembly
 
+
+    def uppercase_fastq_file(self, input_fastq):
+        output_fastq = input_fastq.split('.fastq')[0] + "_uppercase.fastq"
+        command = 'seqkit seq -u '
+        command += '{} > '.format(input_fastq)
+        command += '{}'.format(output_fastq)
+        log('uppercase_fastq_file: {}'.format(command))
+        self._run_command(command)
+        return output_fastq
+
+    def clean_input_fasta(self, output_jorg_assembly):
+        output_jorg_assembly_clean = output_jorg_assembly.split('.fasta')[0] + "_clean.fasta"
+        command = 'cut -d\' \' -f1 {} > {}'.format(output_jorg_assembly, output_jorg_assembly_clean)
+        log('clean_input_fasta: {}'.format(command))
+        self._run_command(command)
+        return output_jorg_assembly_clean
+
+    def sort_fasta_by_length(self, input_fasta):
+        output_fasta_sorted = input_fasta.split('.fasta')[0] + "_sorted.fasta"
+        command = 'seqkit sort '
+        command += '-l {} '.format(input_fasta)
+        command += '-r '.format(input_fasta)
+        command += '> {} '.format(output_fasta_sorted)
+        log('sort_fasta_by_length: {}'.format(command))
+        self._run_command(command)
+        return output_fasta_sorted
+    #
+    # def run_bbmap_for_circos(self, output_fasta_sorted, output_fastq):
+    #     output_sam = 'final.mapped.sam'
+    #     command = 'bbmap.sh -Xmx30g '
+    #     command += 'threads=1 '
+    #     command += 'ref={} '.format(output_fasta_sorted)
+    #     command += 'in={} '.format(output_fastq)
+    #     command += 'out={} '.format(output_sam)
+    #     command += 'fast interleaved=true mappedonly nodisk overwrite'
+    #     log('run_bbmap_for_circos: {}'.format(command))
+    #     self._run_command(command)
+    #     return output_sam
+
+    def extract_mapping_tracks_from_bam(self, sorted_bam):
+        output_sam = 'final.mapped.sam'
+        command = 'bedtools genomecov -ibam '
+        command += '{} '.format(sorted_bam)
+        command += '-bg > circos_mapping_tracks.txt'
+        log('extract_mapping_tracks_from_bam: {}'.format(command))
+        self._run_command(command)
+
+
+    def make_circos_karyotype_file(self, output_jorg_assembly_clean_sorted):
+        from Bio import SeqIO
+        count = 1
+        path_to_circos_karyotype_file = "circos_karyotype.txt"
+        with open(path_to_circos_karyotype_file, 'a') as f:
+            for record in SeqIO.parse(output_jorg_assembly_clean_sorted, "fasta"):
+                f.write("chr - {} {} 0 {} {}\n".format(record.id, count, len(record), record.id))
+                count += 1
+        f.close()
+
+    def draw_circos_plot(self):
+        command = 'circos -conf '
+        command += '/kb/module/lib/kb_jorg/circos/circos_new.conf'
+        log('draw_circos_plot: {}'.format(command))
+        self._run_command(command)
+
+    def make_circos_plot(self, task_params, input_fastq, output_jorg_assembly):
+        output_fastq = self.uppercase_fastq_file(input_fastq)
+        output_jorg_assembly_clean = self.clean_input_fasta(output_jorg_assembly)
+        output_jorg_assembly_clean_sorted = self.sort_fasta_by_length(output_jorg_assembly_clean)
+        sam = os.path.basename(output_fastq).split('.fastq')[0] + ".sam"
+        self.run_read_mapping_interleaved_pairs_mode(task_params, output_jorg_assembly_clean_sorted, output_fastq, sam)
+        # output_sam = self.run_bbmap_for_circos(output_jorg_assembly_clean_sorted, output_fastq)
+        sorted_bam = self.convert_sam_to_sorted_and_indexed_bam(sam)
+        self.extract_mapping_tracks_from_bam(sorted_bam)
+        self.make_circos_karyotype_file(output_jorg_assembly_clean_sorted)
+        self.draw_circos_plot()
+
     def run_circle_check_using_last(self, output_jorg_assembly):
         print("run_circle_check_using_last")
         command = 'bash {}/lib/circle_check_using_last '.format(self.JORG_BASE_PATH)
         command += 'Iterations/{} '.format(output_jorg_assembly)
         self._run_command(command)
 
-    def process_last_output(path_to_last_output):
+    def process_last_output(self, path_to_last_output):
         file1 = open(path_to_last_output, 'r')
         remember_query = ""
         forward_circle_match = ""
@@ -557,11 +639,17 @@ class JorgUtil:
 
         self.move_jorg_example_files_to_cwd()
 
-        self._run_command(command)
+        #self._run_command(command)
 
-        running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
+        #running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
 
-        output_jorg_assembly = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
+        # output_jorg_assembly = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
+
+        output_jorg_assembly = 'Iterations/1.fasta'
+
+        input_fastq = 'bin.186_paired-end_100K-seqs.fastq'
+
+        self.make_circos_plot(task_params, input_fastq, output_jorg_assembly)
 
         self.run_circle_check_using_last(output_jorg_assembly)
 
@@ -569,12 +657,7 @@ class JorgUtil:
 
         return output_jorg_assembly
 
-    def make_circos_karyotype_file(output_jorg_assembly):
-        from Bio import SeqIO
-        for record in SeqIO.parse(output_jorg_assembly, "fasta"):
-            print("%s %i" % (record.id, len(record)))
-
-    def generate_circos_plot():
+    #def generate_circos_plot():
 
 
 
