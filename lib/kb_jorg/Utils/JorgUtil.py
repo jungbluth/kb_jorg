@@ -61,9 +61,6 @@ class JorgUtil:
             if p not in task_params:
                 raise ValueError('"{}" parameter is required, but missing'.format(p))
 
-    def convert_reads_file_to_list():
-
-
     def _mkdir_p(self, path):
         """
         _mkdir_p: make directory for given path
@@ -775,6 +772,9 @@ class JorgUtil:
 
         # get reads
         (reads_list_file, read_type) = self.stage_reads_file(task_params['reads_file'])
+        log("working here")
+        log("task_params['reads_file'] is {}".format(task_params['reads_file']))
+        log("type task_params['reads_file'] is {}".format(type(task_params['reads_file'])))
         task_params['read_type'] = read_type
         task_params['reads_list_file'] = reads_list_file
 
