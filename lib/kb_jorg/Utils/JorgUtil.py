@@ -637,10 +637,10 @@ class JorgUtil:
 
         log("\n\nRunning generate_jorg_command")
         command = 'bash {}/jorg '.format(self.JORG_BASE_PATH)
-        command += '--bin_fasta_file bin.186.fa '
-        #command += '--bin_fasta_file {} '.format(assembly_ref)
-        command += '--reads_file bin.186_paired-end_100K-seqs.fastq '
-        #command += '--reads_file {} '.format(reads_file)
+        #command += '--bin_fasta_file bin.186.fa '
+        command += '--bin_fasta_file {} '.format(assembly_ref)
+        #command += '--reads_file bin.186_paired-end_100K-seqs.fastq '
+        command += '--reads_file {} '.format(reads_file)
         command += '--kmer_length {} '.format(kmer_size)
         command += '--min_coverage {} '.format(min_coverage)
         command += '--iterations {} '.format(num_iterations)
@@ -650,15 +650,15 @@ class JorgUtil:
 
         self.move_jorg_example_files_to_cwd()
 
-        #self._run_command(command)
+        self._run_command(command)
 
-        #running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
+        running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
 
-        #output_jorg_assembly = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
+        output_jorg_assembly = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
-        output_jorg_assembly = 'Iterations/1.fasta'
+        #output_jorg_assembly = 'Iterations/1.fasta'
 
-        input_fastq = 'bin.186_paired-end_100K-seqs.fastq'
+        #input_fastq = 'bin.186_paired-end_100K-seqs.fastq'
 
         output_jorg_assembly_clean_sorted = self.make_circos_plot(task_params, input_fastq, output_jorg_assembly)
 
