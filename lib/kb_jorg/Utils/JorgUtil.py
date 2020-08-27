@@ -639,8 +639,8 @@ class JorgUtil:
         command = 'bash {}/jorg '.format(self.JORG_BASE_PATH)
         #command += '--bin_fasta_file bin.186.fa '
         command += '--bin_fasta_file {} '.format(assembly_ref)
-        #command += '--reads_file bin.186_paired-end_100K-seqs.fastq '
-        command += '--reads_file {} '.format(reads_file)
+        command += '--reads_file bin.186_paired-end_100K-seqs.fastq '
+        #command += '--reads_file {} '.format(reads_file)
         command += '--kmer_length {} '.format(kmer_size)
         command += '--min_coverage {} '.format(min_coverage)
         command += '--iterations {} '.format(num_iterations)
