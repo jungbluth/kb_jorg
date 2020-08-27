@@ -244,6 +244,7 @@
                 },
                 {
                     "input_parameter": "reads_file",
+                    "target_type_transform": "list<ref>",
                     "target_property": "reads_file"
                 },
                 {
