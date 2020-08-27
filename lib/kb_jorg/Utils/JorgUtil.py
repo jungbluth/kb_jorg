@@ -109,7 +109,7 @@ class JorgUtil:
         read_type = []
 
         # getting from workspace and writing to scratch. The 'reads' dictionary now has file paths to scratch.
-        reads = self.ru.download_reads({'read_libraries': reads_file, 'interleaved': None})['files']
+        reads = self.ru.download_reads({'read_libraries': [reads_file], 'interleaved': None})['files']
 
         # reads_file is the list of file paths on workspace? (i.e. 12804/1/1).
         # "reads" is the hash of hashes where key is "12804/1/1" or in this case, read_obj and
@@ -661,7 +661,7 @@ class JorgUtil:
         return output_jorg_assembly_clean_sorted
 
 
-    def generate_html_report(self, result_directory, assembly_ref):
+    def generate_html_report(self, output_assembly_name, assembly_ref):
         """
         generate_html_report: generate html summary report
         """
@@ -811,7 +811,7 @@ class JorgUtil:
         #      'assembly_name': task_params['output_assembly_name']
         #      })
 
-        output_report = self.generate_html_report(task_params['result_directory'],task_params['assembly_ref'])
+        output_report = self.generate_html_report(task_params['output_assembly_name'],task_params['assembly_ref'])
 
         # load report from scaffolds.fasta
         # report_name, report_ref = self.load_report(
