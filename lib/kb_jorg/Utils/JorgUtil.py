@@ -637,8 +637,8 @@ class JorgUtil:
 
         log("\n\nRunning generate_jorg_command")
         command = 'bash {}/jorg '.format(self.JORG_BASE_PATH)
-        command += '--bin_fasta_file bin.186.fa_assembly '
-        #command += '--bin_fasta_file {} '.format(assembly_ref)
+        #command += '--bin_fasta_file bin.186.fa_assembly '
+        command += '--bin_fasta_file {} '.format(assembly_ref)
         #command += '--reads_file bin.186_paired-end_100K-seqs.fastq '
         command += '--reads_file {} '.format(reads_file)
         command += '--kmer_length {} '.format(kmer_size)
@@ -649,7 +649,8 @@ class JorgUtil:
         log('Generated jorg command: {}'.format(command))
 
         self.move_jorg_example_files_to_cwd()
-
+        from os import listdir
+        log("os.listdir is {}".format(os.listdir())
         self._run_command(command)
 
         running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
