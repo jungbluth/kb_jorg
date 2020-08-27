@@ -189,6 +189,42 @@
                 "min_int" : 20,
                 "validate_as" : "int"
             }
+        },
+        {
+            "id": "inspect_all_contigs_using_last",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ 0 ],
+            "field_type": "checkbox",
+            "checkbox_options": {
+                "checked_value": 1,
+                "unchecked_value": 0
+              }
+        },
+        {
+            "id": "check_assembly_using_pilon",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ 0 ],
+            "field_type": "checkbox",
+            "checkbox_options": {
+                "checked_value": 1,
+                "unchecked_value": 0
+              }
+        },
+        {
+            "id": "auto_stop_near_runtime_limit",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ 1 ],
+            "field_type": "checkbox",
+            "checkbox_options": {
+                "checked_value": 1,
+                "unchecked_value": 0
+              }
         }
     ],
     "behavior": {

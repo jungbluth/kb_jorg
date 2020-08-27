@@ -21,6 +21,8 @@ from random import randint
 # seed random number generator
 seed(1)
 
+from shutil import copyfile
+
 
 # for future expansion
 # from kb_jorg.BinningUtilities import BinningUtil as bu
@@ -443,13 +445,6 @@ class JorgUtil:
         final_iteration_assembly = genome_num_fasta[len(genome_num_fasta)-1]
         return (running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
-    def move_jorg_output_files_to_output_dir(self):
-        dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
-        files = os.listdir(os.path.abspath(self.scratch))
-        for f in files:
-            if (f.startswith("Iterations") or f.startswith("iterations") or f.startswith("Jorg") or f.startswith("jorg") or f.startswith("manifest") or f.startswith("mira") or f.startswith("mirabait") or f.startswith("list") or f.startswith("depth")):
-                shutil.move(f, dest)
-
     def select_jorg_output_genome(self, task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly):
         print("select_jorg_output_genome")
         # running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly
@@ -548,6 +543,7 @@ class JorgUtil:
         self.extract_mapping_tracks_from_bam(sorted_bam)
         self.make_circos_karyotype_file(output_jorg_assembly_clean_sorted)
         self.draw_circos_plot()
+        return output_jorg_assembly_clean_sorted
 
     def run_circle_check_using_last(self, output_jorg_assembly):
         print("run_circle_check_using_last")
@@ -611,6 +607,13 @@ class JorgUtil:
                                         subject_end = line.split()[9]
         print("circularized contigs are {}".format(circularized_contigs))
 
+    def move_jorg_output_files_to_output_dir(self):
+        dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
+        files = os.listdir(os.path.abspath(self.scratch))
+        for f in files:
+            if (f.startswith("Iterations") or f.startswith("iterations") or f.startswith("Jorg") or f.startswith("jorg") or f.startswith("manifest") or f.startswith("mira") or f.startswith("mirabait") or f.startswith("list") or f.startswith("depth") or f.startswith("circos")):
+                shutil.move(f, dest)
+
     def generate_jorg_command(self, task_params, jorg_working_coverage):
         """
         generate_command: jorg
@@ -643,61 +646,20 @@ class JorgUtil:
 
         #running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
 
-        # output_jorg_assembly = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
+        #output_jorg_assembly = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
         output_jorg_assembly = 'Iterations/1.fasta'
 
         input_fastq = 'bin.186_paired-end_100K-seqs.fastq'
 
-        self.make_circos_plot(task_params, input_fastq, output_jorg_assembly)
+        output_jorg_assembly_clean_sorted = self.make_circos_plot(task_params, input_fastq, output_jorg_assembly)
 
-        self.run_circle_check_using_last(output_jorg_assembly)
+        #self.run_circle_check_using_last(output_jorg_assembly)
 
         self.move_jorg_output_files_to_output_dir()
 
-        return output_jorg_assembly
+        return output_jorg_assembly_clean_sorted
 
-    #def generate_circos_plot():
-
-
-
-    def generate_output_file_list(self, result_directory):
-        """
-        generate_output_file_list: zip result files and generate file_links for report
-        """
-        log('Start packing result files')
-        output_files = list()
-
-        output_directory = os.path.join(self.scratch, str(uuid.uuid4()))
-        self._mkdir_p(output_directory)
-        result_file = os.path.join(output_directory, 'jorg_result.zip')
-
-        with zipfile.ZipFile(result_file, 'w',
-                             zipfile.ZIP_DEFLATED,
-                             allowZip64=True) as zip_file:
-
-            for dirname, subdirs, files in os.walk(result_directory):
-                for file in files:
-                    if (file.endswith('.sam') or
-                        file.endswith('.bam') or
-                        file.endswith('.bai') or
-                       file.endswith('.summary')):
-                            continue
-                    if (dirname.endswith(self.JORG_RESULT_DIRECTORY)):
-                            continue
-                    zip_file.write(os.path.join(dirname, file), file)
-                if (dirname.endswith(self.JORG_RESULT_DIRECTORY)):
-                    baseDir = os.path.basename(dirname)
-                    for file in files:
-                        full = os.path.join(dirname, file)
-                        zip_file.write(full, os.path.join(baseDir, file))
-
-        output_files.append({'path': result_file,
-                             'name': os.path.basename(result_file),
-                             'label': os.path.basename(result_file),
-                             'description': 'Files generated by Jorg App'})
-
-        return output_files
 
     def generate_html_report(self, result_directory, assembly_ref):
         """
@@ -705,21 +667,29 @@ class JorgUtil:
         """
 
         log('Start generating html report')
-        html_report = list()
+        #html_report = list()
 
-        output_directory = os.path.join(self.scratch, str(uuid.uuid4()))
+        output_directory = os.path.join(self.scratch, 'html_dir_' + str(uuid.uuid4()))
         self._mkdir_p(output_directory)
         result_file_path = os.path.join(output_directory, 'report.html')
 
         # get summary data from existing assembly object and bins_objects
         Summary_Table_Content = ''
         Overview_Content = ''
-        (binned_contig_count, output_assembly_contig_count, total_bins_count) = \
-            self.generate_overview_info(output_assembly_name, result_directory)
 
-        # Overview_Content += '<p>Binned contigs: {}</p>'.format(binned_contig_count)
-        Overview_Content += '<p>Output contigs: {}</p>'.format(output_assembly_contig_count)
-        # Overview_Content += '<p>Number of bins: {}</p>'.format(total_bins_count)
+        # generate overview content
+
+        # get png
+        png_filename_l = [f for f in os.listdir(self.JORG_RESULT_DIRECTORY) if f.endswith('.png')]
+
+        # Example
+        # Overview_Content += '<p>Input contigs: {}</p>'.format(input_contig_count)
+
+        Overview_Content += '<p>Iteration Selected: 1</p>'
+        Overview_Content += '<p>Number of contigs: 4</p>'
+        Overview_Content += '<p>Circularized genome: No {}</p>'
+        for png_filename in png_filename_l:
+            Overview_Content += '\n<embed src="{}" width="1000px" height="1000px">'.format(png_filename)
 
         with open(result_file_path, 'w') as result_file:
             with open(os.path.join(os.path.dirname(__file__), 'report_template.html'),
@@ -731,82 +701,45 @@ class JorgUtil:
                                                           Summary_Table_Content)
                 result_file.write(report_template)
 
+        # copy pdfs into html dir
+        for png_filename in png_filename_l:
+            shutil.copyfile(os.path.join(self.JORG_RESULT_DIRECTORY, png_filename), os.path.join(output_directory, png_filename))
+
+        # save html dir to shock
+        def dir_to_shock(dir_path, name, description):
+            '''
+            For regular directories or html directories
+
+            name - for regular directories: the name of the flat (zip) file returned to ui
+                   for html directories: the name of the html file
+            '''
+            dfu_fileToShock_ret = self.dfu.file_to_shock({
+                'file_path': dir_path,
+                'make_handle': 0,
+                'pack': 'zip',
+                })
+
+            dir_shockInfo = {
+                'shock_id': dfu_fileToShock_ret['shock_id'],
+                'name': name,
+                'description': description
+                }
+
+            return dir_shockInfo
+
+        html_shockInfo = dir_to_shock(output_directory, 'report.html', 'HTML report for Jorg')
+
+        """
         html_report.append({'path': result_file_path,
                             'name': os.path.basename(result_file_path),
                             'label': os.path.basename(result_file_path),
-                            'description': 'HTML summary report for kb_jorg App'})
+                            'description': 'HTML summary report for kb_concoct App'})
+
         return html_report
-
-    def generate_overview_info(self, output_assembly_name, result_directory):
-        """
-        _generate_overview_info: generate overview information from assembly
         """
 
-        # get assembly and binned_contig objects that already have some data populated in them
-        assembly = self.dfu.get_objects({'object_refs': [output_assembly_name]})['data'][0]
-        # binned_contig = self.dfu.get_objects({'object_refs': [binned_contig_obj_ref]})['data'][0]
+        return [html_shockInfo]
 
-        output_assembly_contig_count = assembly.get('data').get('num_contigs')
-        #binned_contig_count = 0
-        #total_bins_count = 0
-        #total_bins = binned_contig.get('data').get('bins')
-        #total_bins_count = len(total_bins)
-        #for bin in total_bins:
-        #    binned_contig_count += len(bin.get('contigs'))
-
-        return (output_assembly_contig_count)
-
-    def generate_report(self, task_params):
-        """
-        generate_report: generate summary report
-        """
-        log('Generating report')
-
-        result_directory = os.path.join(self.scratch, "jorg_output_dir")
-
-        task_params['result_directory'] = result_directory
-
-        output_files = self.generate_output_file_list(task_params['result_directory'])
-
-        output_html_files = self.generate_html_report(task_params['result_directory'],
-                                                      task_params['assembly_ref'])
-
-        report_params = {
-            'message': '',
-            'workspace_name': task_params['workspace_name'],
-            'file_links': output_files,
-            'html_links': output_html_files,
-            'direct_html_link_index': 0,
-            'html_window_height': 266,
-            'report_object_name': 'kb_jorg_report_' + str(uuid.uuid4())
-        }
-
-        kbase_report_client = KBaseReport(self.callback_url)
-        output = kbase_report_client.create_extended_report(report_params)
-
-        report_output = {'report_name': output['name'], 'report_ref': output['ref']}
-
-        return report_output
-
-    # def create_dict_from_depth_file(self, depth_file_path):
-    #     # keep contig order (required by metabat2)
-    #     depth_file_dict = {}
-    #     with open(depth_file_path, 'r') as f:
-    #         header = f.readline().rstrip().split("\t")
-    #         # print('HEADER1 {}'.format(header))
-    #         # map(str.strip, header)
-    #         for line in f:
-    #             # deal with cases were fastq name has spaces.Assume first
-    #             # non white space word is unique and use this as ID.
-    #             # line = line.rstrip()
-    #             vals = line.rstrip().split("\t")
-    #             if ' ' in vals[0]:
-    #                 ID = vals[0].split()[0]
-    #             else:
-    #                 ID = vals[0]
-    #             depth_file_dict[ID] = vals[1:]
-    #         depth_file_dict['header'] = header
-    #     return depth_file_dict
 
     def run_jorg(self, task_params):
         """
@@ -860,7 +793,7 @@ class JorgUtil:
         jorg_working_coverage = self.check_input_assembly_for_minimum_coverage(task_params)
 
         # run jorg prep and jorg
-        output_jorg_assembly = self.generate_jorg_command(task_params, jorg_working_coverage)
+        output_jorg_assembly_clean_sorted = self.generate_jorg_command(task_params, jorg_working_coverage)
 
         # file handling and management
         #os.chdir(cwd)
@@ -869,17 +802,20 @@ class JorgUtil:
         # log('Saved result files to: {}'.format(result_directory))
         # log('Generated files:\n{}'.format('\n'.join(os.listdir(result_directory))))
 
+        dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
+        #
+        # assembly_ref_obj = self.au.save_assembly_from_fasta(
+        #     {'file': {'path': dest + '/' + output_jorg_assembly_clean_sorted},
+        # #     'file_directory': os.path.join(result_directory, self.BINNER_BIN_RESULT_DIR),
+        #      'workspace_name': task_params['workspace_name'],
+        #      'assembly_name': task_params['output_assembly_name']
+        #      })
 
+        output_report = self.generate_html_report(params['result_directory'],params['assembly_ref'])
 
-        self.au.save_assembly_from_fasta(
-            {'file': {'path': self.JORG_RESULT_DIRECTORY + '/iterations/' + output_jorg_assembly},
-        #     'file_directory': os.path.join(result_directory, self.BINNER_BIN_RESULT_DIR),
-             'workspace_name': task_params['workspace_name'],
-             'assembly_name': task_params['output_assembly_name']
-             })
         # load report from scaffolds.fasta
-        report_name, report_ref = self.load_report(
-            output_contigs, params, wsname)
+        # report_name, report_ref = self.load_report(
+        #     output_contigs, params, wsname)
 
         # make new BinnedContig object and upload to KBase
         # generate_binned_contig_param = {
@@ -891,14 +827,14 @@ class JorgUtil:
 
         # binned_contig_obj_ref = \
         #     self.mgu.file_to_binned_contigs(generate_binned_contig_param).get('binned_contig_obj_ref')
-        # binned_contig_obj_ref = 'NULL'
+        assembly_ref_obj = "NULL"
 
         # generate report
-        reportVal = self.generate_report(binned_contig_obj_ref, task_params)
+        # reportVal = self.generate_report(assembly_ref_obj, task_params)
         returnVal = {
             'result_directory': result_directory,
-            'assembly_obj_ref': binned_contig_obj_ref
+            'assembly_obj_ref': assembly_ref_obj
         }
-        returnVal.update(reportVal)
-
-        return returnVal
+        # returnVal.update(reportVal)
+        #
+        return returnVal, output_report

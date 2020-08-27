@@ -83,6 +83,20 @@ parameters :
         short-hint : specify minimum overlap length required to check for if output contigs cirularized
         long-hint  : specify minimum overlap length required to check for if output contigs cirularized
 
+    inspect_all_contigs_using_last :
+        ui-name : Check all contigs for circularization using LAST
+        short-hint : check all contigs in the final selected assembly for circularization using LAST
+        long-hint  : check all contigs in the final selected assembly for circularization using LAST
+
+    check_assembly_using_pilon :
+        ui-name : Check for misassemblies using Pilon
+        short-hint : check for misassembled contigs using Pilon
+        long-hint  : check for misassembled contigs using Pilon
+
+    auto_stop_near_runtime_limit :
+        ui-name : Auto-step at iteration to avoid runtime limit
+        short-hint : limit number of iterations to avoid 7-day run limit associated errors on KBase cluster
+        long-hint  : limit number of iterations to avoid 7-day run limit associated errors on KBase cluster
 
 description : |
 

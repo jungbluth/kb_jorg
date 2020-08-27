@@ -79,7 +79,8 @@ class kb_jorg:
 
         jorg_runner = JorgUtil(self.config)
 
-        returnVal = jorg_runner.run_jorg(params)
+        returnVal, output_report = jorg_runner.run_jorg(params)
+
         #END run_kb_jorg
 
         # At some point might do deeper type checking...
@@ -87,7 +88,7 @@ class kb_jorg:
             raise ValueError('Method run_kb_jorg return value ' +
                              'returnVal is not type dict as required.')
         # return the results
-        return [returnVal]
+        return [output]
 
     def status(self, ctx):
         #BEGIN_STATUS
