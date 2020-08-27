@@ -277,6 +277,18 @@
                 {
                     "input_parameter": "assembly_selection_criteria",
                     "target_property": "assembly_selection_criteria"
+                },
+                {
+                    "input_parameter": "inspect_all_contigs_using_last",
+                    "target_property": "inspect_all_contigs_using_last"
+                },
+                {
+                    "input_parameter": "check_assembly_using_pilon",
+                    "target_property": "check_assembly_using_pilon"
+                },
+                {
+                    "input_parameter": "auto_stop_near_runtime_limit",
+                    "target_property": "auto_stop_near_runtime_limit"
                 }
             ],
             "output_mapping": [

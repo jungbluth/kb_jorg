@@ -811,7 +811,7 @@ class JorgUtil:
         #      'assembly_name': task_params['output_assembly_name']
         #      })
 
-        output_report = self.generate_html_report(params['result_directory'],params['assembly_ref'])
+        output_report = self.generate_html_report(task_params['result_directory'],task_params['assembly_ref'])
 
         # load report from scaffolds.fasta
         # report_name, report_ref = self.load_report(
