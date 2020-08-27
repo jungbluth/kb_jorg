@@ -108,12 +108,12 @@ class JorgUtil:
         result_file_path = []
         read_type = []
 
-        reads_file_check = isinstance(reads_file, list)
-        if reads_file_check :
-            log("Input reads_file detected as list. Great.")
-        else:
-            log("Input reads_file not a list, converting.")
-            reads_file = [reads_file]
+        # reads_file_check = isinstance(reads_file, list)
+        # if reads_file_check :
+        #     log("Input reads_file detected as list. Great.")
+        # else:
+        #     log("Input reads_file not a list, converting.")
+        #     reads_file = [reads_file]
 
 
         # getting from workspace and writing to scratch. The 'reads' dictionary now has file paths to scratch.
