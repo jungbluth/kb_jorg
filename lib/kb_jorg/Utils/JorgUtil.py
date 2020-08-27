@@ -61,6 +61,9 @@ class JorgUtil:
             if p not in task_params:
                 raise ValueError('"{}" parameter is required, but missing'.format(p))
 
+    def convert_reads_file_to_list():
+
+
     def _mkdir_p(self, path):
         """
         _mkdir_p: make directory for given path
@@ -109,7 +112,7 @@ class JorgUtil:
         read_type = []
 
         # getting from workspace and writing to scratch. The 'reads' dictionary now has file paths to scratch.
-        reads = self.ru.download_reads({'read_libraries': [reads_file], 'interleaved': None})['files']
+        reads = self.ru.download_reads({'read_libraries': reads_file, 'interleaved': None})['files']
 
         # reads_file is the list of file paths on workspace? (i.e. 12804/1/1).
         # "reads" is the hash of hashes where key is "12804/1/1" or in this case, read_obj and
