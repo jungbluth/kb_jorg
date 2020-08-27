@@ -108,6 +108,14 @@ class JorgUtil:
         result_file_path = []
         read_type = []
 
+        reads_file_check = isinstance(task_params['reads_file'], list)
+        if reads_file_check :
+            log("Input reads_file detected as list. Great.")
+        else:
+            log("Input reads_file not a list, converting.")
+            task_params['reads_file'] = [task_params['reads_file']]
+
+
         # getting from workspace and writing to scratch. The 'reads' dictionary now has file paths to scratch.
         reads = self.ru.download_reads({'read_libraries': reads_file, 'interleaved': None})['files']
 
