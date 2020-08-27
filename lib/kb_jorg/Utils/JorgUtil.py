@@ -770,17 +770,8 @@ class JorgUtil:
         assembly = self.retrieve_assembly(task_params)
         task_params['contig_file_path'] = assembly
 
-        reads_file_check = isinstance(task_params['reads_file'], list)
-        if reads_file_check :
-            log("Input reads_file detected as list. Great.")
-        else:
-            task_params['reads_file'] = [task_params['reads_file']]
-
         # get reads
         (reads_list_file, read_type) = self.stage_reads_file(task_params['reads_file'])
-        log("working here")
-        log("task_params['reads_file'] is {}".format(task_params['reads_file']))
-        log("type task_params['reads_file'] is {}".format(type(task_params['reads_file'])))
         task_params['read_type'] = read_type
         task_params['reads_list_file'] = reads_list_file
 
