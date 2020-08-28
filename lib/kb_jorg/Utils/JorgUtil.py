@@ -659,7 +659,7 @@ class JorgUtil:
         self.move_jorg_example_files_to_cwd()
         from os import listdir
         log("os.listdir is {}".format(os.listdir()))
-        self._run_command(command)
+        #self._run_command(command)
 
         running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
 
