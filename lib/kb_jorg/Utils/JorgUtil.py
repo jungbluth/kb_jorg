@@ -425,15 +425,10 @@ class JorgUtil:
         cumulative_length = []
         running_longest_single_fragment = 0
         running_longest_assembly_length = 0
+        assembly_with_longest_single_fragment = 0
+        assembly_with_longest_cumulative_assembly_length = 0
         i = -1
         j = -1
-        running_longest_single_fragment = ""
-        assembly_with_longest_single_fragment = ""
-        running_longest_assembly_length = ""
-        assembly_with_longest_cumulative_assembly_length = ""
-
-
-
         with open(path_to_iterations_flat_file, 'a') as f:
             for line in lines:
                 #print(str(line))
