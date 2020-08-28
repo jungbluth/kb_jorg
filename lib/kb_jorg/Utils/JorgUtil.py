@@ -484,10 +484,10 @@ class JorgUtil:
         return output_jorg_assembly
 
 
-    def uppercase_fastq_file(self, input_fastq):
-        output_fastq = input_fastq.split('.fastq')[0] + "_uppercase.fastq"
+    def uppercase_fastq_file(self, reads_file):
+        output_fastq = reads_file.split('.fastq')[0] + "_uppercase.fastq"
         command = 'seqkit seq -u '
-        command += '{} > '.format(input_fastq)
+        command += '{} > '.format(reads_file)
         command += '{}'.format(output_fastq)
         log('uppercase_fastq_file: {}'.format(command))
         self._run_command(command)
@@ -547,8 +547,8 @@ class JorgUtil:
         log('draw_circos_plot: {}'.format(command))
         self._run_command(command)
 
-    def make_circos_plot(self, task_params, input_fastq, output_jorg_assembly):
-        output_fastq = self.uppercase_fastq_file(input_fastq)
+    def make_circos_plot(self, task_params, reads_file, output_jorg_assembly):
+        output_fastq = self.uppercase_fastq_file(reads_file)
         output_jorg_assembly_clean = self.clean_input_fasta(output_jorg_assembly)
         output_jorg_assembly_clean_sorted = self.sort_fasta_by_length(output_jorg_assembly_clean)
         sam = os.path.basename(output_fastq).split('.fastq')[0] + ".sam"
@@ -666,9 +666,7 @@ class JorgUtil:
 
         #output_jorg_assembly = 'Iterations/1.fasta'
 
-        #input_fastq = 'bin.186_paired-end_100K-seqs.fastq'
-
-        output_jorg_assembly_clean_sorted = self.make_circos_plot(task_params, input_fastq, output_jorg_assembly)
+        output_jorg_assembly_clean_sorted = self.make_circos_plot(task_params, reads_file, output_jorg_assembly)
 
         #self.run_circle_check_using_last(output_jorg_assembly)
 
