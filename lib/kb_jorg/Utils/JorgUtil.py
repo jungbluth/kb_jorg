@@ -460,20 +460,20 @@ class JorgUtil:
         # running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly
         if task_params["assembly_selection_criteria"] == "longest_single_fragment":
             output_jorg_assembly = assembly_with_longest_single_fragment
-            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
+            log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
         elif task_params["assembly_selection_criteria"] == "longest_single_fragment_filter":
             output_jorg_assembly = assembly_with_longest_single_fragment
-            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
+            log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
             print("running_longest_single_fragment is {} bp long".format(running_longest_single_fragment))
         elif task_params["assembly_selection_criteria"] == "longest_cumulative_assembly_length":
             output_jorg_assembly = assembly_with_longest_cumulative_assembly_length
-            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
+            log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
         elif task_params["assembly_selection_criteria"] == "longest_cumulative_assembly_length_filter":
             output_jorg_assembly = assembly_with_longest_cumulative_assembly_length
-            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
+            log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
             print("running_longest_single_fragment is {} bp long".format(running_longest_single_fragment))
         elif task_params["assembly_selection_criteria"] == "final_iteration_assembly":
-            log("Assembly produced at Jorg iteration # {} selected as output assembly.".format(output_jorg_assembly.split(".")[0]))
+            log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
             output_jorg_assembly = final_iteration_assembly
         log("jorg assembly selected: {}".format(output_jorg_assembly))
         return output_jorg_assembly
