@@ -734,11 +734,11 @@ class JorgUtil:
         # Example
         # Overview_Content += '<p>Input contigs: {}</p>'.format(input_contig_count)
 
-        Overview_Content += '<p>Iteration Selected: 1</p>'
+        Overview_Content += '<p>Iteration Selected: 3</p>'
         Overview_Content += '<p>Number of contigs: 4</p>'
-        Overview_Content += '<p>Circularized genome: No {}</p>'
+        Overview_Content += '<p>Circularized genome: No </p>'
         for png_filename in png_filename_l:
-            Overview_Content += '\n<embed src="{}" width="1000px" height="1000px">'.format(png_filename)
+            Overview_Content += '\n<embed src="{}" width="700px" height="700px">'.format(png_filename)
 
         with open(result_file_path, 'w') as result_file:
             with open(os.path.join(os.path.dirname(__file__), 'report_template.html'),
