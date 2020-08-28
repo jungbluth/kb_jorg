@@ -480,7 +480,7 @@ class JorgUtil:
 
 
     def uppercase_fastq_file(self, reads_file):
-        output_fastq = reads_file.split('.fastq')[0] + "_uppercase.fastq"
+        output_fastq = reads_file.rsplit('.', 1)[0] + "_uppercase.fastq"
         command = 'seqkit seq -u '
         command += '{} > '.format(reads_file)
         command += '{}'.format(output_fastq)
@@ -489,14 +489,14 @@ class JorgUtil:
         return output_fastq
 
     def clean_input_fasta(self, output_jorg_assembly):
-        output_jorg_assembly_clean = output_jorg_assembly.split('.fasta')[0] + "_clean.fasta"
+        output_jorg_assembly_clean = output_jorg_assembly.rsplit('.', 1)[0] + "_clean.fasta"
         command = 'cut -d\' \' -f1 {} > {}'.format(output_jorg_assembly, output_jorg_assembly_clean)
         log('clean_input_fasta: {}'.format(command))
         self._run_command(command)
         return output_jorg_assembly_clean
 
     def sort_fasta_by_length(self, input_fasta):
-        output_fasta_sorted = input_fasta.split('.fasta')[0] + "_sorted.fasta"
+        output_fasta_sorted = input_fasta.rsplit('.', 1)[0] + "_sorted.fasta"
         command = 'seqkit sort '
         command += '-l {} '.format(input_fasta)
         command += '-r '.format(input_fasta)
