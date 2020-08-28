@@ -627,8 +627,8 @@ class JorgUtil:
         generate_command: jorg
         """
 
-        assembly_ref = task_params['assembly_ref']
-        reads_file = task_params['reads_file']
+        assembly_ref = task_params['contig_file_path']
+        reads_file = task_params['reads_list_file'][0]
         kmer_size = task_params['kmer_size']
         min_coverage = jorg_working_coverage
         num_iterations = task_params['num_iterations']
@@ -780,9 +780,9 @@ class JorgUtil:
         task_params['contig_file_path'] = assembly
 
         # get reads
-        (reads_list_file, read_type) = self.stage_reads_file(task_params['reads_file'])
+        (read_scratch_path, read_type) = self.stage_reads_file(task_params['reads_file'])
         task_params['read_type'] = read_type
-        task_params['reads_list_file'] = reads_list_file
+        task_params['reads_list_file'] = read_scratch_path
 
         # prep result directory
         result_directory = os.path.join(self.scratch, self.JORG_RESULT_DIRECTORY)
