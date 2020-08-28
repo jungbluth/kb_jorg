@@ -451,12 +451,18 @@ class JorgUtil:
                             running_longest_assembly_length = int(cumulative_length[j])
                             assembly_with_longest_cumulative_assembly_length = genome_num_fasta[i]
                         f.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(genome_num_fasta[i],last_circle_check[i],contig_name[j],contig_length[j],contig_GC_percent[j],cumulative_length[j]))
-            f.close()
+        f.close()
         final_iteration_assembly = genome_num_fasta[len(genome_num_fasta)-1]
+        with open(path_to_iterations_flat_file, 'r') as g:
+            log("path_to_iterations_flat_file")
+            for line in lines:
+                log("line is {}".format(line))
+        g.close()
         return (running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
     def select_jorg_output_genome(self, task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly):
         print("select_jorg_output_genome")
+
         # running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly
         if task_params["assembly_selection_criteria"] == "longest_single_fragment":
             output_jorg_assembly = assembly_with_longest_single_fragment
