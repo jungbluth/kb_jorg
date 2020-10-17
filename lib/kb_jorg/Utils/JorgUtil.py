@@ -454,7 +454,7 @@ class JorgUtil:
         f.close()
         final_iteration_assembly = genome_num_fasta[len(genome_num_fasta)-1]
         with open(path_to_iterations_flat_file, 'r') as g:
-            log("path_to_iterations_flat_file")
+            log("path_to_iterations_flat_file is".format(path_to_iterations_flat_file))
             for line in lines:
                 log("line is {}".format(line))
         g.close()
@@ -660,6 +660,7 @@ class JorgUtil:
         from os import listdir
         log("os.listdir is {}".format(os.listdir()))
         self._run_command(command)
+        log("os.listdir is {}".format(os.listdir()))
 
         running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
 
