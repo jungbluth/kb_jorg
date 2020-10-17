@@ -431,7 +431,7 @@ class JorgUtil:
         j = -1
         with open(path_to_iterations_flat_file, 'a') as f:
             for line in lines:
-                #print(str(line))
+                print("path_to_iterations_flat_file line is {}".format(str(line)))
                 if line.startswith('Iteration'):
                     i += 1
                     genome_num_fasta.append(line.split()[1] + ".fasta")
@@ -453,6 +453,7 @@ class JorgUtil:
                         f.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(genome_num_fasta[i],last_circle_check[i],contig_name[j],contig_length[j],contig_GC_percent[j],cumulative_length[j]))
         f.close()
         final_iteration_assembly = genome_num_fasta[len(genome_num_fasta)-1]
+        print("final_iteration_assembly is {}".format(final_iteration_assembly))
         with open(path_to_iterations_flat_file, 'r') as g:
             log("path_to_iterations_flat_file is".format(path_to_iterations_flat_file))
             for line in lines:
@@ -663,6 +664,8 @@ class JorgUtil:
         log("os.listdir is {}".format(os.listdir()))
 
         running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
+
+        log("post iteration flat os.listdir is {}".format(os.listdir()))
 
         output_jorg_assembly = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
