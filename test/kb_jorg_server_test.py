@@ -159,7 +159,7 @@ class kb_jorgTest(unittest.TestCase):
         #
         # building Assembly
         #
-        assembly_filename1 = 'bin.186.fa'
+        assembly_filename1 = 'bin.186.fa_assembly'
         cls.assembly_filename_path1 = os.path.join(cls.scratch, assembly_filename1)
         shutil.copy(os.path.join("data", assembly_filename1), cls.assembly_filename_path1)
 
@@ -199,7 +199,7 @@ class kb_jorgTest(unittest.TestCase):
                                              'read_mapping_tool': 'bbmap',
                                              'kmer_size': 33,
                                              'min_coverage': 5,
-                                             'num_iterations': 1,
+                                             'num_iterations': 3,
                                              'high_contig_num': '--high_contig_num no',
                                              'single_end_reads': '--single_end_reads no',
                                              'assembly_selection_criteria': 'longest_single_fragment_filter',
