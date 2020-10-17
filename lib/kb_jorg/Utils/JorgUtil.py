@@ -664,7 +664,7 @@ class JorgUtil:
         log("os.listdir is {}".format(os.listdir()))
 
         import glob
-        datafile = glob.glob('*2020.log')
+        datafile = str(glob.glob('*2020.log'))
         with open(datafile) as myfile:
             head = [next(myfile) for x in range(N)]
         log(head)
