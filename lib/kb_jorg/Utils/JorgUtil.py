@@ -663,11 +663,11 @@ class JorgUtil:
         self._run_command(command)
         log("os.listdir is {}".format(os.listdir()))
 
-        import glob
-        datafile = str(glob.glob('*2020.log'))
-        with open(datafile) as myfile:
-            head = [next(myfile) for x in range(N)]
-        log(head)
+        # import glob
+        # datafile = str(glob.glob('*2020.log'))
+        # with open(datafile) as myfile:
+        #     head = [next(myfile) for x in range(N)]
+        # log(head)
 
         running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
 
