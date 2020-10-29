@@ -659,9 +659,11 @@ class JorgUtil:
 
         self.move_jorg_example_files_to_cwd()
         from os import listdir
+        log("start running Jorg command")
         log("os.listdir is {}".format(os.listdir()))
         self._run_command(command)
         log("os.listdir is {}".format(os.listdir()))
+        log("end running Jorg command")
 
         # import glob
         # datafile = str(glob.glob('*2020.log'))
