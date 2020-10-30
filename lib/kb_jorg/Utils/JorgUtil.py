@@ -665,21 +665,21 @@ class JorgUtil:
         log("os.listdir is {}".format(os.listdir()))
         log("end running Jorg command")
 
-        # import glob
-        # datafile = glob.glob('*2020.log')[0]
-        # N = 1000
-        # with open(datafile, "r") as file:  # the a opens it in append mode
-        #     for i in range(N):
-        #         line = next(file).strip()
-        #         print(line)
-
         import glob
-        datafile = glob.glob('*terations.txt')[0]
+        datafile = glob.glob('*2020.log')[0]
         N = 1000
         with open(datafile, "r") as file:  # the a opens it in append mode
             for i in range(N):
                 line = next(file).strip()
                 print(line)
+
+        # import glob
+        # datafile = glob.glob('*terations.txt')[0]
+        # N = 1000
+        # with open(datafile, "r") as file:  # the a opens it in append mode
+        #     for i in range(N):
+        #         line = next(file).strip()
+        #         print(line)
 
         running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
 
