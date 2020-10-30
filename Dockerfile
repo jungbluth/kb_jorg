@@ -39,6 +39,8 @@ RUN wget http://eddylab.org/infernal/infernal-1.1.3-linux-intel-gcc.tar.gz && \
 
 RUN echo ""
 
+RUN echo "B"
+
 RUN git clone https://github.com/jungbluth/Jorg && \
     chmod +x /Jorg/jorg
 
