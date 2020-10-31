@@ -20,7 +20,7 @@ RUN wget https://github.com/bachev/mira/releases/download/V5rc2/mira-V5rc2.tar.b
     make install && \
     rm /mira-V5rc2.tar.bz2
 
-# RUN conda install -c bioconda seqtk
+RUN conda install -c bioconda seqtk
 
 RUN conda install -c bioconda bwa
 
@@ -37,10 +37,7 @@ RUN wget http://eddylab.org/infernal/infernal-1.1.3-linux-intel-gcc.tar.gz && \
     tar -xvf infernal-* && \
     rm infernal-1.1.3-linux-intel-gcc.tar.gz
 
-RUN echo "ABCDEFGHI"
-
-RUN git clone https://github.com/lh3/seqtk && \
-    cd seqtk && make && make install
+RUN echo "ABCDEFGHIJ"
 
 RUN git clone https://github.com/jungbluth/Jorg && \
     chmod +x /Jorg/jorg
