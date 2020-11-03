@@ -666,21 +666,21 @@ class JorgUtil:
         log("end running Jorg command")
 
         import glob
-        # datafile = glob.glob('*2020.log')[0]
-        # N = 1000
-        # with open(datafile, "r") as file:  # the a opens it in append mode
-        #     for i in range(N):
-        #         line = next(file).strip()
-        #         print(line)
-        log("start print bin.186.fa_assembly.out.fasta")
-
-        datafile = glob.glob('*in.186.fa_assembly.out.fasta')[0]
-        N = 2
+        datafile = glob.glob('*2020.log')[0]
+        N = 1000
         with open(datafile, "r") as file:  # the a opens it in append mode
             for i in range(N):
                 line = next(file).strip()
                 print(line)
-        log("end print bin.186.fa_assembly.out.fasta")
+        # log("start print bin.186.fa_assembly.out.fasta")
+        #
+        # datafile = glob.glob('*in.186.fa_assembly.out.fasta')[0]
+        # N = 2
+        # with open(datafile, "r") as file:  # the a opens it in append mode
+        #     for i in range(N):
+        #         line = next(file).strip()
+        #         print(line)
+        # log("end print bin.186.fa_assembly.out.fasta")
 
         # import glob
         # datafile = glob.glob('*terations.txt')[0]
