@@ -675,7 +675,7 @@ class JorgUtil:
         log("start print bin.186.fa_assembly.out.fasta")
 
         datafile = glob.glob('*in.186.fa_assembly.out.fasta')[0]
-        N = 1000
+        N = 2
         with open(datafile, "r") as file:  # the a opens it in append mode
             for i in range(N):
                 line = next(file).strip()
