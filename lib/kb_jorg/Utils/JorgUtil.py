@@ -664,23 +664,33 @@ class JorgUtil:
         self._run_command(command)
         log("os.listdir is {}".format(os.listdir()))
         log("end running Jorg command")
-
-        import glob
-        datafile = glob.glob('*2020.log')[0]
-        N = 1000
-        with open(datafile, "r") as file:  # the a opens it in append mode
-            for i in range(N):
-                line = next(file).strip()
-                print(line)
-        # log("start print bin.186.fa_assembly.out.fasta")
         #
-        # datafile = glob.glob('*in.186.fa_assembly.out.fasta')[0]
-        # N = 2
+        # import glob
+        # datafile = glob.glob('*2020.log')[0]
+        # N = 1000
         # with open(datafile, "r") as file:  # the a opens it in append mode
         #     for i in range(N):
         #         line = next(file).strip()
         #         print(line)
-        # log("end print bin.186.fa_assembly.out.fasta")
+        # log("start print _MIRA.fasta")
+
+
+        datafile = glob.glob('*ist.txt')[0]
+        N = 2
+        with open(datafile, "r") as file:  # the a opens it in append mode
+            for i in range(N):
+                line = next(file).strip()
+                print(line)
+        log("end print ist.txt")
+
+
+        datafile = glob.glob('*_MIRA.fasta')[0]
+        N = 2
+        with open(datafile, "r") as file:  # the a opens it in append mode
+            for i in range(N):
+                line = next(file).strip()
+                print(line)
+        log("end print _MIRA.fasta")
 
         # import glob
         # datafile = glob.glob('*terations.txt')[0]
