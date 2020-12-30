@@ -3,3 +3,4 @@ sdk.cfg
 test/data/bin.186.fastq
 .DS_Store
 .DS_Store
+*.DS_Store
