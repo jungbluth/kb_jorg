@@ -499,7 +499,7 @@ class JorgUtil:
     def clean_input_fasta(self, output_jorg_assembly):
         output_jorg_assembly_clean = str(output_jorg_assembly) + "_clean.fasta" # need to fix split command below, sloppy fix
         #output_jorg_assembly_clean = output_jorg_assembly.split('.', 1)[0] + "_clean.fasta"
-        command = 'cut -d\' \' -f1 Iterations/{} > {}'.format(output_jorg_assembly, output_jorg_assembly_clean)
+        command = 'cut -d\' \' -f1 Iterations/{}.fasta > {}'.format(output_jorg_assembly, output_jorg_assembly_clean)
         log('clean_input_fasta: {}'.format(command))
         self._run_command(command)
         return output_jorg_assembly_clean
