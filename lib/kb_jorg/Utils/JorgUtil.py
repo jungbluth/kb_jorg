@@ -463,7 +463,7 @@ class JorgUtil:
 
     def select_jorg_output_genome(self, task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly):
         print("select_jorg_output_genome")
-
+        print("task params assembly selection criteria are {}".format(task_params["assembly_selection_criteria"]))
         # running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly
         if task_params["assembly_selection_criteria"] == "longest_single_fragment":
             output_jorg_assembly = assembly_with_longest_single_fragment
