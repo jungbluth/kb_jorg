@@ -506,7 +506,7 @@ class JorgUtil:
         self._run_command(command)
         log("head of file")
         with open(output_jorg_assembly_clean) as myfile:
-            head = [next(myfile) for x in range(10)]
+            head = [next(myfile) for x in range(1)]
         log(head)
         return output_jorg_assembly_clean
 
