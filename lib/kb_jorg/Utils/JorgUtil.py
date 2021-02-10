@@ -409,7 +409,7 @@ class JorgUtil:
 
 
 
-
+## not working correctly in narrative
     def process_jorg_iteration_output_and_calc_stats(self):
         path_to_iterations_file = os.path.join(self.scratch, str("iterations.txt"))
         path_to_iterations_flat_file = os.path.join(self.scratch, str("iterations_flat.txt"))
@@ -481,8 +481,8 @@ class JorgUtil:
             log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
             print("running_longest_single_fragment is {} bp long".format(running_longest_single_fragment))
         elif task_params["assembly_selection_criteria"] == "final_iteration_assembly":
-            log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
             output_jorg_assembly = final_iteration_assembly
+            log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
         log("jorg assembly selected: {}".format(output_jorg_assembly))
         return output_jorg_assembly
 
