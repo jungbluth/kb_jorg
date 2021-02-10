@@ -459,6 +459,7 @@ class JorgUtil:
             for line in lines:
                 log("line is {}".format(line))
         g.close()
+        print("running_longest_single_fragment {}, assembly_with_longest_single_fragment {}, assembly_with_longest_cumulative_assembly_length {}, final_iteration_assembly {}".format(running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly))
         return (running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
     def select_jorg_output_genome(self, task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly):
