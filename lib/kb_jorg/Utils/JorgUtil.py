@@ -504,6 +504,10 @@ class JorgUtil:
         command = 'cut -d\' \' -f1 Iterations/{} > {}'.format(output_jorg_assembly, output_jorg_assembly_clean)
         log('clean_input_fasta: {}'.format(command))
         self._run_command(command)
+        log("head of file")
+        with open(output_jorg_assembly_clean) as myfile:
+            head = [next(myfile) for x in range(N)]
+        log(head)
         return output_jorg_assembly_clean
 
     def sort_fasta_by_length(self, input_fasta):
