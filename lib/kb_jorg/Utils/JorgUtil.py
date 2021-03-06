@@ -501,6 +501,15 @@ class JorgUtil:
         output_jorg_assembly_clean = str(output_jorg_assembly) + "_clean.fasta" # need to fix split command below, sloppy fix
         #output_jorg_assembly_clean = output_jorg_assembly.split('.', 1)[0] + "_clean.fasta"
         log("os.listdir is {}".format(os.listdir("Iterations")))
+        log("start print 1.fasta")
+        datafile = glob.glob('*.fasta')[0]
+        N = 2
+        with open(datafile, "r") as file:  # the a opens it in append mode
+            for i in range(N):
+                line = next(file).strip()
+                print(line)
+        log("end print 1.fasta")
+
         command = 'cut -d\' \' -f1 Iterations/{} > {}'.format(output_jorg_assembly, output_jorg_assembly_clean)
         log('clean_input_fasta: {}'.format(command))
         self._run_command(command)
@@ -715,6 +724,7 @@ class JorgUtil:
         output_jorg_assembly = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
         #output_jorg_assembly = 'Iterations/1.fasta'
+
 
         output_jorg_assembly_clean_sorted = self.make_circos_plot(task_params, reads_file, output_jorg_assembly)
 
