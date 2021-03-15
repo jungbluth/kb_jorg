@@ -413,6 +413,10 @@ class JorgUtil:
 ## not working correctly in narrative
     def process_jorg_iteration_output_and_calc_stats(self):
         path_to_iterations_file = os.path.join(self.scratch, str("iterations.txt"))
+        with open(path_to_iterations_file, 'r') as g:
+            print("path_to_iterations_file is {}".format(path_to_iterations_file))
+            for line in lines:
+                print("path_to_iterations file line is {}".format(str(line)))
         path_to_iterations_flat_file = os.path.join(self.scratch, str("iterations_flat.txt"))
 
         file1 = open(path_to_iterations_file, 'r')
