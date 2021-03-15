@@ -429,7 +429,7 @@ class JorgUtil:
         log(text)
         z.close()
         log("end printing Jorg log")
-        #
+
         # datafile = glob.glob('bin.186.fa_assembly.fa')[0]
         # print("bin.186.fa_assembly.fa size is {}".format(os.path.getsize(datafile)))
         # datafile = glob.glob('bin.186.fa_assembly_assembly')[0]
