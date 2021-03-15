@@ -423,7 +423,7 @@ class JorgUtil:
 #            print("path_to_iterations file line is {}".format(str(line)))
 
         log("start printing Jorg log")
-        datafile = glob.glob('*Jorg*.log')[0]
+        datafile = glob.glob('Jorg*.log')[0]
         z = open(datafile, "r")  # the a opens it in append mode
         text = z.read()
         log(text)
