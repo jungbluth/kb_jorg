@@ -649,7 +649,7 @@ class JorgUtil:
             if (f.startswith("Iterations") or f.startswith("iterations") or f.startswith("Jorg") or f.startswith("jorg") or f.startswith("manifest") or f.startswith("mira") or f.startswith("mirabait") or f.startswith("list") or f.startswith("depth") or f.startswith("circos") or f.endswith(".log") or f.endswith("sorted.fasta") or f.endswith("clean.fasta")):
                 shutil.move(f, dest)
 
-    def run_jorg(self, task_params, jorg_working_coverage):
+    def run_jorg_and_circos_workflow(self, task_params, jorg_working_coverage):
         """
         generate_command: jorg
         """
@@ -662,7 +662,7 @@ class JorgUtil:
         parameter_high_contig_num, parameter_single_end_reads = \
             self.fix_generate_jorg_command_ui_bug(task_params)
 
-        log("\n\nRunning run_jorg")
+        log("\n\nRunning run_jorg_and_circos_workflow")
         command = 'bash {}/jorg '.format(self.JORG_BASE_PATH)
         #command += '--bin_fasta_file bin.186.fa_assembly '
         command += '--bin_fasta_file {} '.format(assembly_ref)
@@ -928,8 +928,8 @@ class JorgUtil:
 
         jorg_working_coverage = self.check_input_assembly_for_minimum_coverage(task_params)
 
-        # run jorg prep, jorg, and output processing
-        output_jorg_assembly_clean_sorted = self.run_jorg(task_params, jorg_working_coverage)
+        # run jorg prep and jorg
+        output_jorg_assembly_clean_sorted = self.run_jorg_and_circos_workflow(task_params, jorg_working_coverage)
 
         # file handling and management
         #os.chdir(cwd)
