@@ -429,17 +429,17 @@ class JorgUtil:
         log(text)
         z.close()
         log("end printing Jorg log")
-
-        datafile = glob.glob('bin.186.fa_assembly.fa')[0]
-        print("bin.186.fa_assembly.fa size is {}".format(os.path.getsize(datafile)))
-        datafile = glob.glob('bin.186.fa_assembly_assembly')[0]
-        print("bin.186.fa_assembly_assembly size is {}".format(os.path.getsize(datafile)))
-        datafile = glob.glob('bin.186.fa_assembly.out.fasta')[0]
-        print("bin.186.fa_assembly.out.fasta size is {}".format(os.path.getsize(datafile)))
-        datafile = glob.glob('*.out.tmp1.fasta')[0]
-        print(".out.tmp1.fasta size is {}".format(os.path.getsize(datafile)))
-        datafile = glob.glob('*.out.tmp2.fasta')[0]
-        print(".out.tmp2.fasta size is {}".format(os.path.getsize(datafile)))
+        #
+        # datafile = glob.glob('bin.186.fa_assembly.fa')[0]
+        # print("bin.186.fa_assembly.fa size is {}".format(os.path.getsize(datafile)))
+        # datafile = glob.glob('bin.186.fa_assembly_assembly')[0]
+        # print("bin.186.fa_assembly_assembly size is {}".format(os.path.getsize(datafile)))
+        # datafile = glob.glob('bin.186.fa_assembly.out.fasta')[0]
+        # print("bin.186.fa_assembly.out.fasta size is {}".format(os.path.getsize(datafile)))
+        # datafile = glob.glob('*.out.tmp1.fasta')[0]
+        # print(".out.tmp1.fasta size is {}".format(os.path.getsize(datafile)))
+        # datafile = glob.glob('*.out.tmp2.fasta')[0]
+        # print(".out.tmp2.fasta size is {}".format(os.path.getsize(datafile)))
 
         print("tmpA size is {}".format(os.path.getsize("tmpA")))
         print("tmpB size is {}".format(os.path.getsize("tmpB")))
