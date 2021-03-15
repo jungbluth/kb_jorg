@@ -413,14 +413,14 @@ class JorgUtil:
 ## not working correctly in narrative
     def process_jorg_iteration_output_and_calc_stats(self):
         path_to_iterations_file = os.path.join(self.scratch, str("iterations.txt"))
-        with open(path_to_iterations_file, 'r') as g:
-            print("path_to_iterations_file is {}".format(path_to_iterations_file))
-            for line in lines:
-                print("path_to_iterations file line is {}".format(str(line)))
         path_to_iterations_flat_file = os.path.join(self.scratch, str("iterations_flat.txt"))
 
         file1 = open(path_to_iterations_file, 'r')
         lines = file1.readlines()
+
+        print("path_to_iterations_file is {}".format(path_to_iterations_file))
+        for line in lines:
+            print("path_to_iterations file line is {}".format(str(line)))
 
         genome_num_fasta = []
         last_circle_check = []
@@ -436,7 +436,7 @@ class JorgUtil:
         j = -1
         with open(path_to_iterations_flat_file, 'a') as f:
             for line in lines:
-                print("path_to_iterations_flat_file line is {}".format(str(line)))
+                #print("path_to_iterations_flat_file line is {}".format(str(line)))
                 if line.startswith('Iteration'):
                     i += 1
                     genome_num_fasta.append(line.split()[1] + ".fasta")
@@ -459,11 +459,12 @@ class JorgUtil:
         f.close()
         final_iteration_assembly = genome_num_fasta[len(genome_num_fasta)-1]
         print("final_iteration_assembly is {}".format(final_iteration_assembly))
-        with open(path_to_iterations_flat_file, 'r') as g:
-            log("path_to_iterations_flat_file is".format(path_to_iterations_flat_file))
-            for line in lines:
-                log("line is {}".format(line))
-        g.close()
+        file2 = open(path_to_iterations_flat_file, 'r')
+        #with open(path_to_iterations_flat_file, 'r') as g:
+        log("path_to_iterations_flat_file is".format(path_to_iterations_flat_file))
+        lines = file2.readlines()
+        for line in lines:
+            log("line is {}".format(line))
         print("running_longest_single_fragment {}, assembly_with_longest_single_fragment {}, assembly_with_longest_cumulative_assembly_length {}, final_iteration_assembly {}".format(running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly))
         return (running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
