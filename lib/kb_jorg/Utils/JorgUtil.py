@@ -422,6 +422,16 @@ class JorgUtil:
 #        for line in lines:
 #            print("path_to_iterations file line is {}".format(str(line)))
 
+        log("start printing Jorg log")
+        datafile = glob.glob('*Jorg*.log')[0]
+        z = open(datafile, "r")  # the a opens it in append mode
+        text = z.read()
+        log(text)
+        z.close()
+        log("end printing Jorg log")
+
+        datafile = glob.glob('*.out.fasta')[0]
+        print(".out.fasta size is {}".format(os.path.getsize(datafile)))
         datafile = glob.glob('*.out.tmp1.fasta')[0]
         print(".out.tmp1.fasta size is {}".format(os.path.getsize(datafile)))
         datafile = glob.glob('*.out.tmp2.fasta')[0]
