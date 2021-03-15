@@ -421,6 +421,13 @@ class JorgUtil:
         print("path_to_iterations_file is {}".format(path_to_iterations_file))
         for line in lines:
             print("path_to_iterations file line is {}".format(str(line)))
+        print("tmpA size is {}".format(os.path.getsize("tmpA")))
+        print("tmpB size is {}".format(os.path.getsize("tmpB")))
+        print("tmpC size is {}".format(os.path.getsize("tmpC")))
+        print("tmpD size is {}".format(os.path.getsize("tmpD")))
+        print("tmpE size is {}".format(os.path.getsize("tmpE")))
+        print("tmpF size is {}".format(os.path.getsize("tmpF")))
+        print("tmpG size is {}".format(os.path.getsize("tmpG")))
 
         genome_num_fasta = []
         last_circle_check = []
