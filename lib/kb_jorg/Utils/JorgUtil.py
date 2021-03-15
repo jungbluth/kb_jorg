@@ -421,6 +421,12 @@ class JorgUtil:
         print("path_to_iterations_file is {}".format(path_to_iterations_file))
 #        for line in lines:
 #            print("path_to_iterations file line is {}".format(str(line)))
+
+        datafile = glob.glob('*.out.tmp1.fasta')[0]
+        print(".out.tmp1.fasta size is {}".format(os.path.getsize(datafile)))
+        datafile = glob.glob('*.out.tmp2.fasta')[0]
+        print(".out.tmp2.fasta size is {}".format(os.path.getsize(datafile)))
+
         print("tmpA size is {}".format(os.path.getsize("tmpA")))
         print("tmpB size is {}".format(os.path.getsize("tmpB")))
         print("tmpC size is {}".format(os.path.getsize("tmpC")))
