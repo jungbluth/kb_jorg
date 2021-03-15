@@ -202,5 +202,5 @@ class kb_jorgTest(unittest.TestCase):
                                              'num_iterations': 1,
                                              'high_contig_num': '--high_contig_num no',
                                              'single_end_reads': '--single_end_reads no',
-                                             'assembly_selection_criteria': 'longest_single_fragment_filter',
+                                             'assembly_selection_criteria': 'longest_single_fragment',
                                              'reads_file': [self.int1_oldstyle_reads_ref] })

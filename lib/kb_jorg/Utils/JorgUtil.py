@@ -142,7 +142,7 @@ class JorgUtil:
         contig_file = self.dfu.unpack_file({'file_path': contig_file})['file_path']
 
         return contig_file
-    #
+
     def retrieve_assembly(self, task_params):
         if os.path.exists(task_params['contig_file_path']):
             assembly = task_params['contig_file_path']
@@ -649,7 +649,7 @@ class JorgUtil:
             if (f.startswith("Iterations") or f.startswith("iterations") or f.startswith("Jorg") or f.startswith("jorg") or f.startswith("manifest") or f.startswith("mira") or f.startswith("mirabait") or f.startswith("list") or f.startswith("depth") or f.startswith("circos") or f.endswith(".log") or f.endswith("sorted.fasta") or f.endswith("clean.fasta")):
                 shutil.move(f, dest)
 
-    def generate_jorg_command(self, task_params, jorg_working_coverage):
+    def run_jorg(self, task_params, jorg_working_coverage):
         """
         generate_command: jorg
         """
@@ -662,7 +662,7 @@ class JorgUtil:
         parameter_high_contig_num, parameter_single_end_reads = \
             self.fix_generate_jorg_command_ui_bug(task_params)
 
-        log("\n\nRunning generate_jorg_command")
+        log("\n\nRunning run_jorg")
         command = 'bash {}/jorg '.format(self.JORG_BASE_PATH)
         #command += '--bin_fasta_file bin.186.fa_assembly '
         command += '--bin_fasta_file {} '.format(assembly_ref)
@@ -683,7 +683,6 @@ class JorgUtil:
         log("os.listdir is {}".format(os.listdir()))
         log("end running Jorg command")
         #
-        import glob
         # datafile = glob.glob('*2020.log')[0]
         # N = 1000
         # with open(datafile, "r") as file:  # the a opens it in append mode
@@ -915,7 +914,7 @@ class JorgUtil:
         # prep result directory
         result_directory = os.path.join(self.scratch, self.JORG_RESULT_DIRECTORY)
         self._mkdir_p(result_directory)
-        #
+
         # cwd = os.getcwd()
         # log('changing working dir to {}'.format(result_directory))
         # log('DOES THIS EVEN WORK')
@@ -929,8 +928,8 @@ class JorgUtil:
 
         jorg_working_coverage = self.check_input_assembly_for_minimum_coverage(task_params)
 
-        # run jorg prep and jorg
-        output_jorg_assembly_clean_sorted = self.generate_jorg_command(task_params, jorg_working_coverage)
+        # run jorg prep, jorg, and output processing
+        output_jorg_assembly_clean_sorted = self.run_jorg(task_params, jorg_working_coverage)
 
         # file handling and management
         #os.chdir(cwd)
