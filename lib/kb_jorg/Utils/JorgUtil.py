@@ -419,8 +419,8 @@ class JorgUtil:
         lines = file1.readlines()
 
         print("path_to_iterations_file is {}".format(path_to_iterations_file))
-        for line in lines:
-            print("path_to_iterations file line is {}".format(str(line)))
+#        for line in lines:
+#            print("path_to_iterations file line is {}".format(str(line)))
         print("tmpA size is {}".format(os.path.getsize("tmpA")))
         print("tmpB size is {}".format(os.path.getsize("tmpB")))
         print("tmpC size is {}".format(os.path.getsize("tmpC")))
@@ -470,8 +470,8 @@ class JorgUtil:
         #with open(path_to_iterations_flat_file, 'r') as g:
         log("path_to_iterations_flat_file is".format(path_to_iterations_flat_file))
         lines = file2.readlines()
-        for line in lines:
-            log("line is {}".format(line))
+#        for line in lines:
+#            log("line is {}".format(line))
         print("running_longest_single_fragment {}, assembly_with_longest_single_fragment {}, assembly_with_longest_cumulative_assembly_length {}, final_iteration_assembly {}".format(running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly))
         return (running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
