@@ -93,7 +93,7 @@
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ 50 ],
+            "default_values": [ 5 ],
             "field_type": "text",
             "text_options": {
                 "min_int" : 5,
@@ -105,7 +105,7 @@
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ 5 ],
+            "default_values": [ 1 ],
             "field_type": "text",
             "text_options": {
                 "min_int" : 1,
