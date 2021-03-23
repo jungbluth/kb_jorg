@@ -88,11 +88,6 @@ parameters :
         short-hint : check all contigs in the final selected assembly for circularization using LAST
         long-hint  : check all contigs in the final selected assembly for circularization using LAST
 
-    check_assembly_using_pilon :
-        ui-name : Check for misassemblies using Pilon
-        short-hint : check for misassembled contigs using Pilon
-        long-hint  : check for misassembled contigs using Pilon
-
     auto_stop_near_runtime_limit :
         ui-name : Auto-stop to avoid runtime limit
         short-hint : limit number of iterations to avoid 7-day run limit associated errors on KBase cluster

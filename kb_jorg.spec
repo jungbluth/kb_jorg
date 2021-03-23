@@ -51,7 +51,6 @@ module kb_jorg {
         string assembly_selection_criteria;
         int circle_min_overlap_length;
         string inspect_all_contigs_using_last;
-        string check_assembly_using_pilon;
         string auto_stop_near_runtime_limit;
 
     } jorgInputParams;

@@ -348,7 +348,6 @@ class JorgUtil:
 
     def check_input_assembly_for_minimum_coverage(self, task_params):
         path_to_depth_file = os.path.join(self.scratch, str('depth.txt'))
-
         file1 = open(path_to_depth_file, 'r')
         lines = file1.readlines()
         detected_coverage_in_longest_contig = float(lines[1].split()[2])
@@ -380,34 +379,11 @@ class JorgUtil:
 
         return (parameter_high_contig_num, parameter_single_end_reads)
 
-# *******************
-    # def generate_jorg_coverage_table_from_bam(self, task_params):
-    #     """
-    #     generate_command: jorg generate coverage table
-    #     """
-    #     log("\n\nRunning generate_jorg_coverage_table_from_bam")
-    #     command = 'python {}/scripts/jorg_coverage_table.py temp.bed '.format(self.JORG_BASE_PATH)
-    #     command += '{}/*_sorted.bam > '.format(self.JORG_RESULT_DIRECTORY)
-    #     command += '{}/coverage_table.tsv'.format(self.JORG_RESULT_DIRECTORY)
-    #     log('Generated jorg generate coverage table from bam command: {}'.format(command))
-    #
-    #     self._run_command(command)
-# *******************
 
-    def move_jorg_example_files_to_cwd(self):
-        #depth_file_source = "/Jorg/Example/depth.txt"
-        #depth_file_destination = os.path.join(self.scratch, str('depth.txt'))
+    def copy_required_jorg_input_files_to_cwd(self):
         manifest_template_file_source = "/Jorg/Example/manifest_template.conf"
         manifest_template_file_destination = os.path.join(self.scratch, str('manifest_template.conf'))
-        #shutil.move(depth_file_source,depth_file_destination)
         shutil.move(manifest_template_file_source,manifest_template_file_destination)
-        #iterations_folder_source = "/kb/module/test/data/output/example1/Iterations"
-        #iterations_folder_destination = os.path.join(self.scratch, str('Iterations'))
-        #shutil.move(iterations_folder_source,iterations_folder_destination)
-        #iterations_file_source = "/kb/module/test/data/output/example1/iterations.txt"
-        #iterations_file_destination = os.path.join(self.scratch, str('iterations.txt'))
-        #shutil.move(iterations_file_source,iterations_file_destination)
-
 
 
 ## not working correctly in narrative
@@ -415,31 +391,14 @@ class JorgUtil:
         path_to_iterations_file = os.path.join(self.scratch, str("iterations.txt"))
         path_to_iterations_flat_file = os.path.join(self.scratch, str("iterations_flat.txt"))
 
-        file1 = open(path_to_iterations_file, 'r')
-        lines = file1.readlines()
-
-        print("path_to_iterations_file is {}".format(path_to_iterations_file))
-#        for line in lines:
-#            print("path_to_iterations file line is {}".format(str(line)))
-
-        log("start printing Jorg log")
-        datafile = glob.glob('Jorg*.log')[0]
-        z = open(datafile, "r")  # the a opens it in append mode
-        text = z.read()
-        log(text)
-        z.close()
-        log("end printing Jorg log")
-
-        # datafile = glob.glob('bin.186.fa_assembly.fa')[0]
-        # print("bin.186.fa_assembly.fa size is {}".format(os.path.getsize(datafile)))
-        # datafile = glob.glob('bin.186.fa_assembly_assembly')[0]
-        # print("bin.186.fa_assembly_assembly size is {}".format(os.path.getsize(datafile)))
-        # datafile = glob.glob('bin.186.fa_assembly.out.fasta')[0]
-        # print("bin.186.fa_assembly.out.fasta size is {}".format(os.path.getsize(datafile)))
-        # datafile = glob.glob('*.out.tmp1.fasta')[0]
-        # print(".out.tmp1.fasta size is {}".format(os.path.getsize(datafile)))
-        # datafile = glob.glob('*.out.tmp2.fasta')[0]
-        # print(".out.tmp2.fasta size is {}".format(os.path.getsize(datafile)))
+        # used during debugging
+        # log("start printing Jorg log")
+        # datafile = glob.glob('Jorg*.log')[0]
+        # z = open(datafile, "r")  # the a opens it in append mode
+        # text = z.read()
+        # log(text)
+        # z.close()
+        # log("end printing Jorg log")
 
         genome_num_fasta = []
         last_circle_check = []
@@ -455,12 +414,10 @@ class JorgUtil:
         j = -1
         with open(path_to_iterations_flat_file, 'a') as f:
             for line in lines:
-                #print("path_to_iterations_flat_file line is {}".format(str(line)))
                 if line.startswith('Iteration'):
                     i += 1
                     genome_num_fasta.append(line.split()[1] + ".fasta")
                     last_circle_check.append(line.split()[1] + ".reduced")
-                    #print("{}").format(genome_num_fasta)
                 else:
                     if not line.startswith('contig_name'):
                         j += 1
@@ -477,15 +434,9 @@ class JorgUtil:
                         f.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(genome_num_fasta[i],last_circle_check[i],contig_name[j],contig_length[j],contig_GC_percent[j],cumulative_length[j]))
         f.close()
         final_iteration_assembly = genome_num_fasta[len(genome_num_fasta)-1]
-        print("final_iteration_assembly is {}".format(final_iteration_assembly))
-        file2 = open(path_to_iterations_flat_file, 'r')
-        #with open(path_to_iterations_flat_file, 'r') as g:
-        log("path_to_iterations_flat_file is".format(path_to_iterations_flat_file))
-        lines = file2.readlines()
-#        for line in lines:
-#            log("line is {}".format(line))
         print("running_longest_single_fragment {}, assembly_with_longest_single_fragment {}, assembly_with_longest_cumulative_assembly_length {}, final_iteration_assembly {}".format(running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly))
         return (running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
+
 
     def select_jorg_output_genome(self, task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly):
         print("select_jorg_output_genome")
@@ -553,18 +504,6 @@ class JorgUtil:
         log('sort_fasta_by_length: {}'.format(command))
         self._run_command(command)
         return output_fasta_sorted
-    #
-    # def run_bbmap_for_circos(self, output_fasta_sorted, output_fastq):
-    #     output_sam = 'final.mapped.sam'
-    #     command = 'bbmap.sh -Xmx30g '
-    #     command += 'threads=1 '
-    #     command += 'ref={} '.format(output_fasta_sorted)
-    #     command += 'in={} '.format(output_fastq)
-    #     command += 'out={} '.format(output_sam)
-    #     command += 'fast interleaved=true mappedonly nodisk overwrite'
-    #     log('run_bbmap_for_circos: {}'.format(command))
-    #     self._run_command(command)
-    #     return output_sam
 
     def extract_mapping_tracks_from_bam(self, sorted_bam):
         output_sam = 'final.mapped.sam'
@@ -597,7 +536,6 @@ class JorgUtil:
         output_jorg_assembly_clean_sorted = self.sort_fasta_by_length(output_jorg_assembly_clean)
         sam = os.path.basename(output_fastq).split('.fastq')[0] + ".sam"
         self.run_read_mapping_interleaved_pairs_mode(task_params, output_jorg_assembly_clean_sorted, output_fastq, sam)
-        # output_sam = self.run_bbmap_for_circos(output_jorg_assembly_clean_sorted, output_fastq)
         sorted_bam = self.convert_sam_to_sorted_and_indexed_bam(sam)
         self.extract_mapping_tracks_from_bam(sorted_bam)
         self.make_circos_karyotype_file(output_jorg_assembly_clean_sorted)
@@ -688,9 +626,7 @@ class JorgUtil:
 
         log("\n\nRunning run_jorg_and_circos_workflow")
         command = 'bash {}/jorg '.format(self.JORG_BASE_PATH)
-        #command += '--bin_fasta_file bin.186.fa_assembly '
         command += '--bin_fasta_file {} '.format(assembly_ref)
-        #command += '--reads_file bin.186_paired-end_100K-seqs.fastq '
         command += '--reads_file {} '.format(reads_file)
         command += '--kmer_length {} '.format(kmer_size)
         command += '--min_coverage {} '.format(min_coverage)
@@ -698,27 +634,27 @@ class JorgUtil:
         command += ' {} '.format(parameter_high_contig_num)
         command += ' {}'.format(parameter_single_end_reads)
         log('Generated jorg command: {}'.format(command))
-
-        self.move_jorg_example_files_to_cwd()
-        from os import listdir
+        self.copy_required_jorg_input_files_to_cwd()
         log("start running Jorg command")
         self._run_command(command)
         log("end running Jorg command")
-        #
 
+        # process jorg output and calculate statistics
         running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
 
         #output_jorg_assembly = 'Iterations/1.fasta'
         output_jorg_assembly = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
+        # make circos plot
         output_jorg_assembly_clean_sorted = self.make_circos_plot(task_params, reads_file, output_jorg_assembly)
 
-        #self.run_circle_check_using_last(output_jorg_assembly)
+        # run check for circularity
+        self.run_circle_check_using_last(output_jorg_assembly)
 
+        # move relevant files to output directory provided to user
         self.move_jorg_output_files_to_output_dir()
 
         return output_jorg_assembly_clean_sorted
-
 
 
     def generate_output_file_list(self, result_directory):
@@ -727,15 +663,12 @@ class JorgUtil:
         """
         log('Start packing result files')
         output_files = list()
-
         output_directory = os.path.join(self.scratch, str(uuid.uuid4()))
         self._mkdir_p(output_directory)
         result_file = os.path.join(output_directory, 'jorg_result.zip')
-
         with zipfile.ZipFile(result_file, 'w',
                              zipfile.ZIP_DEFLATED,
                              allowZip64=True) as zip_file:
-
             for dirname, subdirs, files in os.walk(result_directory):
                 for file in files:
                     zip_file.write(os.path.join(dirname, file), file)
@@ -744,24 +677,19 @@ class JorgUtil:
                     for file in files:
                         full = os.path.join(dirname, file)
                         zip_file.write(full, os.path.join(baseDir, file))
-
         output_files.append({'path': result_file,
                              'name': os.path.basename(result_file),
                              'label': os.path.basename(result_file),
                              'description': 'Files generated by Jorg App'})
-
         return output_files
-
 
 
     def generate_html_report(self, output_assembly_name, assembly_ref, assembly_stats):
         """
         generate_html_report: generate html summary report
         """
-
         log('Start generating html report')
         #html_report = list()
-
         output_directory = os.path.join(self.scratch, 'html_dir_' + str(uuid.uuid4()))
         self._mkdir_p(output_directory)
         result_file_path = os.path.join(output_directory, 'report.html')
@@ -802,7 +730,6 @@ class JorgUtil:
         def dir_to_shock(dir_path, name, description):
             '''
             For regular directories or html directories
-
             name - for regular directories: the name of the flat (zip) file returned to ui
                    for html directories: the name of the html file
             '''
@@ -811,40 +738,30 @@ class JorgUtil:
                 'make_handle': 0,
                 'pack': 'zip',
                 })
-
             dir_shockInfo = {
                 'shock_id': dfu_fileToShock_ret['shock_id'],
                 'name': name,
                 'description': description
                 }
-
             return dir_shockInfo
-
         html_shockInfo = dir_to_shock(output_directory, 'report.html', 'HTML report for Jorg')
-
         """
         html_report.append({'path': result_file_path,
                             'name': os.path.basename(result_file_path),
                             'label': os.path.basename(result_file_path),
                             'description': 'HTML summary report for kb_concoct App'})
-
         return html_report
         """
-
         return [html_shockInfo]
 
     def generate_report(self, assembly_ref_obj, params, assembly_stats):
         """
         generate_report: generate summary report
-
         """
         log('Generating report')
         params['result_directory'] = self.JORG_RESULT_DIRECTORY
-
         output_files = self.generate_output_file_list(params['result_directory'])
-
         output_html_files = self.generate_html_report(params['result_directory'],params['output_assembly_name'],assembly_stats)
-
         report_params = {
               'message': '',
               'workspace_name': params.get('workspace_name'),
@@ -853,34 +770,20 @@ class JorgUtil:
               'direct_html_link_index': 0,
               'html_window_height': 500,
               'report_object_name': 'kb_jorg_report_' + str(uuid.uuid4())}
-
         kbase_report_client = KBaseReport(self.callback_url)
         output = kbase_report_client.create_extended_report(report_params)
-
         report_output = {'report_name': output['name'], 'report_ref': output['ref']}
-
         return report_output
 
 
     def run_jorg(self, task_params):
         """
         run_jorg: jorg app
-
-        required params:
-            assembly_ref: Metagenome assembly object reference
-            binned_contig_name: BinnedContig object name and output file header
-            workspace_name: the name of the workspace it gets saved to.
-            reads_file: list of reads object (PairedEndLibrary/SingleEndLibrary)
-            upon which JORG will be run
-
-        optional params:
-            TBD
-
-            ref: https://github.com/BinPro/JORG/blob/develop/README.md
         """
         log('--->\nrunning JorgUtil.run_jorg\n' +
             'task_params:\n{}'.format(json.dumps(task_params, indent=1)))
 
+        # light validation on input parameters
         self._validate_run_jorg_params(task_params)
 
         # get assembly
@@ -900,14 +803,16 @@ class JorgUtil:
         result_directory = os.path.join(self.scratch, self.JORG_RESULT_DIRECTORY)
         self._mkdir_p(result_directory)
 
+        # map reads to determine input coverage
         sorted_bam = self.generate_alignment_bams(task_params, assembly)
 
-        # not used right now
+        # extract depth information from bam files
         depth_file_path = self.generate_make_coverage_table_command(task_params, sorted_bam)
 
+        # check to make sure input contigs have require coverage
         jorg_working_coverage = self.check_input_assembly_for_minimum_coverage(task_params)
 
-        # run jorg prep and jorg
+        # run jorg and circos
         output_jorg_assembly_clean_sorted = self.run_jorg_and_circos_workflow(task_params, jorg_working_coverage)
 
         assembly_stats = {'iteration' : 1, 'num_contigs' : 3, 'circle_or_not' : 'Sure'}
@@ -918,15 +823,12 @@ class JorgUtil:
         # log('Generated files:\n{}'.format('\n'.join(os.listdir(result_directory))))
 
         dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
-        #
+
         assembly_ref_obj = self.au.save_assembly_from_fasta(
             {'file': {'path': dest + '/' + output_jorg_assembly_clean_sorted},
-        #     'file_directory': os.path.join(result_directory, self.BINNER_BIN_RESULT_DIR),
              'workspace_name': task_params['workspace_name'],
              'assembly_name': task_params['output_assembly_name']
              })
-
-        #output_report = self.generate_html_report(task_params['output_assembly_name'],task_params['assembly_ref'])
 
         # generate report
         reportVal = self.generate_report(assembly_ref_obj, task_params, assembly_stats)
@@ -934,6 +836,6 @@ class JorgUtil:
             'result_directory': result_directory,
             'assembly_obj_ref': assembly_ref_obj
         }
+
         returnVal.update(reportVal)
-        #
         return returnVal
