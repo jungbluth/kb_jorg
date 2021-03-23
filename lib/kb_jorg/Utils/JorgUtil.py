@@ -702,53 +702,14 @@ class JorgUtil:
         self.move_jorg_example_files_to_cwd()
         from os import listdir
         log("start running Jorg command")
-        log("os.listdir is {}".format(os.listdir()))
         self._run_command(command)
-        log("os.listdir is {}".format(os.listdir()))
         log("end running Jorg command")
         #
-        # datafile = glob.glob('*2020.log')[0]
-        # N = 1000
-        # with open(datafile, "r") as file:  # the a opens it in append mode
-        #     for i in range(N):
-        #         line = next(file).strip()
-        #         print(line)
-        # log("start print _MIRA.fasta")
-
-
-        datafile = glob.glob('*ist.txt')[0]
-        N = 2
-        with open(datafile, "r") as file:  # the a opens it in append mode
-            for i in range(N):
-                line = next(file).strip()
-                print(line)
-        log("end print ist.txt")
-
-
-        datafile = glob.glob('*_MIRA.fasta')[0]
-        N = 2
-        with open(datafile, "r") as file:  # the a opens it in append mode
-            for i in range(N):
-                line = next(file).strip()
-                print(line)
-        log("end print _MIRA.fasta")
-
-        # import glob
-        # datafile = glob.glob('*terations.txt')[0]
-        # N = 1000
-        # with open(datafile, "r") as file:  # the a opens it in append mode
-        #     for i in range(N):
-        #         line = next(file).strip()
-        #         print(line)
 
         running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
 
-        log("post iteration flat os.listdir is {}".format(os.listdir()))
-
-        output_jorg_assembly = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
-
         #output_jorg_assembly = 'Iterations/1.fasta'
-
+        output_jorg_assembly = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
         output_jorg_assembly_clean_sorted = self.make_circos_plot(task_params, reads_file, output_jorg_assembly)
 
@@ -793,7 +754,7 @@ class JorgUtil:
 
 
 
-    def generate_html_report(self, output_assembly_name, assembly_ref):
+    def generate_html_report(self, output_assembly_name, assembly_ref, assembly_stats):
         """
         generate_html_report: generate html summary report
         """
@@ -817,9 +778,9 @@ class JorgUtil:
         # Example
         # Overview_Content += '<p>Input contigs: {}</p>'.format(input_contig_count)
 
-        Overview_Content += '<p>Iteration Selected: 3</p>'
-        Overview_Content += '<p>Number of contigs: 4</p>'
-        Overview_Content += '<p>Circularized genome: No </p>'
+        Overview_Content += '<p>Iteration Selected: {}</p>'.format(assembly_stats['iteration'])
+        Overview_Content += '<p>Number of contigs: {}</p>'.format(assembly_stats['num_contigs'])
+        Overview_Content += '<p>Circularized genome: {}</p>'.format(assembly_stats['circle_or_not'])
         for png_filename in png_filename_l:
             Overview_Content += '\n<embed src="{}" width="700px" height="700px">'.format(png_filename)
 
@@ -872,7 +833,7 @@ class JorgUtil:
 
         return [html_shockInfo]
 
-    def generate_report(self, assembly_ref_obj, params):
+    def generate_report(self, assembly_ref_obj, params, assembly_stats):
         """
         generate_report: generate summary report
 
@@ -882,7 +843,7 @@ class JorgUtil:
 
         output_files = self.generate_output_file_list(params['result_directory'])
 
-        output_html_files = self.generate_html_report(params['result_directory'],params['output_assembly_name'])
+        output_html_files = self.generate_html_report(params['result_directory'],params['output_assembly_name'],assembly_stats)
 
         report_params = {
               'message': '',
@@ -939,25 +900,19 @@ class JorgUtil:
         result_directory = os.path.join(self.scratch, self.JORG_RESULT_DIRECTORY)
         self._mkdir_p(result_directory)
 
-        # cwd = os.getcwd()
-        # log('changing working dir to {}'.format(result_directory))
-        # log('DOES THIS EVEN WORK')
-        # os.chdir(result_directory)
-
         sorted_bam = self.generate_alignment_bams(task_params, assembly)
 
         # not used right now
         depth_file_path = self.generate_make_coverage_table_command(task_params, sorted_bam)
-        # depth_dict = self.create_dict_from_depth_file(depth_file_path)
 
         jorg_working_coverage = self.check_input_assembly_for_minimum_coverage(task_params)
 
         # run jorg prep and jorg
         output_jorg_assembly_clean_sorted = self.run_jorg_and_circos_workflow(task_params, jorg_working_coverage)
 
+        assembly_stats = {'iteration' : 1, 'num_contigs' : 3, 'circle_or_not' : 'Sure'}
+
         # file handling and management
-        #os.chdir(cwd)
-        #log('changing working dir to {}'.format(cwd))
 
         # log('Saved result files to: {}'.format(result_directory))
         # log('Generated files:\n{}'.format('\n'.join(os.listdir(result_directory))))
@@ -973,23 +928,8 @@ class JorgUtil:
 
         #output_report = self.generate_html_report(task_params['output_assembly_name'],task_params['assembly_ref'])
 
-        # load report from scaffolds.fasta
-        # report_name, report_ref = self.load_report(
-        #     output_contigs, params, wsname)
-
-        # make new BinnedContig object and upload to KBase
-        # generate_binned_contig_param = {
-        #     'file_directory': os.path.join(result_directory, self.BINNER_BIN_RESULT_DIR),
-        #     'assembly_ref': task_params['assembly_ref'],
-        #     'binned_contig_name': task_params['binned_contig_name'],
-        #     'workspace_name': task_params['workspace_name']
-        # }
-
-        # binned_contig_obj_ref = \
-        #     self.mgu.file_to_binned_contigs(generate_binned_contig_param).get('binned_contig_obj_ref')
-
         # generate report
-        reportVal = self.generate_report(assembly_ref_obj, task_params)
+        reportVal = self.generate_report(assembly_ref_obj, task_params, assembly_stats)
         returnVal = {
             'result_directory': result_directory,
             'assembly_obj_ref': assembly_ref_obj
