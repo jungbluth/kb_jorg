@@ -26,6 +26,8 @@ RUN conda install -c bioconda bwa
 
 RUN conda install -c bioconda last && touch /var/log/wtmp
 
+RUN conda install -c bioconda seqkit
+
 RUN conda install -c bioconda circos
 
 RUN mkdir pilon-1.2.3 && \
@@ -35,7 +37,7 @@ RUN wget http://eddylab.org/infernal/infernal-1.1.3-linux-intel-gcc.tar.gz && \
     tar -xvf infernal-* && \
     rm infernal-1.1.3-linux-intel-gcc.tar.gz
 
-RUN echo "TESTINGAB"
+RUN echo "TESTINGABC"
 
 RUN git clone https://github.com/jungbluth/Jorg && \
     chmod +x /Jorg/jorg
