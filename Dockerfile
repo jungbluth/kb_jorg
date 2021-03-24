@@ -40,6 +40,8 @@ RUN wget http://eddylab.org/infernal/infernal-1.1.3-linux-intel-gcc.tar.gz && \
 RUN git clone https://github.com/jungbluth/Jorg && \
     chmod +x /Jorg/jorg
 
+RUN echo "Z"
+
 # RUN mv SRX3307784_clean.fastq.gz /Jorg/Example
 
 COPY ./ /kb/module
