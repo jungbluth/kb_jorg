@@ -391,6 +391,9 @@ class JorgUtil:
         path_to_iterations_file = os.path.join(self.scratch, str("iterations.txt"))
         path_to_iterations_flat_file = os.path.join(self.scratch, str("iterations_flat.txt"))
 
+        file1 = open(path_to_iterations_file, 'r')
+        lines = file1.readlines()
+
         # used during debugging
         # log("start printing Jorg log")
         # datafile = glob.glob('Jorg*.log')[0]
