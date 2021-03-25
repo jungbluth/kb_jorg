@@ -464,7 +464,8 @@ class JorgUtil:
             log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
         log("jorg assembly selected: {}".format(output_jorg_assembly))
         num_contigs = 0
-        file1 = open(output_jorg_assembly, 'r')
+        full_path_output_jorg_assembly = "Iterations/" + output_jorg_assembly
+        file1 = open(full_path_output_jorg_assembly, 'r')
         lines = file1.readlines()
         for line in lines:
             if line.startwith('>'):
