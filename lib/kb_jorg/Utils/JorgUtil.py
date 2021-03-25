@@ -722,7 +722,7 @@ class JorgUtil:
         # Overview_Content += '<p>Input contigs: {}</p>'.format(input_contig_count)
         Overview_Content += '<p>Iteration Selected: {}</p>'.format(assembly_stats['iteration'])
         Overview_Content += '<p>Number of contigs: {}</p>'.format(assembly_stats['num_contigs'])
-        Overview_Content += '<p>Coverage (avg, sd, max, min): {}</p>'.format(assembly_stats['mean_cov'],assembly_stats['std_cov'],assembly_stats['max_cov'],assembly_stats['min_cov'])
+        Overview_Content += '<p>Coverage (avg, sd, max, min): {}, {}, {}, {}</p>'.format(assembly_stats['mean_cov'],assembly_stats['std_cov'],assembly_stats['max_cov'],assembly_stats['min_cov'])
         Overview_Content += '<p>Circularized genome: {}</p>'.format(assembly_stats['circle_or_not'])
         for png_filename in png_filename_l:
             Overview_Content += '\n<embed src="{}" width="700px" height="700px">'.format(png_filename)
