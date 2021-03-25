@@ -463,7 +463,14 @@ class JorgUtil:
             output_jorg_assembly = final_iteration_assembly
             log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
         log("jorg assembly selected: {}".format(output_jorg_assembly))
-        return output_jorg_assembly
+        num_contigs = 0
+        file1 = open(output_jorg_assembly, 'r')
+        lines = file1.readlines()
+        for line in lines:
+            if line.startwith('>'):
+                num_contigs = num_contigs + 1
+        output_jorg_assembly_name = os.path.basename(output_jorg_assembly).split(".fasta")[0]
+        return output_jorg_assembly, output_jorg_assembly_name, num_contigs
 
 
     def uppercase_fastq_file(self, reads_file):
@@ -565,49 +572,39 @@ class JorgUtil:
         subject_start = 0
         subject_end = 0
         minimum_length_threshold = task_params['circle_min_overlap_length']
-
         for line in lines:
-            print("line is {}".format(line))
             if line.startswith('#'):
                 pass
             else:
-                print("remember_query and line.split()[0] are {} and {}".format(remember_query,line.split()[0]))
                 if not remember_query == line.split()[0]: # clear this variable if different contig
                     remember_query = ""
                     longest_contig_length = 0
-                    print("checkpoint 0")
                 remember_query = line.split()[0]
                 if line.split()[0] == line.split()[1]: # if query and subject the same
-                    print("checkpoint 1")
                     if int(line.split()[14]) >= minimum_length_threshold: # if the match is above the minimum length threshold
-                        print("checkpoint 2")
                         if line.split()[2] == "100.00": # if a 100% match identified
-                            print("checkpoint 3")
                             if float(line.split()[10]) <= 10e-5: # if the expected value is significant
-                                print("checkpoint 4")
                                 if line.split()[13] == line.split()[14]: # if length of query equals length of reference
                                     longest_contig_length = int(line.split()[14])
-                                    print("longest_contig_length is {}".format(longest_contig_length))
-                                    print("checkpoint 5")
                                 if forward_circle_match == "TRUE":
-                                    print("checkpoint 6")
-                                    print("query_start is {} ".format(query_start))
-                                    print("format_line_split6 is {} ".format(line.split()[6]))
-                                    print("subject_end and longest_contig_length are {} {}".format(int(subject_end),int(longest_contig_length)))
                                     if (query_start == line.split()[8]) and (query_end == line.split()[9]) and (subject_start == line.split()[6]) and (subject_end == line.split()[7]) and (int(subject_end) == int(longest_contig_length)) and (int(line.split()[7]) == int(longest_contig_length)):
-                                        print("checkpoint 7")
                                         reverse_circle_match = "TRUE"
                                         circularized_contigs.append(line.split()[0])
                                 elif line.split()[13] != line.split()[14]: # if length of query not equal to length of reference
                                     if (int(line.split()[7]) - int(line.split()[6])) == (int(line.split()[9]) - int(line.split()[8])): # if query start/end length equal to subject start/end length
-                                        print("checkpoint 8")
                                         forward_circle_match = "TRUE"
                                         remember_query = line.split()[0]
                                         query_start = line.split()[6]
                                         query_end = line.split()[7]
                                         subject_start = line.split()[8]
                                         subject_end = line.split()[9]
-        print("circularized contigs are {}".format(circularized_contigs))
+        if len(circularized_contigs) >= 1:
+            output_circle_text = "Yes! Contig(s): "
+            for i in range(len(circularized_contigs)):
+                output_circle_text = output_circle_text + str(circularized_contigs[i])
+                if i != (len(circularized_contigs) - 1):
+                    output_circle_text = output_circle_text + ","
+        return circularized_contigs, output_circle_text
 
     def move_jorg_output_files_to_output_dir(self):
         dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
@@ -648,20 +645,20 @@ class JorgUtil:
         running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
 
         #output_jorg_assembly = 'Iterations/1.fasta'
-        output_jorg_assembly = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
-
-        # make circos plot
-        output_jorg_assembly_clean_sorted = self.make_circos_plot(task_params, reads_file, output_jorg_assembly)
+        output_jorg_assembly, output_jorg_assembly_name, num_contigs = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
         # run check for circularity
         path_to_last_output = self.run_circle_check_using_last(output_jorg_assembly)
 
-        self.process_last_output(task_params, path_to_last_output)
+        circularized_contigs, output_circle_text = self.process_last_output(task_params, path_to_last_output)
+
+        # make circos plot
+        output_jorg_assembly_clean_sorted = self.make_circos_plot(task_params, reads_file, output_jorg_assembly)
 
         # move relevant files to output directory provided to user
         self.move_jorg_output_files_to_output_dir()
 
-        return output_jorg_assembly_clean_sorted
+        return output_jorg_assembly_clean_sorted, output_jorg_assembly_name, num_contigs, output_circle_text
 
 
     def generate_output_file_list(self, result_directory):
@@ -820,9 +817,9 @@ class JorgUtil:
         jorg_working_coverage = self.check_input_assembly_for_minimum_coverage(task_params)
 
         # run jorg and circos
-        output_jorg_assembly_clean_sorted = self.run_jorg_and_circos_workflow(task_params, jorg_working_coverage)
+        output_jorg_assembly_clean_sorted, output_jorg_assembly_name, num_contigs, output_circle_text = self.run_jorg_and_circos_workflow(task_params, jorg_working_coverage)
 
-        assembly_stats = {'iteration' : 1, 'num_contigs' : 3, 'circle_or_not' : 'Sure'}
+        assembly_stats = {'iteration' : output_jorg_assembly_name, 'num_contigs' : num_contigs, 'circle_or_not' : output_circle_text}
 
         # file handling and management
 
