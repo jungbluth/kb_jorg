@@ -88,11 +88,6 @@ parameters :
         short-hint : check all contigs in the final selected assembly for circularization using LAST
         long-hint  : check all contigs in the final selected assembly for circularization using LAST
 
-    auto_stop_near_runtime_limit :
-        ui-name : Auto-stop to avoid runtime limit
-        short-hint : limit number of iterations to avoid 7-day run limit associated errors on KBase cluster
-        long-hint  : limit number of iterations to avoid 7-day run limit associated errors on KBase cluster
-
 description : |
 
     <p>Jorg is a tool to help improve or circularize genomes from shotgun metagenomics data.</p>
@@ -103,12 +98,11 @@ description : |
     <p>This method assumes that you already have a pipeline that you like to use for assembling your metagenomes and creating bins.</p>
     <p><hr></p>
     <p><b>Configuration:</b></p>
-    <p><b><i>Assembly Object:</i></b> The Assembly object is a collection of assembled genome fragments, called "contigs".  These are the items that CONCOCT will bin.  Currently only a single Assembly object is accepted by the CONCOCT App.</p>
+    <p><b><i>Assembly Object:</i></b> The Assembly object is a collection of assembled genome fragments, called "contigs". </p>
     <p><hr></p>
     <p><b>Output:</b></p>
     <p><b><i>Output Object:</i></b>The Assembly Object represents improved or cirularized assembly. This object can be used for downstream analysis.</p>
-    <p><b><i>Output Jorg Summary Report:</i></b>The size and total GC of the contigs across Jorg iterations.</p>
-    <p><b><i>Downloadable files:</i></b> The enitre output of the CONCOCT run may be downloaded as a zip file. This zip file also contains a table of read-depth coverage per contig ("*.depth.txt")</p>
+    <p><b><i>Downloadable files:</i></b> The relevant output of the Jorg run may be downloaded as a zip file.</p>
 
 publications:
     -

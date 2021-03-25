@@ -643,6 +643,7 @@ class JorgUtil:
         command += '--kmer_length {} '.format(kmer_size)
         command += '--min_coverage {} '.format(min_coverage)
         command += '--iterations {} '.format(num_iterations)
+        command += '--runtime_cap 6.5 ' # runtime limit (in days) for running on KBase
         command += ' {} '.format(parameter_high_contig_num)
         command += ' {}'.format(parameter_single_end_reads)
         log('Generated jorg command: {}'.format(command))

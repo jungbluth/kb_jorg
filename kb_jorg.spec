@@ -30,7 +30,6 @@ module kb_jorg {
         assembly_selection_criteria: criteria to select the final assembly output from Jorg
         circle_min_overlap_length: specify overlap length when checking for circularized contig
         inspect_all_contigs_using_last: check all contigs in the final selected assembly for circularization using LAST
-        auto_stop_near_runtime_limit: limit number of iterations to avoid 7-day run limit associated errors on KBase cluster
 
         ref: https://github.com/jungbluth/jorg
 
@@ -50,7 +49,6 @@ module kb_jorg {
         string assembly_selection_criteria;
         int circle_min_overlap_length;
         string inspect_all_contigs_using_last;
-        string auto_stop_near_runtime_limit;
 
     } jorgInputParams;
 
