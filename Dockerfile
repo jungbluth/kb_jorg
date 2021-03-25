@@ -35,6 +35,8 @@ RUN conda install -c bioconda seqkit
 
 RUN conda install -c bioconda circos
 
+RUN conda install pandas
+
 RUN mkdir pilon-1.2.3 && \
     wget https://github.com/broadinstitute/pilon/releases/download/v1.23/pilon-1.23.jar -P pilon-1.2.3
 
