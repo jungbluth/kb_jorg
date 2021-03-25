@@ -78,7 +78,8 @@ class kb_jorgTest(unittest.TestCase):
         #
         # READS 1
         # building paired-end library
-        pe1_reads_filename = 'bin.186.fastq'
+        #pe1_reads_filename = 'bin.186.fastq'
+        pe1_reads_filename = 'bin.186_paired-end_100K-seqs.fastq'
         pe1_reads_path = os.path.join(cls.scratch, pe1_reads_filename)
 
         # gets put on scratch. "work/tmp" is scratch
