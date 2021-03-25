@@ -605,6 +605,8 @@ class JorgUtil:
                 output_circle_text = output_circle_text + str(circularized_contigs[i])
                 if i != (len(circularized_contigs) - 1):
                     output_circle_text = output_circle_text + ","
+        else:
+            output_circle_text = "No"
         return circularized_contigs, output_circle_text
 
     def move_jorg_output_files_to_output_dir(self):
