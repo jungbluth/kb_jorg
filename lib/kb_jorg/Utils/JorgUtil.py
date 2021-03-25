@@ -550,8 +550,10 @@ class JorgUtil:
         command = 'bash {}/lib/circle_check_using_last '.format(self.JORG_BASE_PATH)
         command += 'Iterations/{} '.format(output_jorg_assembly)
         self._run_command(command)
+        path_to_last_output = output_jorg_assembly.split(".fasta")[0] + ".reduced"
+        return path_to_last_output
 
-    def process_last_output(self, path_to_last_output):
+    def process_last_output(self, task_params, path_to_last_output):
         file1 = open(path_to_last_output, 'r')
         remember_query = ""
         forward_circle_match = ""
@@ -562,7 +564,7 @@ class JorgUtil:
         query_end = 0
         subject_start = 0
         subject_end = 0
-        minimum_length_threshold = 100
+        minimum_length_threshold = task_params['circle_min_overlap_length']
 
         for line in lines:
             print("line is {}".format(line))
@@ -583,7 +585,7 @@ class JorgUtil:
                             print("checkpoint 3")
                             if float(line.split()[10]) <= 10e-5: # if the expected value is significant
                                 print("checkpoint 4")
-                                if line.split()[13] == line.split()[14]: # if the self last match
+                                if line.split()[13] == line.split()[14]: # if length of query equals length of reference
                                     longest_contig_length = int(line.split()[14])
                                     print("longest_contig_length is {}".format(longest_contig_length))
                                     print("checkpoint 5")
@@ -596,8 +598,8 @@ class JorgUtil:
                                         print("checkpoint 7")
                                         reverse_circle_match = "TRUE"
                                         circularized_contigs.append(line.split()[0])
-                                elif line.split()[13] != line.split()[14]:
-                                    if (int(line.split()[7]) - int(line.split()[6])) == (int(line.split()[9]) - int(line.split()[8])):
+                                elif line.split()[13] != line.split()[14]: # if length of query not equal to length of reference
+                                    if (int(line.split()[7]) - int(line.split()[6])) == (int(line.split()[9]) - int(line.split()[8])): # if query start/end length equal to subject start/end length
                                         print("checkpoint 8")
                                         forward_circle_match = "TRUE"
                                         remember_query = line.split()[0]
@@ -652,7 +654,9 @@ class JorgUtil:
         output_jorg_assembly_clean_sorted = self.make_circos_plot(task_params, reads_file, output_jorg_assembly)
 
         # run check for circularity
-        self.run_circle_check_using_last(output_jorg_assembly)
+        path_to_last_output = self.run_circle_check_using_last(output_jorg_assembly)
+
+        self.process_last_output(task_params, path_to_last_output)
 
         # move relevant files to output directory provided to user
         self.move_jorg_output_files_to_output_dir()
