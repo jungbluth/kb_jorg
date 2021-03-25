@@ -468,7 +468,7 @@ class JorgUtil:
         file1 = open(full_path_output_jorg_assembly, 'r')
         lines = file1.readlines()
         for line in lines:
-            if line.startwith('>'):
+            if line.startswith('>'):
                 num_contigs = num_contigs + 1
         output_jorg_assembly_name = os.path.basename(output_jorg_assembly).split(".fasta")[0]
         return output_jorg_assembly, output_jorg_assembly_name, num_contigs
