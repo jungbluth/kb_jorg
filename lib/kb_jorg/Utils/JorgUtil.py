@@ -10,6 +10,7 @@ import copy
 import shutil
 import math
 import glob
+import pandas as pd
 
 from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.DataFileUtilClient import DataFileUtil
@@ -437,7 +438,7 @@ class JorgUtil:
                         f.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(genome_num_fasta[i],last_circle_check[i],contig_name[j],contig_length[j],contig_GC_percent[j],cumulative_length[j]))
         f.close()
         final_iteration_assembly = genome_num_fasta[len(genome_num_fasta)-1]
-        print("running_longest_single_fragment {}, assembly_with_longest_single_fragment {}, assembly_with_longest_cumulative_assembly_length {}, final_iteration_assembly {}".format(running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly))
+        log("running_longest_single_fragment {}, assembly_with_longest_single_fragment {}, assembly_with_longest_cumulative_assembly_length {}, final_iteration_assembly {}".format(running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly))
         return (running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
 
@@ -523,7 +524,13 @@ class JorgUtil:
         command += '-bg > circos_mapping_tracks.txt'
         log('extract_mapping_tracks_from_bam: {}'.format(command))
         self._run_command(command)
-
+        file1 = open(os.path.abspath("circos_mapping_tracks.txt"), 'r')
+        pandas_df = pd.read_table(file1, header=None)
+        max_cov = round(pandas_df[3].max(),1)
+        min_cov = round(pandas_df[3].min(),1)
+        std_cov = round(pandas_df[3].std(),1)
+        mean_cov = round(pandas_df[3].mean(),1)
+        return max_cov, min_cov, std_cov, mean_cov
 
     def make_circos_karyotype_file(self, output_jorg_assembly_clean_sorted):
         from Bio import SeqIO
@@ -548,10 +555,10 @@ class JorgUtil:
         sam = os.path.basename(output_fastq).split('.fastq')[0] + ".sam"
         self.run_read_mapping_interleaved_pairs_mode(task_params, output_jorg_assembly_clean_sorted, output_fastq, sam)
         sorted_bam = self.convert_sam_to_sorted_and_indexed_bam(sam)
-        self.extract_mapping_tracks_from_bam(sorted_bam)
+        max_cov, min_cov, std_cov, mean_cov = self.extract_mapping_tracks_from_bam(sorted_bam)
         self.make_circos_karyotype_file(output_jorg_assembly_clean_sorted)
         self.draw_circos_plot()
-        return output_jorg_assembly_clean_sorted
+        return output_jorg_assembly_clean_sorted, max_cov, min_cov, std_cov, mean_cov
 
     def run_circle_check_using_last(self, output_jorg_assembly):
         print("run_circle_check_using_last")
@@ -656,12 +663,12 @@ class JorgUtil:
         circularized_contigs, output_circle_text = self.process_last_output(task_params, path_to_last_output)
 
         # make circos plot
-        output_jorg_assembly_clean_sorted = self.make_circos_plot(task_params, reads_file, output_jorg_assembly)
+        output_jorg_assembly_clean_sorted, max_cov, min_cov, std_cov, mean_cov = self.make_circos_plot(task_params, reads_file, output_jorg_assembly)
 
         # move relevant files to output directory provided to user
         self.move_jorg_output_files_to_output_dir()
 
-        return output_jorg_assembly_clean_sorted, output_jorg_assembly_name, num_contigs, output_circle_text
+        return output_jorg_assembly_clean_sorted, output_jorg_assembly_name, num_contigs, output_circle_text, max_cov, min_cov, std_cov, mean_cov
 
 
     def generate_output_file_list(self, result_directory):
@@ -712,9 +719,9 @@ class JorgUtil:
 
         # Example
         # Overview_Content += '<p>Input contigs: {}</p>'.format(input_contig_count)
-
         Overview_Content += '<p>Iteration Selected: {}</p>'.format(assembly_stats['iteration'])
         Overview_Content += '<p>Number of contigs: {}</p>'.format(assembly_stats['num_contigs'])
+        Overview_Content += '<p>Coverage (avg, sd, max, min): {}</p>'.format(assembly_stats['mean_cov'],assembly_stats['std_cov'],assembly_stats['max_cov'],assembly_stats['min_cov'])
         Overview_Content += '<p>Circularized genome: {}</p>'.format(assembly_stats['circle_or_not'])
         for png_filename in png_filename_l:
             Overview_Content += '\n<embed src="{}" width="700px" height="700px">'.format(png_filename)
@@ -820,9 +827,9 @@ class JorgUtil:
         jorg_working_coverage = self.check_input_assembly_for_minimum_coverage(task_params)
 
         # run jorg and circos
-        output_jorg_assembly_clean_sorted, output_jorg_assembly_name, num_contigs, output_circle_text = self.run_jorg_and_circos_workflow(task_params, jorg_working_coverage)
+        output_jorg_assembly_clean_sorted, output_jorg_assembly_name, num_contigs, output_circle_text, max_cov, min_cov, std_cov, mean_cov = self.run_jorg_and_circos_workflow(task_params, jorg_working_coverage)
 
-        assembly_stats = {'iteration' : output_jorg_assembly_name, 'num_contigs' : num_contigs, 'circle_or_not' : output_circle_text}
+        assembly_stats = {'iteration' : output_jorg_assembly_name, 'num_contigs' : num_contigs, 'mean_cov' : mean_cov, 'std_cov' : std_cov, 'min_cov' : min_cov, 'max_cov' : max_cov, 'circle_or_not' : output_circle_text}
 
         # file handling and management
 
