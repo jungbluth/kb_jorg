@@ -125,18 +125,6 @@
               }
         },
         {
-            "id": "single_end_reads",
-            "optional": true,
-            "advanced": true,
-            "allow_multiple": false,
-            "default_values": [ " " ],
-            "field_type": "checkbox",
-            "checkbox_options": {
-                "checked_value": "--single_end_reads yes",
-                "unchecked_value": " "
-              }
-        },
-        {
             "id": "assembly_selection_criteria",
             "optional": true,
             "advanced": true,
@@ -234,10 +222,6 @@
                 {
                     "input_parameter": "high_contig_num",
                     "target_property": "high_contig_num"
-                },
-                {
-                    "input_parameter": "single_end_reads",
-                    "target_property": "single_end_reads"
                 },
                 {
                     "input_parameter": "assembly_selection_criteria",

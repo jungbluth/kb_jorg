@@ -68,11 +68,6 @@ parameters :
         short-hint : if high number of contigs detected (>2500 contigs), are you certain that you want to try running Jorg? (default no)
         long-hint  : if high number of contigs detected (>2500 contigs), are you certain that you want to try running Jorg? (default no)
 
-    single_end_reads :
-        ui-name : Single-End Library
-        short-hint : are the input reads a single-end library? (default no)
-        long-hint  : are the input reads a single-end library? (default no)
-
     assembly_selection_criteria :
         ui-name : Output Assembly Selection Criteria
         short-hint : select the assembly statistics criteria used to decide which assembly to output
@@ -100,7 +95,6 @@ description : |
     <p><b><i>Minimum Coverage Value:</i></b> Minimum coverage of the input genome required to run Jorg (default: 50). </p>
     <p><b><i>Number of Iterations:</i></b> Number of assembly and extension iterations to run using Jorg (default: 10). </p>
     <p><b><i>High Contig Count Run:</i></b> Check to make sure an input genome with many contigs is the truly intended input. </p>
-    <p><b><i>Single-End Library:</i></b> Check if using single-end library (note: Jorg does not work with a single-end library). </p>
     <p><b><i>Output Assembly Selection Criteria:</i></b> Select the criteria to decide which iteration output to use (default: Longest Single Fragment Assembly). </p>
     <p><b><i>Minimum Overlap Length Required to Circularize:</i></b> During check for circularization, indicate the overlap length to use (default: 100). </p>
 

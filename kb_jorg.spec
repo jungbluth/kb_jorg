@@ -26,7 +26,6 @@ module kb_jorg {
         min_coverage: minimum coverage value
         num_iterations: specify a number of iterations to use
         high_contig_num: are there more than 2500 contigs and is this expected
-        single_end_reads: is the input library single-end type
         assembly_selection_criteria: criteria to select the final assembly output from Jorg
         circle_min_overlap_length: specify overlap length when checking for circularized contig
 
@@ -44,7 +43,6 @@ module kb_jorg {
         int min_coverage;
         int num_iterations;
         string high_contig_num;
-        string single_end_reads;
         string assembly_selection_criteria;
         int circle_min_overlap_length;
 
