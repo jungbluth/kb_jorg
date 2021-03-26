@@ -530,7 +530,6 @@ class JorgUtil:
     def prep_circos_axis(self, max_cov):
         if max_cov < 30:
             max_cov = 30
-        max_cov = 100
         command = 'sed -i "s/^max.*/max   = {}/" /kb/module/lib/kb_jorg/circos/circos.conf '.format(max_cov)
         log('prep_circos_axis: {}'.format(command))
         self._run_command(command)
