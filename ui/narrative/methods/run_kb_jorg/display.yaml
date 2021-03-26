@@ -94,6 +94,16 @@ description : |
     <p><hr></p>
     <p><b>Configuration:</b></p>
     <p><b><i>Assembly Object:</i></b> The Assembly object is a collection of assembled genome fragments, called "contigs". </p>
+    <p><b><i>Reads Object:</i></b> The raw reads used to produce the original assembly and to be used for assembly improvement. </p>
+    <p><b><i>Read Mapping Tool:</i></b> The read mapping tool used for coverage assessment and generation of the Circos diagram. </p>
+    <p><b><i>Kmer Length:</i></b> Size of the kmers used during profiling (default: 33). </p>
+    <p><b><i>Minimum Coverage Value:</i></b> Minimum coverage of the input genome required to run Jorg (default: 50). </p>
+    <p><b><i>Number of Iterations:</i></b> Number of assembly and extension iterations to run using Jorg (default: 10). </p>
+    <p><b><i>High Contig Count Run:</i></b> Check to make sure an input genome with many contigs is the truly intended input. </p>
+    <p><b><i>Single-End Library:</i></b> Check if using single-end library (note: Jorg does not work with a single-end library). </p>
+    <p><b><i>Output Assembly Selection Criteria:</i></b> Select the criteria to decide which iteration output to use (default: Longest Single Fragment Assembly). </p>
+    <p><b><i>Minimum Overlap Length Required to Circularize:</i></b> During check for circularization, indicate the overlap length to use (default: 100). </p>
+
     <p><hr></p>
     <p><b>Output:</b></p>
     <p><b><i>Output Object:</i></b>The Assembly Object represents improved or cirularized assembly. This object can be used for downstream analysis.</p>
