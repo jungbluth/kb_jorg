@@ -203,6 +203,5 @@ class kb_jorgTest(unittest.TestCase):
                                              'num_iterations': 1,
                                              'circle_min_overlap_length': 100,
                                              'high_contig_num': '--high_contig_num no',
-                                             'single_end_reads': '--single_end_reads no',
                                              'assembly_selection_criteria': 'longest_single_fragment',
                                              'reads_file': [self.int1_oldstyle_reads_ref] })

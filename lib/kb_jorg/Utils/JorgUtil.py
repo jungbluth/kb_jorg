@@ -367,19 +367,13 @@ class JorgUtil:
         # needed to get checkbox for UI to work with string objects, for some
         # reason strings are converted to numerics when running inside KBase UI.
         parameter_high_contig_num = task_params['high_contig_num']
-        parameter_single_end_reads = task_params['single_end_reads']
 
         if task_params['high_contig_num'] is 1:
             parameter_high_contig_num = '--high_contig_num yes'
         elif task_params['high_contig_num'] is 0:
             parameter_high_contig_num = '--high_contig_num no'
 
-        if task_params['single_end_reads'] is 1:
-            parameter_single_end_reads = '--single_end_reads yes'
-        elif task_params['single_end_reads'] is 0:
-            parameter_single_end_reads = '--single_end_reads no'
-
-        return (parameter_high_contig_num, parameter_single_end_reads)
+        return parameter_high_contig_num
 
 
     def copy_required_jorg_input_files_to_cwd(self):
@@ -620,8 +614,7 @@ class JorgUtil:
         kmer_size = task_params['kmer_size']
         min_coverage = jorg_working_coverage
         num_iterations = task_params['num_iterations']
-        parameter_high_contig_num, parameter_single_end_reads = \
-            self.fix_generate_jorg_command_ui_bug(task_params)
+        parameter_high_contig_num = self.fix_generate_jorg_command_ui_bug(task_params)
 
         log("\n\nRunning run_jorg_and_circos_workflow")
         command = 'bash {}/jorg '.format(self.JORG_BASE_PATH)
@@ -631,8 +624,7 @@ class JorgUtil:
         command += '--min_coverage {} '.format(min_coverage)
         command += '--iterations {} '.format(num_iterations)
         command += '--runtime_cap 6 ' # runtime limit (in days) for running on KBase
-        command += ' {} '.format(parameter_high_contig_num)
-        command += ' {}'.format(parameter_single_end_reads)
+        command += ' {}'.format(parameter_high_contig_num)
         log('Generated jorg command: {}'.format(command))
         self.copy_required_jorg_input_files_to_cwd()
         log("start running Jorg command")
