@@ -83,11 +83,6 @@ parameters :
         short-hint : specify minimum overlap length required to check for if output contigs cirularized
         long-hint  : specify minimum overlap length required to check for if output contigs cirularized
 
-    inspect_all_contigs_using_last :
-        ui-name : Check all contigs for circularization using LAST
-        short-hint : check all contigs in the final selected assembly for circularization using LAST
-        long-hint  : check all contigs in the final selected assembly for circularization using LAST
-
 description : |
 
     <p>Jorg is a tool to help improve or circularize genomes from shotgun metagenomics data.</p>

@@ -189,18 +189,6 @@
                 "min_int" : 20,
                 "validate_as" : "int"
             }
-        },
-        {
-            "id": "inspect_all_contigs_using_last",
-            "optional": true,
-            "advanced": true,
-            "allow_multiple": false,
-            "default_values": [ 0 ],
-            "field_type": "checkbox",
-            "checkbox_options": {
-                "checked_value": 1,
-                "unchecked_value": 0
-              }
         }
     ],
     "behavior": {
@@ -258,10 +246,6 @@
                 {
                     "input_parameter": "circle_min_overlap_length",
                     "target_property": "circle_min_overlap_length"
-                },
-                {
-                    "input_parameter": "inspect_all_contigs_using_last",
-                    "target_property": "inspect_all_contigs_using_last"
                 }
             ],
             "output_mapping": [
