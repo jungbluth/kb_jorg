@@ -659,7 +659,7 @@ class JorgUtil:
         output_jorg_assembly_clean_sorted, max_cov, min_cov, std_cov, mean_cov = self.make_circos_plot(task_params, reads_file, output_jorg_assembly)
 
         # move relevant files to output directory provided to user
-        self.move_jorg_output_files_to_output_dir()
+        # self.move_jorg_output_files_to_output_dir()
 
         return output_jorg_assembly_clean_sorted, output_jorg_assembly_name, num_contigs, output_circle_text, max_cov, min_cov, std_cov, mean_cov
 
