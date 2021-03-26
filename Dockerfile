@@ -8,8 +8,6 @@ MAINTAINER KBase Developer
 
 RUN apt-get update && apt-get install -y wget git
 
-# RUN wget https://zenodo.org/record/3889132/files/SRX3307784_clean.fastq.gz
-
 RUN apt-get update && apt-get install -y build-essential make flex libexpat1-dev libboost-all-dev xxd zlib1g-dev bowtie2 bedtools
 
 RUN wget https://github.com/bachev/mira/releases/download/V5rc2/mira-V5rc2.tar.bz2 && \
@@ -19,8 +17,6 @@ RUN wget https://github.com/bachev/mira/releases/download/V5rc2/mira-V5rc2.tar.b
     make && \
     make install && \
     rm /mira-V5rc2.tar.bz2
-
-# RUN conda install -c bioconda seqtk
 
 RUN git clone https://github.com/lh3/seqtk.git && \
     cd seqtk && \
@@ -37,14 +33,12 @@ RUN conda install -c bioconda circos
 
 RUN conda install pandas
 
-RUN mkdir pilon-1.2.3 && \
-    wget https://github.com/broadinstitute/pilon/releases/download/v1.23/pilon-1.23.jar -P pilon-1.2.3
+#RUN mkdir pilon-1.2.3 && \
+#    wget https://github.com/broadinstitute/pilon/releases/download/v1.23/pilon-1.23.jar -P pilon-1.2.3
 
-RUN wget http://eddylab.org/infernal/infernal-1.1.3-linux-intel-gcc.tar.gz && \
-    tar -xvf infernal-* && \
-    rm infernal-1.1.3-linux-intel-gcc.tar.gz
-
-RUN echo "ZZZY"
+# RUN wget http://eddylab.org/infernal/infernal-1.1.3-linux-intel-gcc.tar.gz && \
+#    tar -xvf infernal-* && \
+#    rm infernal-1.1.3-linux-intel-gcc.tar.gz
 
 RUN git clone https://github.com/jungbluth/Jorg && \
     chmod +x /Jorg/jorg

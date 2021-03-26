@@ -221,7 +221,8 @@ class JorgUtil:
             command += '--threads {}'.format(self.MAPPING_THREADS)
         log('running alignment command: {}'.format(command))
         out, err = self._run_command(command)
-    #
+
+    # not used right now because Jorg does not support single-end mode
     # def run_read_mapping_unpaired_mode(self, task_params, assembly, fastq, sam):
     #     read_mapping_tool = task_params['read_mapping_tool']
     #     log("running {} mapping in single-end (unpaired) mode.".format(read_mapping_tool))
@@ -443,23 +444,18 @@ class JorgUtil:
 
 
     def select_jorg_output_genome(self, task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly):
-        print("select_jorg_output_genome")
-        print("task params assembly selection criteria are {}".format(task_params["assembly_selection_criteria"]))
-        # running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly
         if task_params["assembly_selection_criteria"] == "longest_single_fragment":
             output_jorg_assembly = assembly_with_longest_single_fragment
             log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
         elif task_params["assembly_selection_criteria"] == "longest_single_fragment_filter":
             output_jorg_assembly = assembly_with_longest_single_fragment
             log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
-            print("running_longest_single_fragment is {} bp long".format(running_longest_single_fragment))
         elif task_params["assembly_selection_criteria"] == "longest_cumulative_assembly_length":
             output_jorg_assembly = assembly_with_longest_cumulative_assembly_length
             log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
         elif task_params["assembly_selection_criteria"] == "longest_cumulative_assembly_length_filter":
             output_jorg_assembly = assembly_with_longest_cumulative_assembly_length
             log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
-            print("running_longest_single_fragment is {} bp long".format(running_longest_single_fragment))
         elif task_params["assembly_selection_criteria"] == "final_iteration_assembly":
             output_jorg_assembly = final_iteration_assembly
             log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
@@ -487,17 +483,6 @@ class JorgUtil:
 
     def clean_input_fasta(self, output_jorg_assembly):
         output_jorg_assembly_clean = str(output_jorg_assembly) + "_clean.fasta" # need to fix split command below, sloppy fix
-        #output_jorg_assembly_clean = output_jorg_assembly.split('.', 1)[0] + "_clean.fasta"
-        log("os.listdir is {}".format(os.listdir("Iterations")))
-        log("start print 1.fasta")
-        datafile = glob.glob('*.fasta')[0]
-        N = 2
-        with open(datafile, "r") as file:  # the a opens it in append mode
-            for i in range(N):
-                line = next(file).strip()
-                print(line)
-        log("end print 1.fasta")
-
         command = 'cut -d\' \' -f1 Iterations/{} > {}'.format(output_jorg_assembly, output_jorg_assembly_clean)
         log('clean_input_fasta: {}'.format(command))
         self._run_command(command)
@@ -542,6 +527,13 @@ class JorgUtil:
                 count += 1
         f.close()
 
+    def prep_circos_axis(self, max_cov):
+        if max_cov < 30:
+            max_cov = 30
+        command = 'sed -i "/^max.*/max   = {}/" /kb/module/lib/kb_jorg/circos/circos.conf '.format(max_cov)
+        log('prep_circos_axis: {}'.format(command))
+        self._run_command(command)
+
     def draw_circos_plot(self):
         command = 'circos -conf '
         command += '/kb/module/lib/kb_jorg/circos/circos.conf'
@@ -557,11 +549,11 @@ class JorgUtil:
         sorted_bam = self.convert_sam_to_sorted_and_indexed_bam(sam)
         max_cov, min_cov, std_cov, mean_cov = self.extract_mapping_tracks_from_bam(sorted_bam)
         self.make_circos_karyotype_file(output_jorg_assembly_clean_sorted)
+        self.prep_circos_axis(max_cov)
         self.draw_circos_plot()
         return output_jorg_assembly_clean_sorted, max_cov, min_cov, std_cov, mean_cov
 
     def run_circle_check_using_last(self, output_jorg_assembly):
-        print("run_circle_check_using_last")
         command = 'bash {}/lib/circle_check_using_last '.format(self.JORG_BASE_PATH)
         command += 'Iterations/{} '.format(output_jorg_assembly)
         self._run_command(command)

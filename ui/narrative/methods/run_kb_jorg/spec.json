@@ -1,5 +1,5 @@
 {
-    "ver": "0.0.1",
+    "ver": "0.1.0",
     "authors": [
         "seanjungbluth"
     ],
@@ -93,7 +93,7 @@
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ 5 ],
+            "default_values": [ 50 ],
             "field_type": "text",
             "text_options": {
                 "min_int" : 5,
@@ -105,7 +105,7 @@
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ 1 ],
+            "default_values": [ 10 ],
             "field_type": "text",
             "text_options": {
                 "min_int" : 1,
