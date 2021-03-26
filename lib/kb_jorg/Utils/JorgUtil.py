@@ -659,7 +659,7 @@ class JorgUtil:
         output_jorg_assembly_clean_sorted, max_cov, min_cov, std_cov, mean_cov = self.make_circos_plot(task_params, reads_file, output_jorg_assembly)
 
         # move relevant files to output directory provided to user
-        self.move_jorg_output_files_to_output_dir()
+        #self.move_jorg_output_files_to_output_dir()
 
         return output_jorg_assembly_clean_sorted, output_jorg_assembly_name, num_contigs, output_circle_text, max_cov, min_cov, std_cov, mean_cov
 
@@ -832,7 +832,8 @@ class JorgUtil:
         dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
 
         assembly_ref_obj = self.au.save_assembly_from_fasta(
-            {'file': {'path': dest + '/' + output_jorg_assembly_clean_sorted},
+#            {'file': {'path': dest + '/' + output_jorg_assembly_clean_sorted},
+            {'file': {'path': output_jorg_assembly_clean_sorted},
              'workspace_name': task_params['workspace_name'],
              'assembly_name': task_params['output_assembly_name']
              })
