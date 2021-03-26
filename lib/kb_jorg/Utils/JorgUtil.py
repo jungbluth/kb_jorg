@@ -337,7 +337,6 @@ class JorgUtil:
     def generate_make_coverage_table_command(self, task_params, sorted_bam):
         # create the depth file for this bam
         #
-
         depth_file_path = os.path.join(self.scratch, str('depth.txt'))
         command = '/kb/module/lib/kb_jorg/bin/jgi_summarize_bam_contig_depths '
         command += '--outputDepth {} '.format(depth_file_path)
@@ -664,8 +663,8 @@ class JorgUtil:
                              zipfile.ZIP_DEFLATED,
                              allowZip64=True) as zip_file:
             for dirname, subdirs, files in os.walk(result_directory):
-                for file in files:
-                    zip_file.write(os.path.join(dirname, file), file)
+                # for file in files:
+                #     zip_file.write(os.path.join(dirname, file), file)
                 if (dirname.endswith(self.JORG_RESULT_DIRECTORY)):
                     baseDir = os.path.basename(dirname)
                     for file in files:
