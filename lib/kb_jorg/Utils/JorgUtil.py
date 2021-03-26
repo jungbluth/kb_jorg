@@ -612,7 +612,7 @@ class JorgUtil:
         dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
         files = os.listdir(os.path.abspath(self.scratch))
         for f in files:
-            if (f.startswith("Iterations") or f.startswith("iterations") or f.startswith("Jorg") or f.startswith("jorg") or f.startswith("manifest") or f.startswith("mira") or f.startswith("mirabait") or f.startswith("list") or f.startswith("depth") or f.startswith("circos") or f.endswith(".log") or f.endswith("sorted.fasta") or f.endswith("clean.fasta")):
+            if (f.startswith("iterations") or f.startswith("Jorg") or f.startswith("jorg") or f.startswith("manifest") or f.startswith("mira") or f.startswith("mirabait") or f.startswith("list") or f.startswith("depth") or f.startswith("circos") or f.endswith(".log") or f.endswith("sorted.fasta") or f.endswith("clean.fasta") or f.endswith(".reduced") or f.endswith(".tbl")):
                 shutil.move(f, dest)
 
     def run_jorg_and_circos_workflow(self, task_params, jorg_working_coverage):
