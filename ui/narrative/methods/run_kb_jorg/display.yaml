@@ -60,8 +60,8 @@ parameters :
 
     num_iterations :
         ui-name : Number of Iterations
-        short-hint : specify a number of iterations to use (default 5)
-        long-hint  : specify a number of iterations to use (default 5)
+        short-hint : specify a number of iterations to use (default 10)
+        long-hint  : specify a number of iterations to use (default 10)
 
     high_contig_num :
         ui-name : High Contig Count Run
