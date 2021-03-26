@@ -100,7 +100,7 @@ description : |
 
     <p><hr></p>
     <p><b>Output:</b></p>
-    <p><b><i>Output Object:</i></b>The Assembly Object represents improved or cirularized assembly. This object can be used for downstream analysis.</p>
+    <p><b><i>Output Object:</i></b> The Assembly Object represents improved or cirularized assembly. This object can be used for downstream analysis.</p>
     <p><b><i>Downloadable files:</i></b> The relevant output of the Jorg run may be downloaded as a zip file. Contents include the clean sequence assembly files, last output, Jorg output files, and Circos input/output files.</p>
 
     <p><hr></p>
