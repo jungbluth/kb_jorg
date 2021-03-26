@@ -473,7 +473,6 @@ class JorgUtil:
 
     def uppercase_fastq_file(self, reads_file):
         output_fastq = str(reads_file) + "_uppercase.fastq"
-        #output_fastq = reads_file.rsplit('.', 1)[0] + "_uppercase.fastq" # need to fix split command below, sloppy fix
         command = 'seqkit seq -u '
         command += '{} > '.format(reads_file)
         command += '{}'.format(output_fastq)
@@ -486,10 +485,6 @@ class JorgUtil:
         command = 'cut -d\' \' -f1 Iterations/{} > {}'.format(output_jorg_assembly, output_jorg_assembly_clean)
         log('clean_input_fasta: {}'.format(command))
         self._run_command(command)
-        log("head of file")
-        with open(output_jorg_assembly_clean) as myfile:
-            head = [next(myfile) for x in range(1)]
-        log(head)
         return output_jorg_assembly_clean
 
     def sort_fasta_by_length(self, input_fasta):
@@ -833,7 +828,7 @@ class JorgUtil:
 
         assembly_ref_obj = self.au.save_assembly_from_fasta(
 #            {'file': {'path': dest + '/' + output_jorg_assembly_clean_sorted},
-            {'file': {'path': output_jorg_assembly_clean_sorted},
+            {'file': {'path': os.path.abspath(output_jorg_assembly_clean_sorted)},
              'workspace_name': task_params['workspace_name'],
              'assembly_name': task_params['output_assembly_name']
              })
