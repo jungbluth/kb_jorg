@@ -50,7 +50,7 @@
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "bbmap" ],
+            "default_values": [ "bowtie2_default" ],
             "field_type": "dropdown",
             "dropdown_options": {
                 "options": [
