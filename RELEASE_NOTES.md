@@ -1,6 +1,11 @@
 # kb_jorg release notes
 =========================================
 
+
+0.1.1
+-----
+* Lower kmer minimum size
+
 0.1.0
 -----
 * Release to beta

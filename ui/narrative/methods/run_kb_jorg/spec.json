@@ -83,7 +83,7 @@
             "default_values": [ 33 ],
             "field_type": "text",
             "text_options": {
-                "min_int" : 31,
+                "min_int" : 25,
                 "max_int" : 127,
                 "validate_as" : "int"
             }
