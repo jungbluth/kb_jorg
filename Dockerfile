@@ -33,7 +33,7 @@ RUN conda install -c bioconda circos
 
 RUN conda install pandas
 
-#RUN mkdir pilon-1.2.3 && \
+# RUN mkdir pilon-1.2.3 && \
 #    wget https://github.com/broadinstitute/pilon/releases/download/v1.23/pilon-1.23.jar -P pilon-1.2.3
 
 # RUN wget http://eddylab.org/infernal/infernal-1.1.3-linux-intel-gcc.tar.gz && \
@@ -42,8 +42,6 @@ RUN conda install pandas
 
 RUN git clone https://github.com/jungbluth/Jorg && \
     chmod +x /Jorg/jorg
-
-# RUN mv SRX3307784_clean.fastq.gz /Jorg/Example
 
 COPY ./ /kb/module
 RUN mkdir -p /kb/module/work

@@ -1,6 +1,10 @@
 # kb_jorg release notes
 =========================================
 
+0.1.2
+-----
+* New working_coverage parameter
+* Updated documentation and publication citation information
 
 0.1.1
 -----

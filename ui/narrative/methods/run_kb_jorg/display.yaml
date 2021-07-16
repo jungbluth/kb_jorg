@@ -58,6 +58,11 @@ parameters :
         short-hint : minimum coverage value (default 50x)
         long-hint  : minimum coverage value of the genome you want to improve (default 50x)
 
+    working_coverage :
+        ui-name : Working Coverage Percentage
+        short-hint : percent of longest-contig coverage value used as coverage input to Jorg (default 75%)
+        long-hint  : percent of longest-contig coverage value used as coverage input to Jorg (default 75%)
+
     num_iterations :
         ui-name : Number of Iterations
         short-hint : specify a number of iterations to use (default 10)
@@ -93,6 +98,7 @@ description : |
     <p><b><i>Read Mapping Tool:</i></b> The read mapping tool used for coverage assessment and generation of the Circos diagram. </p>
     <p><b><i>Kmer Length:</i></b> Size of the kmers used during profiling (default: 33). </p>
     <p><b><i>Minimum Coverage Value:</i></b> Minimum coverage of the input genome required to run Jorg (default: 50). </p>
+    <p><b><i>Working Coverage Percentage:</i></b> Coverage value passed to Jorg tool is some percentage of the coverage of the longest contig in the input assembly (default: 75%). </p>
     <p><b><i>Number of Iterations:</i></b> Number of assembly and extension iterations to run using Jorg (default: 10). </p>
     <p><b><i>High Contig Count Run:</i></b> Check to make sure an input genome with many contigs is the truly intended input. </p>
     <p><b><i>Output Assembly Selection Criteria:</i></b> Select the criteria to decide which iteration output to use (default: Longest Single Fragment Assembly). </p>
@@ -112,6 +118,10 @@ publications:
         display-text : |
             Lui LM, Nielsen TN, Arkin AP. A method for achieving complete microbial genomes and better quality bins from metagenomics data. bioRxiv. 2020. doi:10.1101/2020.03.05.979740
         link: https://doi.org/10.1101/2020.03.05.979740
+    -
+        display-text : |
+            Lui LM, Nielsen TN, Arkin AP. A method for achieving complete microbial genomes and improving bins from metagenomics data. PLoS Computational Biology. 2021. doi:10.1371/journal.pcbi.1008972
+        link: https://doi.org/10.1371/journal.pcbi.1008972
 
     -
         display-text : |

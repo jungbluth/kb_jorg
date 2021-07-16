@@ -1,5 +1,5 @@
 {
-    "ver": "0.1.0",
+    "ver": "0.1.2",
     "authors": [
         "seanjungbluth"
     ],
@@ -85,6 +85,19 @@
             "text_options": {
                 "min_int" : 25,
                 "max_int" : 127,
+                "validate_as" : "int"
+            }
+        },
+        {
+            "id": "working_coverage",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ 75 ],
+            "field_type": "text",
+            "text_options": {
+                "min_int" : 1,
+                "max_int" : 100,
                 "validate_as" : "int"
             }
         },
