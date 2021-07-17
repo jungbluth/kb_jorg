@@ -352,10 +352,9 @@ class JorgUtil:
         file1 = open(path_to_depth_file, 'r')
         lines = file1.readlines()
         detected_coverage_in_longest_contig = float(lines[1].split()[2])
-        working_coverage = task_params["working_coverage"]
         if detected_coverage_in_longest_contig >= float(task_params["min_coverage"]):
-            log("The longest contig in the input assembly passes the input minimum coverage criteria (value: {}). Setting Jorg coverage parameter to {}% of this value.".format(detected_coverage_in_longest_contig, working_coverage))
-            jorg_working_coverage = math.floor(float(lines[1].split()[2]) * (working_coverage / 100))
+            log("The longest contig in the input assembly passes the input minimum coverage criteria (value: {}). Setting Jorg coverage parameter to 75% of this value.".format(detected_coverage_in_longest_contig))
+            jorg_working_coverage = math.floor(float(lines[1].split()[2]) * 0.75)
             log("Working Jorg minimum coverage set to {}.".format(jorg_working_coverage))
         else:
             log("The longest contig in the input assembly has a coverage value of {}, which does not meet the minimum coverage criteria. Exiting Jorg.".format(float(lines[1].split()[2])))

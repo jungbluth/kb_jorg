@@ -24,7 +24,6 @@ module kb_jorg {
         read_mapping_tool: tool to use for read mapping
         kmer_size: specify kmer length for baiting
         min_coverage: minimum coverage value
-        working_coverage: percent of longest-contig coverage passed to Jorg
         num_iterations: specify a number of iterations to use
         high_contig_num: are there more than 2500 contigs and is this expected
         assembly_selection_criteria: criteria to select the final assembly output from Jorg
@@ -42,7 +41,6 @@ module kb_jorg {
         string read_mapping_tool;
         int kmer_size;
         int min_coverage;
-        int working_coverage;
         int num_iterations;
         string high_contig_num;
         string assembly_selection_criteria;

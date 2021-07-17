@@ -200,7 +200,6 @@ class kb_jorgTest(unittest.TestCase):
                                              'read_mapping_tool': 'bbmap',
                                              'kmer_size': 33,
                                              'min_coverage': 5,
-                                             'working_coverage': 80,
                                              'num_iterations': 1,
                                              'circle_min_overlap_length': 100,
                                              'high_contig_num': '--high_contig_num no',
