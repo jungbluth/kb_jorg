@@ -148,7 +148,8 @@ class JorgUtil:
     def retrieve_assembly(self, task_params):
         if os.path.exists(task_params['contig_file_path']):
             assembly = task_params['contig_file_path']
-            print("FOUND ASSEMBLY ON LOCAL SCRATCH")
+            log("FOUND ASSEMBLY ON LOCAL SCRATCH")
+            log("task_params['contig_file_path'] is {}".format(task_params['contig_file_path']))
         else:
             # we are on njsw so lets copy it over to scratch
             log("task_params['assembly_ref'] is {}".format(task_params['assembly_ref']))
