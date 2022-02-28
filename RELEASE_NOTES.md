@@ -2,6 +2,10 @@
 =========================================
 
 
+0.1.2
+-----
+* Allow users to input multiple assemblies
+
 0.1.1
 -----
 * Lower kmer minimum size

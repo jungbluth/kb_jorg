@@ -15,8 +15,8 @@ module kb_jorg {
 
     /*
         required params:
-        assembly_ref: Genome assembly object
-        reads_file: reads object (PairedEndLibrary/SingleEndLibrary) upon which jorg will be run
+        assembly_ref: genome assembly object(s)
+        reads_file: reads object(s) (PairedEndLibrary/SingleEndLibrary) upon which jorg will be run
         workspace_name: the name of the workspace it gets saved to.
         output_assembly_name: name of the output assembly
 
@@ -33,7 +33,7 @@ module kb_jorg {
 
     */
     typedef structure {
-        obj_ref assembly_ref;
+        list<obj_ref> assembly_ref;
         string workspace_name;
         list<obj_ref> reads_file;
         string output_assembly_name;
