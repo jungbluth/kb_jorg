@@ -793,6 +793,7 @@ class JorgUtil:
         log('--->\nEnd assembly\n')
 
         # get reads
+        log('--->\nStart reads\n')
         (read_scratch_path, read_type) = self.stage_reads_file(task_params['reads_file'])
         task_params['read_type'] = read_type
         task_params['reads_list_file'] = read_scratch_path
