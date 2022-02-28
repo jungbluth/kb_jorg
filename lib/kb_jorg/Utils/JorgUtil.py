@@ -783,14 +783,14 @@ class JorgUtil:
         self._validate_run_jorg_params(task_params)
 
         # get assembly
-        log("Start assembly")
+        log('--->\nStart assembly\n')
         contig_file = self._get_contig_file(task_params['assembly_ref'])
         task_params['contig_file_path'] = contig_file
 
         # clean the assembly file so that there are no spaces in the fasta headers
         assembly = self.retrieve_assembly(task_params)
         task_params['contig_file_path'] = assembly
-        log("End assembly")
+        log('--->\nEnd assembly\n')
 
         # get reads
         (read_scratch_path, read_type) = self.stage_reads_file(task_params['reads_file'])
