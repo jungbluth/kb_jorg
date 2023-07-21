@@ -6,9 +6,14 @@ MAINTAINER KBase Developer
 # install line here, a git checkout to download code, or run any other
 # installation scripts.
 
+# Update stretch repositories
+RUN sed -i -e 's/deb.debian.org/archive.debian.org/g' \
+           -e 's|security.debian.org|archive.debian.org/|g' \
+           -e '/stretch-updates/d' /etc/apt/sources.list
+
 RUN apt-get update && apt-get install -y wget git
 
-RUN apt-get update && apt-get install -y build-essential make flex libexpat1-dev libboost-all-dev xxd zlib1g-dev bowtie2 bedtools
+RUN apt-get install -y build-essential make flex libexpat1-dev libboost-all-dev xxd zlib1g-dev bowtie2 bedtools
 
 RUN wget https://github.com/bachev/mira/releases/download/V5rc2/mira-V5rc2.tar.bz2 && \
     tar -xvf mira-* && \
