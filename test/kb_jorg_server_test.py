@@ -195,7 +195,7 @@ class kb_jorgTest(unittest.TestCase):
         # jorg should run to completion here
         ret = self.getImpl().run_kb_jorg(self.getContext(),
                                             {'workspace_name': self.getWsName(),
-                                             'assembly_ref': self.assembly_ref1,
+                                             'assembly_ref': [self.assembly_ref1],
                                              'output_assembly_name': 'test.assembly',
                                              'read_mapping_tool': 'bbmap',
                                              'kmer_size': 33,

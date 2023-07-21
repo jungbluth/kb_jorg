@@ -144,12 +144,15 @@ class JorgUtil:
 
         return contig_file
 
+
     def retrieve_assembly(self, task_params):
         if os.path.exists(task_params['contig_file_path']):
             assembly = task_params['contig_file_path']
-            print("FOUND ASSEMBLY ON LOCAL SCRATCH")
+            log("FOUND ASSEMBLY ON LOCAL SCRATCH")
+            log("task_params['contig_file_path'] is {}".format(task_params['contig_file_path']))
         else:
             # we are on njsw so lets copy it over to scratch
+            log("task_params['assembly_ref'] is {}".format(task_params['assembly_ref']))
             assembly = self._get_contig_file(task_params['assembly_ref'])
         return assembly
 
@@ -780,14 +783,17 @@ class JorgUtil:
         self._validate_run_jorg_params(task_params)
 
         # get assembly
+        log('--->\nStart assembly\n')
         contig_file = self._get_contig_file(task_params['assembly_ref'])
         task_params['contig_file_path'] = contig_file
 
         # clean the assembly file so that there are no spaces in the fasta headers
         assembly = self.retrieve_assembly(task_params)
         task_params['contig_file_path'] = assembly
+        log('--->\nEnd assembly\n')
 
         # get reads
+        log('--->\nStart reads\n')
         (read_scratch_path, read_type) = self.stage_reads_file(task_params['reads_file'])
         task_params['read_type'] = read_type
         task_params['reads_list_file'] = read_scratch_path

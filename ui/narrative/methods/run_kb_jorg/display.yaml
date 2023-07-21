@@ -15,7 +15,7 @@ screenshots: []
 suggestions:
     apps:
         related:
-            [kb_maxbin, kbase-metabat, kb_concoct, kb_cocacola]
+            [kb_maxbin, kbase-metabat, kb_concoct]
         next:
             [kb_Msuite, MetaAnnot]
     methods:
@@ -30,13 +30,13 @@ suggestions:
 parameters :
     assembly_ref :
         ui-name : Assembly
-        short-hint : Genome assembly object
-        long-hint  : Genome assembly or bin that you want to improve
+        short-hint : Genome assembly object(s)
+        long-hint  : Genome assembly object(s) or bin(s) that you want to improve
 
     reads_file :
         ui-name : Reads
-        short-hint : Reads object (PairedEndLibrary/SingleEndLibrary) upon which Jorg will be run
-        long-hint  : Reads object (PairedEndLibrary/SingleEndLibrary) upon which Jorg will be run
+        short-hint : Reads object(s) (PairedEndLibrary/SingleEndLibrary) upon which Jorg will be run
+        long-hint  : Reads object(s) (PairedEndLibrary/SingleEndLibrary) upon which Jorg will be run
 
     output_assembly_name :
         ui-name : Output Assembly Name
@@ -110,8 +110,8 @@ description : |
 publications:
     -
         display-text : |
-            Lui LM, Nielsen TN, Arkin AP. A method for achieving complete microbial genomes and better quality bins from metagenomics data. bioRxiv. 2020. doi:10.1101/2020.03.05.979740
-        link: https://doi.org/10.1101/2020.03.05.979740
+            Lui LM, Nielsen TN, Arkin AP. A method for achieving complete microbial genomes and improving bins from metagenomics data. PLoS Computational Biology. 2021. doi:10.1371/journal.pcbi.1008972
+        link: https://doi.org/10.1371/journal.pcbi.1008972
 
     -
         display-text : |
