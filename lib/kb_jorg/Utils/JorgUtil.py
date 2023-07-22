@@ -807,7 +807,7 @@ class JorgUtil:
         self._mkdir_p(result_directory)
 
         # map reads to determine input coverage
-        sorted_bam = self.generate_alignment_bams(task_params, assembly)
+        sorted_bam = self.generate_alignment_bams(task_params, contig_file)
 
         # extract depth information from bam files
         depth_file_path = self.generate_make_coverage_table_command(task_params, sorted_bam)
