@@ -98,6 +98,7 @@ class JorgUtil:
             sys.exit(1)
         return (output, stderr)
 
+
     # this function has been customized to return read_type variable (interleaved vs single-end library)
     def stage_reads_file(self, reads_file):
         """
@@ -784,12 +785,14 @@ class JorgUtil:
 
         # get assembly
         log('--->\nStart assembly\n')
-        contig_file = self._get_contig_file(task_params['assembly_ref'])
-        task_params['contig_file_path'] = contig_file
-
-        # clean the assembly file so that there are no spaces in the fasta headers
-        assembly = self.retrieve_assembly(task_params)
-        task_params['contig_file_path'] = assembly
+        for i in range(0, len(task_params['assembly_ref'])):
+            # needs work but this is it
+            contig_file = self._get_contig_file(task_params['assembly_ref'])
+            log(contig_file)
+            task_params['contig_file_path'] = contig_file
+            assembly = self.retrieve_assembly(task_params)
+            log(assembly)
+            task_params['contig_file_path'] = assembly
         log('--->\nEnd assembly\n')
 
         # get reads
