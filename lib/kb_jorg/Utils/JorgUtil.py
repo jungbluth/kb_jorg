@@ -146,15 +146,15 @@ class JorgUtil:
         return contig_file
 
 
-    def retrieve_assembly(self, task_params):
+    def retrieve_assembly(self, task_params, i):
         if os.path.exists(task_params['contig_file_path']):
             assembly = task_params['contig_file_path']
             log("FOUND ASSEMBLY ON LOCAL SCRATCH")
             log("task_params['contig_file_path'] is {}".format(task_params['contig_file_path']))
         else:
             # we are on njsw so lets copy it over to scratch
-            log("task_params['assembly_ref'] is {}".format(task_params['assembly_ref']))
-            assembly = self._get_contig_file(task_params['assembly_ref'])
+            log("task_params['assembly_ref'] is {}".format(task_params['assembly_ref'][i]))
+            assembly = self._get_contig_file(task_params['assembly_ref'][i])
         return assembly
 
     def deinterlace_raw_reads(self, fastq):
@@ -787,10 +787,11 @@ class JorgUtil:
         log('--->\nStart assembly\n')
         for i in range(0, len(task_params['assembly_ref'])):
             # needs work but this is it
-            contig_file = self._get_contig_file(task_params['assembly_ref'])
+            log(task_params['assembly_ref'])
+            contig_file = self._get_contig_file(task_params['assembly_ref'][i])
             log(contig_file)
             task_params['contig_file_path'] = contig_file
-            assembly = self.retrieve_assembly(task_params)
+            assembly = self.retrieve_assembly(task_params, i)
             log(assembly)
             task_params['contig_file_path'] = assembly
         log('--->\nEnd assembly\n')
@@ -811,7 +812,7 @@ class JorgUtil:
         # extract depth information from bam files
         depth_file_path = self.generate_make_coverage_table_command(task_params, sorted_bam)
 
-        # check to make sure input contigs have require coverage
+        # check to make sure input contigs have required coverage
         jorg_working_coverage = self.check_input_assembly_for_minimum_coverage(task_params)
 
         # run jorg and circos

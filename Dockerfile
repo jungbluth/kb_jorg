@@ -33,6 +33,8 @@ RUN conda install -c bioconda circos
 
 RUN conda install pandas
 
+RUN conda install -c bioconda samtools
+
 #RUN mkdir pilon-1.2.3 && \
 #    wget https://github.com/broadinstitute/pilon/releases/download/v1.23/pilon-1.23.jar -P pilon-1.2.3
 
@@ -53,7 +55,6 @@ WORKDIR /kb/module
 
 ENV PATH=/kb/module/lib/kb_jorg/bin:$PATH
 ENV PATH=/kb/module/lib/kb_jorg/bin/bbmap:$PATH
-ENV PATH=/kb/module/lib/kb_jorg/bin/samtools/bin:$PATH
 ENV PATH=/pilon-1.2.3:$PATH
 ENV PATH=/infernal-1.1.3-linux-intel-gcc/binaries:$PATH
 ENV PATH=/Jorg:$PATH
