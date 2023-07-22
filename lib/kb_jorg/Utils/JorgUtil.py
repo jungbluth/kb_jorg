@@ -146,16 +146,16 @@ class JorgUtil:
         return contig_file
 
 
-    def retrieve_assembly(self, task_params, i):
-        if os.path.exists(task_params['contig_file_path']):
-            assembly = task_params['contig_file_path']
-            log("FOUND ASSEMBLY ON LOCAL SCRATCH")
-            log("task_params['contig_file_path'] is {}".format(task_params['contig_file_path']))
-        else:
-            # we are on njsw so lets copy it over to scratch
-            log("task_params['assembly_ref'] is {}".format(task_params['assembly_ref'][i]))
-            assembly = self._get_contig_file(task_params['assembly_ref'][i])
-        return assembly
+    # def retrieve_assembly(self, task_params, i):
+    #     if os.path.exists(task_params['contig_file_path']):
+    #         assembly = task_params['contig_file_path']
+    #         log("FOUND ASSEMBLY ON LOCAL SCRATCH")
+    #         log("task_params['contig_file_path'] is {}".format(task_params['contig_file_path']))
+    #     else:
+    #         # we are on njsw so lets copy it over to scratch
+    #         log("task_params['assembly_ref'] is {}".format(task_params['assembly_ref'][i]))
+    #         assembly = self._get_contig_file(task_params['assembly_ref'][i])
+    #     return assembly
 
     def deinterlace_raw_reads(self, fastq):
         fastq_forward = fastq.split('.fastq')[0] + "_forward.fastq"
@@ -791,9 +791,9 @@ class JorgUtil:
             contig_file = self._get_contig_file(task_params['assembly_ref'][i])
             log(contig_file)
             task_params['contig_file_path'] = contig_file
-            assembly = self.retrieve_assembly(task_params, i)
-            log(assembly)
-            task_params['contig_file_path'] = assembly
+            # assembly = self.retrieve_assembly(task_params, i)
+            # log(assembly)
+            # task_params['contig_file_path'] = assembly
         log('--->\nEnd assembly\n')
 
         # get reads
