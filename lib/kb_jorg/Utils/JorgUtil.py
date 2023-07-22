@@ -25,7 +25,6 @@ seed(1)
 
 from shutil import copyfile
 
-
 # for future expansion
 # from kb_jorg.BinningUtilities import BinningUtil as bu
 
@@ -105,19 +104,15 @@ class JorgUtil:
         stage_reads_file: download fastq file associated to reads to scratch area
                           and return result_file_path
         """
-
         log('Processing reads object list: {}'.format(reads_file))
-
         result_file_path = []
         read_type = []
-
         reads_file_check = isinstance(reads_file, list)
         if reads_file_check :
             log("Input reads_file detected as list. Great.")
         else:
             log("Input reads_file not a list, converting.")
             reads_file = [reads_file]
-
 
         # getting from workspace and writing to scratch. The 'reads' dictionary now has file paths to scratch.
         reads = self.ru.download_reads({'read_libraries': reads_file, 'interleaved': None})['files']
@@ -144,7 +139,6 @@ class JorgUtil:
         contig_file = self.dfu.unpack_file({'file_path': contig_file})['file_path']
 
         return contig_file
-
 
     # def retrieve_assembly(self, task_params, i):
     #     if os.path.exists(task_params['contig_file_path']):
@@ -282,13 +276,10 @@ class JorgUtil:
     def convert_sam_to_sorted_and_indexed_bam(self, sam):
         # create bam files from sam files
         sorted_bam = os.path.abspath(sam).split('.sam')[0] + "_sorted.bam"
-
         command = 'samtools view -F 0x04 -uS {} | '.format(sam)
         command += 'samtools sort - -o {}'.format(sorted_bam)
-
         log('running samtools command to generate sorted bam: {}'.format(command))
         self._run_command(command)
-
         # verify we got bams
         if not os.path.exists(sorted_bam):
             log('Failed to find bam file\n{}'.format(sorted_bam))
@@ -296,13 +287,10 @@ class JorgUtil:
         elif(os.stat(sorted_bam).st_size == 0):
             log('Bam file is empty\n{}'.format(sorted_bam))
             sys.exit(1)
-
         # index the bam file
         command = 'samtools index {}'.format(sorted_bam)
-
         log('running samtools command to index sorted bam: {}'.format(command))
         self._run_command(command)
-
         return sorted_bam
 
     def generate_alignment_bams(self, task_params, assembly):
@@ -315,14 +303,21 @@ class JorgUtil:
 
         (read_scratch_path, read_type) = self.stage_reads_file(reads_file)
 
-        # sorted_bam_file_list = []
-
         # list of reads files, can be 1 or more. assuming reads are either type unpaired or interleaved
         # will not handle unpaired forward and reverse reads input as seperate (non-interleaved) files
+
+
 
         for i in range(len(read_scratch_path)):
             fastq = read_scratch_path[i]
             fastq_type = read_type[i]
+
+            file = open(read_scratch_path[i])
+            # getting the starting line of the file
+            start_line = file.readline()
+            log(start_line)
+            log(len(start_line))
+            file.close()
 
             sam = os.path.basename(fastq).split('.fastq')[0] + ".sam"
             #sam = os.path.join(self.JORG_RESULT_DIRECTORY, sam)
@@ -371,9 +366,9 @@ class JorgUtil:
         # reason strings are converted to numerics when running inside KBase UI.
         parameter_high_contig_num = task_params['high_contig_num']
 
-        if task_params['high_contig_num'] is 1:
+        if task_params['high_contig_num'] == 1:
             parameter_high_contig_num = '--high_contig_num yes'
-        elif task_params['high_contig_num'] is 0:
+        elif task_params['high_contig_num'] == 0:
             parameter_high_contig_num = '--high_contig_num no'
 
         return parameter_high_contig_num
@@ -467,6 +462,24 @@ class JorgUtil:
         output_jorg_assembly_name = os.path.basename(output_jorg_assembly).split(".fasta")[0]
         return output_jorg_assembly, output_jorg_assembly_name, num_contigs
 
+    # from: https://stackoverflow.com/questions/68929595/join-distinct-fasta-files-using-python-and-biopython
+    def fasta_reader(self, file, i):
+        fasta_df = pd.read_csv(file, sep='>', lineterminator='>', header=None)
+        fasta_df[['Accession', 'Sequence']] = fasta_df[0].str.split('\n', 1, expand=True)
+        fasta_df['Accession'] = fasta_df['Accession'].astype(str) + '_assembly' + str(i+1)  # need to keep assembly names distinct upon merging
+        log(print(fasta_df['Accession']))
+        fasta_df.drop(0, axis=1, inplace=True)
+        fasta_df['Sequence'] = fasta_df['Sequence'].replace('\n', '', regex=True)
+        return fasta_df
+
+    def combine_fasta_file(self, fasta_file_list):
+        df = pd.concat(self.fasta_reader(file, i) for i, file in enumerate(fasta_file_list))
+        # Exporting to fa
+        # adding '>' for accessions
+        df['Accession'] = '>' + df['Accession']
+        combined_assembly = 'jorg_input_combined_assembly.fna'
+        df.to_csv(os.path.join(self.scratch, combined_assembly), sep='\n', index=None, header=None)
+        return combined_assembly
 
     def uppercase_fastq_file(self, reads_file):
         output_fastq = str(reads_file) + "_uppercase.fastq"
@@ -604,7 +617,20 @@ class JorgUtil:
         dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
         files = os.listdir(os.path.abspath(self.scratch))
         for f in files:
-            if (f.startswith("iterations") or f.startswith("Jorg") or f.startswith("manifest") or f.startswith("mira") or f.startswith("mirabait") or f.startswith("list") or f.startswith("depth") or f.startswith("circos") or f.endswith(".log") or f.endswith("sorted.fasta") or f.endswith("clean.fasta") or f.endswith(".reduced") or f.endswith(".tbl")):
+            if (f.startswith("iterations") or \
+                f.startswith("Jorg") or \
+                f.startswith("manifest") or \
+                f.startswith("mira") or \
+                f.startswith("mirabait") or \
+                f.startswith("list") or \
+                f.startswith("depth") or \
+                f.startswith("circos") or \
+                f.endswith(".log") or \
+                f.endswith("sorted.fasta") or \
+                f.endswith("clean.fasta") or \
+                f.endswith("combined_assembly.fna") or \
+                f.endswith(".reduced") or \
+                f.endswith(".tbl")):
                 shutil.move(f, dest)
 
     def run_jorg_and_circos_workflow(self, task_params, jorg_working_coverage):
@@ -785,15 +811,24 @@ class JorgUtil:
 
         # get assembly
         log('--->\nStart assembly\n')
+        assembly_set = []
         for i in range(0, len(task_params['assembly_ref'])):
-            # needs work but this is it
-            log(task_params['assembly_ref'])
-            contig_file = self._get_contig_file(task_params['assembly_ref'][i])
-            log(contig_file)
-            task_params['contig_file_path'] = contig_file
-            # assembly = self.retrieve_assembly(task_params, i)
-            # log(assembly)
-            # task_params['contig_file_path'] = assembly
+            if len(task_params['assembly_ref']) > 1:
+                log("Pulling assembly files ")
+                log(len(task_params['assembly_ref']))
+                assembly_set.append(self._get_contig_file(task_params['assembly_ref'][i]))
+                if i == (len(task_params['assembly_ref']) - 1):  # all fasta files should be local
+                    log("Merging assembly files")
+                    contig_file = self.combine_fasta_file(assembly_set)
+                    task_params['contig_file_path'] = contig_file
+            else:
+                log(task_params['assembly_ref'])
+                contig_file = self._get_contig_file(task_params['assembly_ref'][i])
+                log(contig_file)
+                task_params['contig_file_path'] = contig_file
+                # assembly = self.retrieve_assembly(task_params, i)
+                # log(assembly)
+                # task_params['contig_file_path'] = assembly
         log('--->\nEnd assembly\n')
 
         # get reads

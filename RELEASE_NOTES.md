@@ -2,8 +2,9 @@
 =========================================
 
 
-0.1.2
+0.2.0
 -----
+* Base image overhaul
 * Allow users to input multiple assemblies
 
 0.1.1

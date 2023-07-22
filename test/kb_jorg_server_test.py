@@ -186,8 +186,29 @@ class kb_jorgTest(unittest.TestCase):
     def getContext(self):
         return self.__class__.ctx
 
-    def test_run_jorg_default(self):
-        method_name = 'test_run_jorg_default'
+    # def test_run_jorg_default(self):
+    #     method_name = 'test_run_jorg_default'
+    #     print ("\n=================================================================")
+    #     print ("RUNNING "+method_name+"()")
+    #     print ("=================================================================\n")
+
+    #     # jorg should run to completion here
+    #     ret = self.getImpl().run_kb_jorg(self.getContext(),
+    #                                         {'workspace_name': self.getWsName(),
+    #                                          'assembly_ref': [self.assembly_ref1],
+    #                                          'output_assembly_name': 'test.assembly',
+    #                                          'read_mapping_tool': 'bowtie2_default',
+    #                                          'kmer_size': 33,
+    #                                          'min_coverage': 5,
+    #                                          'num_iterations': 1,
+    #                                          'circle_min_overlap_length': 100,
+    #                                          'high_contig_num': '--high_contig_num no',
+    #                                          'assembly_selection_criteria': 'longest_single_fragment',
+    #                                          'reads_file': self.int1_oldstyle_reads_ref })
+
+
+    def test_run_jorg_multiple_assembly_input(self):
+        method_name = 'test_run_jorg_multiple_assembly_input'
         print ("\n=================================================================")
         print ("RUNNING "+method_name+"()")
         print ("=================================================================\n")

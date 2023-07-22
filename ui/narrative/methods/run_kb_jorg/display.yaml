@@ -15,14 +15,14 @@ screenshots: []
 suggestions:
     apps:
         related:
-            [kb_maxbin, kbase-metabat, kb_concoct]
+            [kb_maxbin, kbase-metabat, kb_concoct, kb_anvio, kb_dastool]
         next:
-            [kb_Msuite, MetaAnnot]
+            []
     methods:
         related:
             []
         next:
-            ["kb_Msuite.run_checkM_lineage_wf"]
+            []
 
 #
 # Configure the display and description of parameters
