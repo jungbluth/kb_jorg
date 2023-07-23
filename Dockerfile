@@ -44,11 +44,6 @@ RUN pip install biopython
 #    tar -xvf infernal-* && \
 #    rm infernal-1.1.3-linux-intel-gcc.tar.gz
 
-RUN git clone https://github.com/jungbluth/Jorg && \
-    chmod +x /Jorg/jorg
-
-# RUN mv SRX3307784_clean.fastq.gz /Jorg/Example
-
 COPY ./ /kb/module
 RUN mkdir -p /kb/module/work
 RUN chmod -R a+rw /kb/module
@@ -57,9 +52,9 @@ WORKDIR /kb/module
 
 ENV PATH=/kb/module/lib/kb_jorg/bin:$PATH
 ENV PATH=/kb/module/lib/kb_jorg/bin/bbmap:$PATH
-ENV PATH=/pilon-1.2.3:$PATH
-ENV PATH=/infernal-1.1.3-linux-intel-gcc/binaries:$PATH
-ENV PATH=/Jorg:$PATH
+ENV PATH=/kb/module/lib/kb_jorg/bin/Jorg:$PATH
+# ENV PATH=/pilon-1.2.3:$PATH
+# ENV PATH=/infernal-1.1.3-linux-intel-gcc/binaries:$PATH
 
 RUN make all
 

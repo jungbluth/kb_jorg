@@ -2,6 +2,11 @@
 =========================================
 
 
+0.3.0
+-----
+* Added auto-renaming for long sequence IDs
+* Internalized Jorg binaries
+
 0.2.0
 -----
 * Base image overhaul

@@ -25,6 +25,8 @@ seed(1)
 
 from shutil import copyfile
 
+from Bio import SeqIO
+
 # for future expansion
 # from kb_jorg.BinningUtilities import BinningUtil as bu
 
@@ -35,7 +37,7 @@ def log(message, prefix_newline=False):
 
 
 class JorgUtil:
-    JORG_BASE_PATH = '/Jorg'
+    JORG_BASE_PATH = '/kb/module/lib/kb_jorg/bin/Jorg'
     JORG_RESULT_DIRECTORY = 'jorg_output_dir'
     MAPPING_THREADS = 16
     BBMAP_MEM = '30g'
@@ -61,6 +63,8 @@ class JorgUtil:
         for p in ['assembly_ref', 'reads_file', 'workspace_name']:
             if p not in task_params:
                 raise ValueError('"{}" parameter is required, but missing'.format(p))
+        log('End validating run_jorg params')
+
 
     def _mkdir_p(self, path):
         """
@@ -104,7 +108,7 @@ class JorgUtil:
         stage_reads_file: download fastq file associated to reads to scratch area
                           and return result_file_path
         """
-        log('Processing reads object list: {}'.format(reads_file))
+        log('Start processing reads object list: {}'.format(reads_file))
         result_file_path = []
         read_type = []
         reads_file_check = isinstance(reads_file, list)
@@ -126,18 +130,19 @@ class JorgUtil:
             read_type.append(files['type'])
             if 'rev' in files and files['rev'] is not None:
                 result_file_path.append(files['rev'])
-
+        log('End processing reads objects')
         return result_file_path, read_type
 
     def _get_contig_file(self, assembly_ref):
         """
         _get_contig_file: get contig file from GenomeAssembly object
         """
+        log('Start _get_contig_file')
         contig_file = self.au.get_assembly_as_fasta({'ref': assembly_ref}).get('path')
 
         sys.stdout.flush()
         contig_file = self.dfu.unpack_file({'file_path': contig_file})['file_path']
-
+        log('End _get_contig_file')
         return contig_file
 
     # def retrieve_assembly(self, task_params, i):
@@ -152,6 +157,7 @@ class JorgUtil:
     #     return assembly
 
     def deinterlace_raw_reads(self, fastq):
+        log('Start deinterlacing reads')
         fastq_forward = fastq.split('.fastq')[0] + "_forward.fastq"
         fastq_reverse = fastq.split('.fastq')[0] + "_reverse.fastq"
         command = 'deinterleave_fastq.sh < {} {} {}'.format(fastq, fastq_forward, fastq_reverse)
@@ -159,6 +165,7 @@ class JorgUtil:
             self._run_command(command)
         except:
             raise Exception("Cannot deinterlace fastq file!")
+        log('End deinterlacing reads')
         return (fastq_forward, fastq_reverse)
 
     def run_read_mapping_interleaved_pairs_mode(self, task_params, assembly, fastq, sam):
@@ -219,7 +226,7 @@ class JorgUtil:
             command += '--threads {}'.format(self.MAPPING_THREADS)
         log('running alignment command: {}'.format(command))
         out, err = self._run_command(command)
-
+        log('Done running alignment')
     # not used right now because Jorg does not support single-end mode
     # def run_read_mapping_unpaired_mode(self, task_params, assembly, fastq, sam):
     #     read_mapping_tool = task_params['read_mapping_tool']
@@ -275,6 +282,7 @@ class JorgUtil:
 
     def convert_sam_to_sorted_and_indexed_bam(self, sam):
         # create bam files from sam files
+        log('Start convert_sam_to_sorted_and_indexed_bam')
         sorted_bam = os.path.abspath(sam).split('.sam')[0] + "_sorted.bam"
         command = 'samtools view -F 0x04 -uS {} | '.format(sam)
         command += 'samtools sort - -o {}'.format(sorted_bam)
@@ -291,14 +299,47 @@ class JorgUtil:
         command = 'samtools index {}'.format(sorted_bam)
         log('running samtools command to index sorted bam: {}'.format(command))
         self._run_command(command)
+        log('End convert_sam_to_sorted_and_indexed_bam')
         return sorted_bam
+
+
+    def rename_fasta_ids(self, fasta):
+        log('Start fasta ID rename')
+        handle = open(fasta,"rU")
+        n = 1
+        for seq_record in SeqIO.parse(handle,"fasta"):
+            seq_record.id = seq_record.id[:20] + "_" + str(n)
+            seq_record.description = ''
+            n = n + 1
+            file_output = fasta.split('.fasta')[0] + "_renamed.fna"
+            with open(file_output, 'a') as myfile:
+                SeqIO.write(seq_record, myfile,"fasta")
+        handle.close()
+        log('End fasta ID rename')
+        return file_output
+
+
+    def rename_fastq_ids(self, fastq):
+        log('Start fastq ID rename')
+        handle = open(fastq,"rU")
+        n = 1
+        for seq_record in SeqIO.parse(handle,"fastq"):
+            seq_record.id = seq_record.id[:20] + "_" + str(n)
+            seq_record.description = ''
+            n = n + 1
+            file_output = fastq.split('.fastq')[0] + "_renamed.fastq"
+            with open(file_output, 'a') as myfile:
+                SeqIO.write(seq_record, myfile,"fastq")
+        handle.close()
+        log('End fastq ID rename')
+        return file_output
 
     def generate_alignment_bams(self, task_params, assembly):
         """
             This function runs the selected read mapper and creates the
             sorted and indexed bam files from sam files using samtools.
         """
-
+        log('Start generate_alignment_bams')
         reads_file = task_params['reads_file']
 
         (read_scratch_path, read_type) = self.stage_reads_file(reads_file)
@@ -306,17 +347,16 @@ class JorgUtil:
         # list of reads files, can be 1 or more. assuming reads are either type unpaired or interleaved
         # will not handle unpaired forward and reverse reads input as seperate (non-interleaved) files
 
-
-
         for i in range(len(read_scratch_path)):
             fastq = read_scratch_path[i]
             fastq_type = read_type[i]
 
-            file = open(read_scratch_path[i])
+            file = open(fastq)
             # getting the starting line of the file
             start_line = file.readline()
             log(start_line)
-            log(len(start_line))
+            if (len(start_line) > 20): # 30 is cutoff, 20 to be safe with longer IDs in file not represented by first ID
+                fastq = self.rename_fastq_ids(fastq)
             file.close()
 
             sam = os.path.basename(fastq).split('.fastq')[0] + ".sam"
@@ -330,12 +370,13 @@ class JorgUtil:
                 self.run_read_mapping_unpaired_mode(task_params, assembly, fastq, sam)
 
             sorted_bam = self.convert_sam_to_sorted_and_indexed_bam(sam)
-
+        log('End generate_alignment_bams')
         return sorted_bam
 
     def generate_make_coverage_table_command(self, task_params, sorted_bam):
         # create the depth file for this bam
         #
+        log('Start generate_make_coverage_table_command')
         depth_file_path = os.path.join(self.scratch, str('depth.txt'))
         command = '/kb/module/lib/kb_jorg/bin/jgi_summarize_bam_contig_depths '
         command += '--outputDepth {} '.format(depth_file_path)
@@ -343,10 +384,11 @@ class JorgUtil:
 
         log('running summarize_bam_contig_depths command: {}'.format(command))
         self._run_command(command)
-
+        log('End generate_make_coverage_table_command')
         return depth_file_path
 
     def check_input_assembly_for_minimum_coverage(self, task_params):
+        log('Start check_input_assembly_for_minimum_coverage')
         path_to_depth_file = os.path.join(self.scratch, str('depth.txt'))
         file1 = open(path_to_depth_file, 'r')
         lines = file1.readlines()
@@ -358,30 +400,33 @@ class JorgUtil:
         else:
             log("The longest contig in the input assembly has a coverage value of {}, which does not meet the minimum coverage criteria. Exiting Jorg.".format(float(lines[1].split()[2])))
             sys.exit(1)
+        log('End check_input_assembly_for_minimum_coverage')
         return jorg_working_coverage
 
 
     def fix_generate_jorg_command_ui_bug(self, task_params):
         # needed to get checkbox for UI to work with string objects, for some
         # reason strings are converted to numerics when running inside KBase UI.
+        log("Start fix_generate_jorg_command_ui_bug")
         parameter_high_contig_num = task_params['high_contig_num']
 
         if task_params['high_contig_num'] == 1:
             parameter_high_contig_num = '--high_contig_num yes'
         elif task_params['high_contig_num'] == 0:
             parameter_high_contig_num = '--high_contig_num no'
-
+        log("End fix_generate_jorg_command_ui_bug")
         return parameter_high_contig_num
 
-
     def copy_required_jorg_input_files_to_cwd(self):
-        manifest_template_file_source = "/Jorg/Example/manifest_template.conf"
+        log('Start copy_required_jorg_input_files_to_cwd')
+        manifest_template_file_source = "/kb/module/lib/kb_jorg/bin/Jorg/manifest_template.conf"
         manifest_template_file_destination = os.path.join(self.scratch, str('manifest_template.conf'))
         shutil.move(manifest_template_file_source,manifest_template_file_destination)
-
+        log('End copy_required_jorg_input_files_to_cwd')
 
 ## not working correctly in narrative
     def process_jorg_iteration_output_and_calc_stats(self):
+        log('Start process_jorg_iteration_output_and_calc_stats')
         path_to_iterations_file = os.path.join(self.scratch, str("iterations.txt"))
         path_to_iterations_flat_file = os.path.join(self.scratch, str("iterations_flat.txt"))
 
@@ -432,10 +477,11 @@ class JorgUtil:
         f.close()
         final_iteration_assembly = genome_num_fasta[len(genome_num_fasta)-1]
         log("running_longest_single_fragment {}, assembly_with_longest_single_fragment {}, assembly_with_longest_cumulative_assembly_length {}, final_iteration_assembly {}".format(running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly))
+        log('End process_jorg_iteration_output_and_calc_stats')
         return (running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
 
-
     def select_jorg_output_genome(self, task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly):
+        log('Start select_jorg_output_genome')
         if task_params["assembly_selection_criteria"] == "longest_single_fragment":
             output_jorg_assembly = assembly_with_longest_single_fragment
             log("Assembly {} selected as output assembly.".format(output_jorg_assembly))
@@ -460,44 +506,54 @@ class JorgUtil:
             if line.startswith('>'):
                 num_contigs = num_contigs + 1
         output_jorg_assembly_name = os.path.basename(output_jorg_assembly).split(".fasta")[0]
+        log('End select_jorg_output_genome')
         return output_jorg_assembly, output_jorg_assembly_name, num_contigs
 
     # from: https://stackoverflow.com/questions/68929595/join-distinct-fasta-files-using-python-and-biopython
     def fasta_reader(self, file, i):
+        log('Start fasta_reader')
         fasta_df = pd.read_csv(file, sep='>', lineterminator='>', header=None)
         fasta_df[['Accession', 'Sequence']] = fasta_df[0].str.split('\n', 1, expand=True)
         fasta_df['Accession'] = fasta_df['Accession'].astype(str) + '_assembly' + str(i+1)  # need to keep assembly names distinct upon merging
         log(print(fasta_df['Accession']))
         fasta_df.drop(0, axis=1, inplace=True)
         fasta_df['Sequence'] = fasta_df['Sequence'].replace('\n', '', regex=True)
+        log('End fasta_reader')
         return fasta_df
 
     def combine_fasta_file(self, fasta_file_list):
+        log('Start combine_fasta_file')
         df = pd.concat(self.fasta_reader(file, i) for i, file in enumerate(fasta_file_list))
         # Exporting to fa
         # adding '>' for accessions
         df['Accession'] = '>' + df['Accession']
         combined_assembly = 'jorg_input_combined_assembly.fna'
         df.to_csv(os.path.join(self.scratch, combined_assembly), sep='\n', index=None, header=None)
+        log('End combine_fasta_file')
         return combined_assembly
 
     def uppercase_fastq_file(self, reads_file):
+        log('Start uppercase_fastq_file')
         output_fastq = str(reads_file) + "_uppercase.fastq"
         command = 'seqkit seq -u '
         command += '{} > '.format(reads_file)
         command += '{}'.format(output_fastq)
         log('uppercase_fastq_file: {}'.format(command))
         self._run_command(command)
+        log('End uppercase_fastq_file')
         return output_fastq
 
     def clean_input_fasta(self, output_jorg_assembly):
+        log('Start clean_input_fasta')
         output_jorg_assembly_clean = str(output_jorg_assembly) + "_clean.fasta" # need to fix split command below, sloppy fix
         command = 'cut -d\' \' -f1 Iterations/{} > {}'.format(output_jorg_assembly, output_jorg_assembly_clean)
         log('clean_input_fasta: {}'.format(command))
         self._run_command(command)
+        log('End clean_input_fasta')
         return output_jorg_assembly_clean
 
     def sort_fasta_by_length(self, input_fasta):
+        log('Start sort_fasta_by_length')
         output_fasta_sorted = input_fasta.rsplit('.', 1)[0] + "_sorted.fasta"
         command = 'seqkit sort '
         command += '-l {} '.format(input_fasta)
@@ -505,9 +561,11 @@ class JorgUtil:
         command += '> {} '.format(output_fasta_sorted)
         log('sort_fasta_by_length: {}'.format(command))
         self._run_command(command)
+        log('End sort_fasta_by_length')
         return output_fasta_sorted
 
     def extract_mapping_tracks_from_bam(self, sorted_bam):
+        log('Start extract_mapping_tracks_from_bam')
         output_sam = 'final.mapped.sam'
         command = 'bedtools genomecov -ibam '
         command += '{} '.format(sorted_bam)
@@ -520,10 +578,11 @@ class JorgUtil:
         min_cov = round(pandas_df[3].min(),1)
         std_cov = round(pandas_df[3].std(),1)
         mean_cov = round(pandas_df[3].mean(),1)
+        log('End extract_mapping_tracks_from_bam')
         return max_cov, min_cov, std_cov, mean_cov
 
     def make_circos_karyotype_file(self, output_jorg_assembly_clean_sorted):
-        from Bio import SeqIO
+        log('Start make_circos_karyotype_file')
         count = 1
         path_to_circos_karyotype_file = "circos_karyotype.txt"
         with open(path_to_circos_karyotype_file, 'a') as f:
@@ -531,21 +590,27 @@ class JorgUtil:
                 f.write("chr - {} {} 0 {} {}\n".format(record.id, count, len(record), record.id))
                 count += 1
         f.close()
+        log('End make_circos_karyotype_file')
 
     def prep_circos_axis(self, max_cov):
+        log('Start prep_circos_axis')
         if max_cov < 30:
             max_cov = 30
         command = 'sed -i "s/^max.*/max   = {}/" /kb/module/lib/kb_jorg/circos/circos.conf '.format(max_cov)
         log('prep_circos_axis: {}'.format(command))
         self._run_command(command)
+        log('End prep_circos_axis')
 
     def draw_circos_plot(self):
+        log('Start draw_circos_plot')
         command = 'circos -conf '
         command += '/kb/module/lib/kb_jorg/circos/circos.conf'
         log('draw_circos_plot: {}'.format(command))
         self._run_command(command)
+        log('End draw_circos_plot')
 
     def make_circos_plot(self, task_params, reads_file, output_jorg_assembly):
+        log('Start make_circos_plot')
         output_fastq = self.uppercase_fastq_file(reads_file)
         output_jorg_assembly_clean = self.clean_input_fasta(output_jorg_assembly)
         output_jorg_assembly_clean_sorted = self.sort_fasta_by_length(output_jorg_assembly_clean)
@@ -556,16 +621,20 @@ class JorgUtil:
         self.make_circos_karyotype_file(output_jorg_assembly_clean_sorted)
         self.prep_circos_axis(max_cov)
         self.draw_circos_plot()
+        log('End make_circos_plot')
         return output_jorg_assembly_clean_sorted, max_cov, min_cov, std_cov, mean_cov
 
     def run_circle_check_using_last(self, output_jorg_assembly):
+        log('Start run_circle_check_using_last')
         command = 'bash {}/lib/circle_check_using_last '.format(self.JORG_BASE_PATH)
         command += 'Iterations/{} '.format(output_jorg_assembly)
         self._run_command(command)
         path_to_last_output = output_jorg_assembly.split(".fasta")[0] + ".reduced"
+        log('End run_circle_check_using_last')
         return path_to_last_output
 
     def process_last_output(self, task_params, path_to_last_output):
+        log('Start process_last_output')
         file1 = open(path_to_last_output, 'r')
         remember_query = ""
         forward_circle_match = ""
@@ -611,9 +680,11 @@ class JorgUtil:
                     output_circle_text = output_circle_text + ","
         else:
             output_circle_text = "No"
+        log('End process_last_output')
         return circularized_contigs, output_circle_text
 
     def move_jorg_output_files_to_output_dir(self):
+        log('Start move_jorg_output_files_to_output_dir')
         dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
         files = os.listdir(os.path.abspath(self.scratch))
         for f in files:
@@ -632,12 +703,13 @@ class JorgUtil:
                 f.endswith(".reduced") or \
                 f.endswith(".tbl")):
                 shutil.move(f, dest)
+        log('End move_jorg_output_files_to_output_dir')
 
     def run_jorg_and_circos_workflow(self, task_params, jorg_working_coverage):
         """
         generate_command: jorg
         """
-
+        log('Start run_jorg_and_circos_workflow')
         assembly_ref = task_params['contig_file_path']
         reads_file = task_params['reads_list_file'][0]
         kmer_size = task_params['kmer_size']
@@ -646,7 +718,7 @@ class JorgUtil:
         parameter_high_contig_num = self.fix_generate_jorg_command_ui_bug(task_params)
 
         log("\n\nRunning run_jorg_and_circos_workflow")
-        command = 'bash {}/jorg '.format(self.JORG_BASE_PATH)
+        command = 'bash {}/jorg_light '.format(self.JORG_BASE_PATH)
         command += '--bin_fasta_file {} '.format(assembly_ref)
         command += '--reads_file {} '.format(reads_file)
         command += '--kmer_length {} '.format(kmer_size)
@@ -677,6 +749,7 @@ class JorgUtil:
         # move relevant files to output directory provided to user
         self.move_jorg_output_files_to_output_dir()
 
+        log('End run_jorg_and_circos_workflow')
         return output_jorg_assembly_clean_sorted, output_jorg_assembly_name, num_contigs, output_circle_text, max_cov, min_cov, std_cov, mean_cov
 
 
@@ -684,7 +757,7 @@ class JorgUtil:
         """
         generate_output_file_list: zip result files and generate file_links for report
         """
-        log('Start packing result files')
+        log('Start generate_output_file_list')
         output_files = list()
         output_directory = os.path.join(self.scratch, str(uuid.uuid4()))
         self._mkdir_p(output_directory)
@@ -704,6 +777,7 @@ class JorgUtil:
                              'name': os.path.basename(result_file),
                              'label': os.path.basename(result_file),
                              'description': 'Files generated by Jorg App'})
+        log('End generate_output_file_list')
         return output_files
 
 
@@ -748,6 +822,7 @@ class JorgUtil:
         # copy pdfs into html dir
         for png_filename in png_filename_l:
             shutil.copyfile(os.path.join(self.JORG_RESULT_DIRECTORY, png_filename), os.path.join(output_directory, png_filename))
+        log('End generating html report')
 
         # save html dir to shock
         def dir_to_shock(dir_path, name, description):
@@ -781,7 +856,7 @@ class JorgUtil:
         """
         generate_report: generate summary report
         """
-        log('Generating report')
+        log('Start generating report')
         params['result_directory'] = self.JORG_RESULT_DIRECTORY
         output_files = self.generate_output_file_list(params['result_directory'])
         output_html_files = self.generate_html_report(params['result_directory'],params['output_assembly_name'],assembly_stats)
@@ -796,6 +871,7 @@ class JorgUtil:
         kbase_report_client = KBaseReport(self.callback_url)
         output = kbase_report_client.create_extended_report(report_params)
         report_output = {'report_name': output['name'], 'report_ref': output['ref']}
+        log('End generating report')
         return report_output
 
 
@@ -829,6 +905,15 @@ class JorgUtil:
                 # assembly = self.retrieve_assembly(task_params, i)
                 # log(assembly)
                 # task_params['contig_file_path'] = assembly
+            fasta = contig_file
+            file = open(fasta)
+            # getting the starting line of the file
+            start_line = file.readline()
+            log(start_line)
+            if (len(start_line) > 20): # 30 is cutoff, 20 to be safe with longer IDs in file not represented by first ID
+                contig_file = self.rename_fasta_ids(fasta)
+                task_params['contig_file_path'] = contig_file
+            file.close()
         log('--->\nEnd assembly\n')
 
         # get reads
