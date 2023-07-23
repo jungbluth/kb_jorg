@@ -25,7 +25,8 @@ RUN git clone https://github.com/lh3/seqtk.git && \
 
 RUN conda install -c bioconda bwa
 
-RUN conda install -c bioconda last && touch /var/log/wtmp
+RUN conda install -c bioconda last && \
+    touch /var/log/wtmp
 
 RUN conda install -c bioconda seqkit
 
@@ -53,6 +54,7 @@ WORKDIR /kb/module
 ENV PATH=/kb/module/lib/kb_jorg/bin:$PATH
 ENV PATH=/kb/module/lib/kb_jorg/bin/bbmap:$PATH
 ENV PATH=/kb/module/lib/kb_jorg/bin/Jorg:$PATH
+
 # ENV PATH=/pilon-1.2.3:$PATH
 # ENV PATH=/infernal-1.1.3-linux-intel-gcc/binaries:$PATH
 

@@ -47,7 +47,7 @@
         },
         {
             "id": "read_mapping_tool",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "bowtie2_default" ],
@@ -77,7 +77,7 @@
         },
         {
             "id": "kmer_size",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ 33 ],
@@ -90,7 +90,7 @@
         },
         {
             "id": "min_coverage",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ 50 ],
@@ -102,7 +102,7 @@
         },
         {
             "id": "num_iterations",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ 10 ],
@@ -114,7 +114,7 @@
         },
         {
             "id": "high_contig_num",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ " " ],
@@ -126,7 +126,7 @@
         },
         {
             "id": "assembly_selection_criteria",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "longest_single_fragment" ],
@@ -168,7 +168,7 @@
         },
         {
             "id": "save_iterations_fasta",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ 0 ],
@@ -180,7 +180,7 @@
         },
         {
             "id": "circle_min_overlap_length",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ 100 ],
@@ -234,6 +234,10 @@
                 {
                     "input_parameter": "high_contig_num",
                     "target_property": "high_contig_num"
+                },
+                {
+                    "input_parameter": "save_iterations_fasta",
+                    "target_property": "save_iterations_fasta"
                 },
                 {
                     "input_parameter": "assembly_selection_criteria",

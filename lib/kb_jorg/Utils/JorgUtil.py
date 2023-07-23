@@ -12,23 +12,19 @@ import math
 import glob
 import pandas as pd
 
+from random import seed
+from random import randint
+from shutil import copyfile
+from Bio import SeqIO
+
 from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.DataFileUtilClient import DataFileUtil
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.MetagenomeUtilsClient import MetagenomeUtils
 from installed_clients.ReadsUtilsClient import ReadsUtils
 
-from random import seed
-from random import randint
 # seed random number generator
 seed(1)
-
-from shutil import copyfile
-
-from Bio import SeqIO
-
-# for future expansion
-# from kb_jorg.BinningUtilities import BinningUtil as bu
 
 
 def log(message, prefix_newline=False):
@@ -60,7 +56,7 @@ class JorgUtil:
         log('Start validating run_jorg params')
 
         # check for required parameters
-        for p in ['assembly_ref', 'reads_file', 'workspace_name']:
+        for p in ['assembly_ref', 'reads_file', 'output_assembly_name', 'read_mapping_tool', 'kmer_size', 'min_coverage', 'num_iterations', 'high_contig_num', 'assembly_selection_criteria', 'save_iterations_fasta', 'circle_min_overlap_length', 'workspace_name']:
             if p not in task_params:
                 raise ValueError('"{}" parameter is required, but missing'.format(p))
         log('End validating run_jorg params')
