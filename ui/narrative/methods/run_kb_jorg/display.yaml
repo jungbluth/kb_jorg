@@ -68,15 +68,15 @@ parameters :
         short-hint : if high number of contigs detected (>2500 contigs), are you certain that you want to try running Jorg? (default no)
         long-hint  : if high number of contigs detected (>2500 contigs), are you certain that you want to try running Jorg? (default no)
 
-    save_iterations_fasta :
-        ui-name : Save Iterations fasta Folder
-        short-hint : given the time take to run Jorg, do you want to keep the non-criteria fasta files? (default no)
-        long-hint  : given the time take to run Jorg, do you want to keep the non-criteria fasta files? (default no)
-
     assembly_selection_criteria :
         ui-name : Output Assembly Selection Criteria
         short-hint : select the assembly statistics criteria used to decide which assembly to output
         long-hint  : select the assembly statistics criteria used to decide which assembly to output
+
+    save_iterations_fasta :
+        ui-name : Save All Sequence File Iterations
+        short-hint : given the time take to run Jorg, do you want to keep the criterion-based unselected fasta files within the zip file? (default no)
+        long-hint  : given the time take to run Jorg, do you want to keep the criterion-based unselected fasta files within the zip file? (default no)
 
     circle_min_overlap_length :
         ui-name : Minimum Overlap Length Required to Circularize
