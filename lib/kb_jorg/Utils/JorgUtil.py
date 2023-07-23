@@ -97,6 +97,87 @@ class JorgUtil:
             sys.exit(1)
         return (output, stderr)
 
+    def _get_contig_file(self, assembly_ref):
+        """
+        _get_contig_file: get contig file from GenomeAssembly object
+        """
+        log('Start _get_contig_file')
+        contig_file = self.au.get_assembly_as_fasta({'ref': assembly_ref}).get('path')
+
+        sys.stdout.flush()
+        contig_file = self.dfu.unpack_file({'file_path': contig_file})['file_path']
+        log('End _get_contig_file')
+        return contig_file
+
+    # from: https://stackoverflow.com/questions/68929595/join-distinct-fasta-files-using-python-and-biopython
+    def fasta_reader(self, file, i):
+        log('Start fasta_reader')
+        fasta_df = pd.read_csv(file, sep='>', lineterminator='>', header=None)
+        fasta_df[['Accession', 'Sequence']] = fasta_df[0].str.split('\n', 1, expand=True)
+        fasta_df['Accession'] = fasta_df['Accession'].astype(str) + '_assembly' + str(i+1)  # need to keep assembly names distinct upon merging
+        log(print(fasta_df['Accession']))
+        fasta_df.drop(0, axis=1, inplace=True)
+        fasta_df['Sequence'] = fasta_df['Sequence'].replace('\n', '', regex=True)
+        log('End fasta_reader')
+        return fasta_df
+
+    def combine_fasta_file(self, fasta_file_list):
+        log('Start combine_fasta_file')
+        df = pd.concat(self.fasta_reader(file, i) for i, file in enumerate(fasta_file_list))
+        # Exporting to fa
+        # adding '>' for accessions
+        df['Accession'] = '>' + df['Accession']
+        combined_assembly = 'jorg_input_combined_assembly.fna'
+        df.to_csv(os.path.join(self.scratch, combined_assembly), sep='\n', index=None, header=None)
+        log('End combine_fasta_file')
+        return combined_assembly
+
+    def rename_fasta_ids(self, fasta):
+        log('Start fasta ID rename')
+        handle = open(fasta,"rU")
+        n = 1
+        for seq_record in SeqIO.parse(handle,"fasta"):
+            seq_record.id = seq_record.id[:20] + "_" + str(n)
+            seq_record.description = ''
+            n = n + 1
+            file_output = fasta.split('.fasta')[0] + "_renamed.fna"
+            with open(file_output, 'a') as myfile:
+                SeqIO.write(seq_record, myfile,"fasta")
+        handle.close()
+        log('End fasta ID rename')
+        return file_output
+
+    def get_assembly_files(self, task_params):
+        log('Start get_assembly_files')
+        assembly_set = []
+        for i in range(0, len(task_params['assembly_ref'])):
+            if len(task_params['assembly_ref']) > 1:
+                log("Pulling assembly files ")
+                log(len(task_params['assembly_ref']))
+                assembly_set.append(self._get_contig_file(task_params['assembly_ref'][i]))
+                if i == (len(task_params['assembly_ref']) - 1):  # all fasta files should be local
+                    log("Merging assembly files")
+                    contig_file = self.combine_fasta_file(assembly_set)
+                    task_params['contig_file_path'] = contig_file
+            else:
+                log(task_params['assembly_ref'])
+                contig_file = self._get_contig_file(task_params['assembly_ref'][i])
+                log(contig_file)
+                task_params['contig_file_path'] = contig_file
+                # assembly = self.retrieve_assembly(task_params, i)
+                # log(assembly)
+                # task_params['contig_file_path'] = assembly
+        fasta = contig_file
+        file = open(fasta)
+        # getting the starting line of the file
+        start_line = file.readline()
+        log(start_line)
+        if (len(start_line) > 20): # 30 is cutoff, 20 to be safe with longer IDs in file not represented by first ID
+            contig_file = self.rename_fasta_ids(fasta)
+            task_params['contig_file_path'] = contig_file
+        file.close()
+        log('End get_assembly_files')
+        return contig_file
 
     # this function has been customized to return read_type variable (interleaved vs single-end library)
     def stage_reads_file(self, reads_file):
@@ -129,17 +210,6 @@ class JorgUtil:
         log('End processing reads objects')
         return result_file_path, read_type
 
-    def _get_contig_file(self, assembly_ref):
-        """
-        _get_contig_file: get contig file from GenomeAssembly object
-        """
-        log('Start _get_contig_file')
-        contig_file = self.au.get_assembly_as_fasta({'ref': assembly_ref}).get('path')
-
-        sys.stdout.flush()
-        contig_file = self.dfu.unpack_file({'file_path': contig_file})['file_path']
-        log('End _get_contig_file')
-        return contig_file
 
     # def retrieve_assembly(self, task_params, i):
     #     if os.path.exists(task_params['contig_file_path']):
@@ -298,21 +368,6 @@ class JorgUtil:
         log('End convert_sam_to_sorted_and_indexed_bam')
         return sorted_bam
 
-
-    def rename_fasta_ids(self, fasta):
-        log('Start fasta ID rename')
-        handle = open(fasta,"rU")
-        n = 1
-        for seq_record in SeqIO.parse(handle,"fasta"):
-            seq_record.id = seq_record.id[:20] + "_" + str(n)
-            seq_record.description = ''
-            n = n + 1
-            file_output = fasta.split('.fasta')[0] + "_renamed.fna"
-            with open(file_output, 'a') as myfile:
-                SeqIO.write(seq_record, myfile,"fasta")
-        handle.close()
-        log('End fasta ID rename')
-        return file_output
 
 
     def rename_fastq_ids(self, fastq):
@@ -505,28 +560,6 @@ class JorgUtil:
         log('End select_jorg_output_genome')
         return output_jorg_assembly, output_jorg_assembly_name, num_contigs
 
-    # from: https://stackoverflow.com/questions/68929595/join-distinct-fasta-files-using-python-and-biopython
-    def fasta_reader(self, file, i):
-        log('Start fasta_reader')
-        fasta_df = pd.read_csv(file, sep='>', lineterminator='>', header=None)
-        fasta_df[['Accession', 'Sequence']] = fasta_df[0].str.split('\n', 1, expand=True)
-        fasta_df['Accession'] = fasta_df['Accession'].astype(str) + '_assembly' + str(i+1)  # need to keep assembly names distinct upon merging
-        log(print(fasta_df['Accession']))
-        fasta_df.drop(0, axis=1, inplace=True)
-        fasta_df['Sequence'] = fasta_df['Sequence'].replace('\n', '', regex=True)
-        log('End fasta_reader')
-        return fasta_df
-
-    def combine_fasta_file(self, fasta_file_list):
-        log('Start combine_fasta_file')
-        df = pd.concat(self.fasta_reader(file, i) for i, file in enumerate(fasta_file_list))
-        # Exporting to fa
-        # adding '>' for accessions
-        df['Accession'] = '>' + df['Accession']
-        combined_assembly = 'jorg_input_combined_assembly.fna'
-        df.to_csv(os.path.join(self.scratch, combined_assembly), sep='\n', index=None, header=None)
-        log('End combine_fasta_file')
-        return combined_assembly
 
     def uppercase_fastq_file(self, reads_file):
         log('Start uppercase_fastq_file')
@@ -885,38 +918,10 @@ class JorgUtil:
         self._validate_run_jorg_params(task_params)
 
         # get assembly
-        log('--->\nStart assembly\n')
-        assembly_set = []
-        for i in range(0, len(task_params['assembly_ref'])):
-            if len(task_params['assembly_ref']) > 1:
-                log("Pulling assembly files ")
-                log(len(task_params['assembly_ref']))
-                assembly_set.append(self._get_contig_file(task_params['assembly_ref'][i]))
-                if i == (len(task_params['assembly_ref']) - 1):  # all fasta files should be local
-                    log("Merging assembly files")
-                    contig_file = self.combine_fasta_file(assembly_set)
-                    task_params['contig_file_path'] = contig_file
-            else:
-                log(task_params['assembly_ref'])
-                contig_file = self._get_contig_file(task_params['assembly_ref'][i])
-                log(contig_file)
-                task_params['contig_file_path'] = contig_file
-                # assembly = self.retrieve_assembly(task_params, i)
-                # log(assembly)
-                # task_params['contig_file_path'] = assembly
-            fasta = contig_file
-            file = open(fasta)
-            # getting the starting line of the file
-            start_line = file.readline()
-            log(start_line)
-            if (len(start_line) > 20): # 30 is cutoff, 20 to be safe with longer IDs in file not represented by first ID
-                contig_file = self.rename_fasta_ids(fasta)
-                task_params['contig_file_path'] = contig_file
-            file.close()
-        log('--->\nEnd assembly\n')
+        task_params['contig_file_path'] = self.get_assembly_files(task_params)
+        contig_file = task_params['contig_file_path']
 
         # get reads
-        log('--->\nStart reads\n')
         (read_scratch_path, read_type) = self.stage_reads_file(task_params['reads_file'])
         task_params['read_type'] = read_type
         task_params['reads_list_file'] = read_scratch_path
@@ -937,18 +942,13 @@ class JorgUtil:
         # run jorg and circos
         output_jorg_assembly_clean_sorted, output_jorg_assembly_name, num_contigs, output_circle_text, max_cov, min_cov, std_cov, mean_cov = self.run_jorg_and_circos_workflow(task_params, jorg_working_coverage)
 
-        assembly_stats = {'iteration' : output_jorg_assembly_name, 'num_contigs' : num_contigs, 'mean_cov' : mean_cov, 'std_cov' : std_cov, 'min_cov' : min_cov, 'max_cov' : max_cov, 'circle_or_not' : output_circle_text}
+        # generate assembly stats for report output
+        assembly_stats = {'iteration': output_jorg_assembly_name, 'num_contigs': num_contigs, 'mean_cov': mean_cov, 'std_cov': std_cov, 'min_cov': min_cov, 'max_cov': max_cov, 'circle_or_not': output_circle_text}
 
-        # file handling and management
-
-        # log('Saved result files to: {}'.format(result_directory))
-        # log('Generated files:\n{}'.format('\n'.join(os.listdir(result_directory))))
-
+        # prep assembly fasta file for kbase upload
         dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
-
         assembly_ref_obj = self.au.save_assembly_from_fasta(
             {'file': {'path': dest + '/' + output_jorg_assembly_clean_sorted},
-#            {'file': {'path': os.path.abspath(output_jorg_assembly_clean_sorted)},
              'workspace_name': task_params['workspace_name'],
              'assembly_name': task_params['output_assembly_name']
              })
@@ -959,6 +959,5 @@ class JorgUtil:
             'result_directory': result_directory,
             'assembly_obj_ref': assembly_ref_obj
         }
-
         returnVal.update(reportVal)
         return returnVal
