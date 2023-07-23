@@ -216,9 +216,9 @@ class kb_jorgTest(unittest.TestCase):
                                              'read_mapping_tool': 'bowtie2_default',
                                              'kmer_size': 33,
                                              'min_coverage': 5,
-                                             'num_iterations': 3,
+                                             'num_iterations': 1,
                                              'circle_min_overlap_length': 100,
-                                             'save_iterations_fasta': False,
+                                             'save_iterations_fasta': 1,
                                              'high_contig_num': '--high_contig_num no',
                                              'assembly_selection_criteria': 'longest_single_fragment',
                                              'reads_file': self.int1_oldstyle_reads_ref })
@@ -240,7 +240,7 @@ class kb_jorgTest(unittest.TestCase):
     #                                          'min_coverage': 5,
     #                                          'num_iterations': 1,
     #                                          'circle_min_overlap_length': 100,
-    #                                          'save_iterations_fasta': False,
+    #                                          'save_iterations_fasta': 1,
     #                                          'high_contig_num': '--high_contig_num no',
     #                                          'assembly_selection_criteria': 'longest_single_fragment',
     #                                          'reads_file': self.int2_oldstyle_reads_ref })
@@ -262,7 +262,7 @@ class kb_jorgTest(unittest.TestCase):
     #                                          'min_coverage': 5,
     #                                          'num_iterations': 1,
     #                                          'circle_min_overlap_length': 100,
-    #                                          'save_iterations_fasta': False,
+    #                                          'save_iterations_fasta': 1,
     #                                          'high_contig_num': '--high_contig_num no',
     #                                          'assembly_selection_criteria': 'longest_single_fragment',
     #                                          'reads_file': self.int1_oldstyle_reads_ref })

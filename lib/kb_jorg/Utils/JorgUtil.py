@@ -683,6 +683,7 @@ class JorgUtil:
         log('Start move_jorg_output_files_to_output_dir')
         dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
         files = os.listdir(os.path.abspath(self.scratch))
+        log(files)
         for f in files:
             if (f.startswith("iterations") or \
                 f.startswith("Jorg") or \
@@ -699,9 +700,9 @@ class JorgUtil:
                 f.endswith(".reduced") or \
                 f.endswith(".tbl")):
                 shutil.move(f, dest)
-                if task_params['save_iterations_fasta'] == 1:
-                    if f.startswith("Iterations"):
-                        shutil.move(f, dest)
+            if f.startswith("Iteration") and (task_params['save_iterations_fasta'] == 1):
+                log("This triggered")
+                shutil.move(f, dest)
         log('End move_jorg_output_files_to_output_dir')
 
     def run_jorg_and_circos_workflow(self, task_params, jorg_working_coverage):

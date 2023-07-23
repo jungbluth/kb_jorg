@@ -15,17 +15,6 @@
 # Commands returning a non-zero exit code will cause an immediate exit
 set -e
 
-
-################################################################################
-# Check for dependencies
-################################################################################
-
-# Check for MIRA installation
-command -v mira >/dev/null 2>&1 || { echo >&2 "Error: unable to locate MIRA. Please make sure MIRA is installed on your system. Exiting."; exit 1; }
-
-# Check for Seqtk installation
-command -v seqtk >/dev/null 2>&1 || { echo >&2 "Error: unable to locate Seqtk. Please make sure Seqtk is installed on your system. Exiting."; exit 1; }
-
 ################################################################################
 # Variable Declarations
 ################################################################################
