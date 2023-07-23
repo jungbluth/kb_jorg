@@ -1,5 +1,5 @@
 {
-    "ver": "0.3.0",
+    "ver": "0.4.0",
     "authors": [
         "seanjungbluth"
     ],
@@ -122,6 +122,18 @@
             "checkbox_options": {
                 "checked_value": "--high_contig_num yes",
                 "unchecked_value": " "
+              }
+        },
+        {
+            "id": "save_iterations_fasta",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ 0 ],
+            "field_type": "checkbox",
+            "checkbox_options": {
+                "checked_value": 1,
+                "unchecked_value": 0
               }
         },
         {

@@ -683,7 +683,7 @@ class JorgUtil:
         log('End process_last_output')
         return circularized_contigs, output_circle_text
 
-    def move_jorg_output_files_to_output_dir(self):
+    def move_jorg_output_files_to_output_dir(self, task_params):
         log('Start move_jorg_output_files_to_output_dir')
         dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
         files = os.listdir(os.path.abspath(self.scratch))
@@ -703,6 +703,9 @@ class JorgUtil:
                 f.endswith(".reduced") or \
                 f.endswith(".tbl")):
                 shutil.move(f, dest)
+                if task_params['save_iterations_fasta'] == 1:
+                    if f.startswith("Iterations"):
+                        shutil.move(f, dest)
         log('End move_jorg_output_files_to_output_dir')
 
     def run_jorg_and_circos_workflow(self, task_params, jorg_working_coverage):
@@ -747,7 +750,7 @@ class JorgUtil:
         output_jorg_assembly_clean_sorted, max_cov, min_cov, std_cov, mean_cov = self.make_circos_plot(task_params, reads_file, output_jorg_assembly)
 
         # move relevant files to output directory provided to user
-        self.move_jorg_output_files_to_output_dir()
+        self.move_jorg_output_files_to_output_dir(task_params)
 
         log('End run_jorg_and_circos_workflow')
         return output_jorg_assembly_clean_sorted, output_jorg_assembly_name, num_contigs, output_circle_text, max_cov, min_cov, std_cov, mean_cov

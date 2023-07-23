@@ -1,6 +1,9 @@
 # kb_jorg release notes
 =========================================
 
+0.4.0
+-----
+* Option to keep all Iterations folder fna files
 
 0.3.0
 -----

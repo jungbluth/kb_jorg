@@ -15,70 +15,6 @@
 # Commands returning a non-zero exit code will cause an immediate exit
 set -e
 
-# Software version, starting at 1.0.0
-jorg_version=1.0.0
-
-################################################################################
-# Menu banner
-################################################################################
-function ascii_text_banner() {
-    echo "        _                               __    __    __    __              "
-    echo "       | | ___  _ __ __ _              /  \  /  \  /  \  /  \             "
-    echo "___ _  | |/ _ \| '__/ _  |____________/  __\/  __\/  __\/  __\____________"
-    echo "___| |_| | (_) | | | (_| |___________/  /__/  /__/  /__/  /_______________"
-    echo "    \___/ \___/|_|  \__, |       | / \   / \   / \   / \  \____           "
-    echo "                    |___/        |/   \_/   \_/   \_/   \    o \          "
-    echo "                                                         \_____/--<       "
-}
-################################################################################
-# Version reporting
-################################################################################
-function display_version() {
-    echo "$jorg_version"
-    exit 1
-}
-
-################################################################################
-# Help menu
-################################################################################
-function display_help() {
-    echo "--------------------------------------------------------------------------"
-    ascii_text_banner
-    echo " "
-    echo "Jorg - Circularization and improvement of metagenomic bins"
-    echo " "
-    echo "Version: $jorg_version"
-    echo " "
-    echo "Authors: Lauren Lui (lmlui@lbl.gov), Torben Nielsen, Adam Arkin"
-    echo "--------------------------------------------------------------------------"
-    echo " "
-    echo "Usage: jorg -b bin.186.fa -r interleaved_reads.fastq.gz -k 33 -c 50 -i 5 --high_contig_num no"
-    echo "or"
-    echo "Usage: jorg -b bin.186.fa --forward reads_1.fastq.gz --reverse reads_2.fastq.gz -k 33 -c 50 -i 5 --high_contig_num no"
-    echo
-    echo "   -b, --bin_fasta_file       Genome bin in fasta format."
-    echo "   -r, --reads_file           Interleaved metagenome reads file in fastq or fastq.gz format."
-    echo "   --foward                   Forward reads file in fastq or fastq.gz format."
-    echo "   --reverse                  Reverse reads file in fastq or fastq.gz format."
-    echo "   -k, --kmer_length          Kmer value for baiting (default: 33)."
-    echo "   -c, --min_coverage         Minimum coverage value (default: 50)."
-    echo "   -i, --iterations           Number of iterations (default: 5)."
-    echo "   -t, --runtime_cap          Max number of days for MIRA iteration steps (default: none)."
-    echo "   --high_contig_num          Relevant only if input assembly has >2500 contigs: are you certain that this is a single genome worth running with Jorg? (default: no)."
-    echo "   --single_end_reads         Are the input reads a single-end library? (default: no)."
-    echo "   -v, --version              Print version number and exit."
-    echo "   -h, --help                 Show this message."
-    echo " "
-    echo "Extended Usage: jorg --bin_fasta_file bin.186.fa --reads_file interleaved_reads.fastq.gz --kmer_length 33 --min_coverage 50 --iterations 5 --high_contig_num no "
-    echo "or"
-    echo "jorg --bin_fasta_file bin.186.fa --forward reads_1.fastq.gz --reverse reads_2.fastq.gz --kmer_length 33 --min_coverage 50 --iterations 5 --high_contig_num no "
-    echo " "
-    echo "Please cite: Lui LM, Nielsen TN, Arkin AP. 2020, biorxiv (https://www.biorxiv.org/content/10.1101/2020.03.05.979740v2.full)."
-    exit 1
-}
-
-# If jorg entered with no other input then will display help menu
-[ $# -eq 0 ] && { display_help ; exit 1; }
 
 ################################################################################
 # Check for dependencies
@@ -89,9 +25,6 @@ command -v mira >/dev/null 2>&1 || { echo >&2 "Error: unable to locate MIRA. Ple
 
 # Check for Seqtk installation
 command -v seqtk >/dev/null 2>&1 || { echo >&2 "Error: unable to locate Seqtk. Please make sure Seqtk is installed on your system. Exiting."; exit 1; }
-
-# Capture seqtk stout, but this doesn't work, it causes a hang
-#seqtk 2> /tmp/seqtk_version.tmp
 
 ################################################################################
 # Variable Declarations
@@ -155,10 +88,6 @@ while [ "$1" != "" ]; do
     shift
 done
 
-################################################################################
-# Variable Checks
-################################################################################
-
 #Convert run limit length from days to second
 runtime_cap_seconds=$(( 86400*$runtime_cap))
 
@@ -182,7 +111,6 @@ echo "MIRABAIT path: $(which mirabait)" | tee -a "$jorg_logfile"
 echo "MIRABAIT version: $(mirabait --version | grep MIRA | sed 's/MIRABAIT //' 2>&1)" | tee -a "$jorg_logfile"
 echo "seqtk path: $(which seqtk)" | tee -a "$jorg_logfile"
 # echo "seqtk version:" $(grep Version /tmp/seqtk_version.tmp | sed 's/Version: //' 2>&1) | tee -a "$jorg_logfile"
-
 
 
 # Check for number of contigs in input fasta file
