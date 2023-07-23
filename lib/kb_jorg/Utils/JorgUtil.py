@@ -683,7 +683,6 @@ class JorgUtil:
         log('Start move_jorg_output_files_to_output_dir')
         dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
         files = os.listdir(os.path.abspath(self.scratch))
-        log(files)
         for f in files:
             if (f.startswith("iterations") or \
                 f.startswith("Jorg") or \
