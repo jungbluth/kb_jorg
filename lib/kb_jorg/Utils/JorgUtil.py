@@ -708,17 +708,12 @@ class JorgUtil:
         if task_params['save_iterations_fasta'] == 1:
             log("This triggered")
             shutil.move(os.path.join(os.path.abspath(self.scratch), "Iterations") , dest)
-            result_file = os.path.join(dest, 'Iterations.zip')
-            with zipfile.ZipFile(result_file, 'w', zipfile.ZIP_DEFLATED, allowZip64=True) as zip_file:
-                full = os.path.join(dest, "Iterations")
-                zip_file.write(full, result_file)
-                # for dirname, subdirs, files in os.walk(dest):
-            # for file in files:
-            #     zip_file.write(os.path.join(dirname, file), file)
-            # if (dirname.endswith(self.JORG_RESULT_DIRECTORY)):
-            #     baseDir = os.path.basename(dirname)
-            #     for file in files:
-
+            full = os.path.join(dest, "Iterations")
+            result_file = os.path.join(dest, 'Iterations')
+            shutil.make_archive(result_file, 'zip', full)
+            # with zipfile.ZipFile(result_file, 'w', zipfile.ZIP_DEFLATED, allowZip64=True) as zip_file:
+            #     full = os.path.join(dest, "Iterations")
+            #     zip_file.write(result_file, full)
         files = os.listdir(os.path.abspath(self.scratch))
         for f in files:
             if (f.startswith("iterations") or \
@@ -737,9 +732,6 @@ class JorgUtil:
                 f.endswith(".zip") or \
                 f.endswith(".tbl")):
                 shutil.move(f, dest)
-
-
-
         log('End move_jorg_output_files_to_output_dir')
 
     def run_jorg_and_circos_workflow(self, task_params, jorg_working_coverage):
