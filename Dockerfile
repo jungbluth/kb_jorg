@@ -38,6 +38,20 @@ RUN conda install -c bioconda samtools
 
 RUN pip install biopython
 
+RUN wget https://github.com/lh3/bwa/releases/download/v0.7.17/bwa-0.7.17.tar.bz2 && \
+    tar -xvf bwa-0.7.17.tar.bz2 && \
+    cd bwa-0.7.17 && \
+    make && \
+    cd ../ && \
+    rm bwa-0.7.17.tar.bz2
+
+RUN wget https://github.com/lh3/minimap2/releases/download/v2.26/minimap2-2.26.tar.bz2 && \
+    tar -xvf minimap2-2.26.tar.bz2 && \
+    cd minimap2-2.26 && \
+    make && \
+    cd ../ && \
+    rm minimap2-2.26.tar.bz2
+
 #RUN mkdir pilon-1.2.3 && \
 #    wget https://github.com/broadinstitute/pilon/releases/download/v1.23/pilon-1.23.jar -P pilon-1.2.3
 
@@ -54,6 +68,8 @@ WORKDIR /kb/module
 ENV PATH=/kb/module/lib/kb_jorg/bin:$PATH
 ENV PATH=/kb/module/lib/kb_jorg/bin/bbmap:$PATH
 ENV PATH=/kb/module/lib/kb_jorg/bin/Jorg:$PATH
+ENV PATH=/minimap2-2.26:$PATH
+ENV PATH=/bwa-0.7.17:$PATH
 
 # ENV PATH=/pilon-1.2.3:$PATH
 # ENV PATH=/infernal-1.1.3-linux-intel-gcc/binaries:$PATH

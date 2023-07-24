@@ -705,6 +705,20 @@ class JorgUtil:
     def move_jorg_output_files_to_output_dir(self, task_params):
         log('Start move_jorg_output_files_to_output_dir')
         dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
+        if task_params['save_iterations_fasta'] == 1:
+            log("This triggered")
+            shutil.move(os.path.join(os.path.abspath(self.scratch), "Iterations") , dest)
+            result_file = os.path.join(dest, 'Iterations.zip')
+            with zipfile.ZipFile(result_file, 'w', zipfile.ZIP_DEFLATED, allowZip64=True) as zip_file:
+                full = os.path.join(dest, "Iterations")
+                zip_file.write(full, result_file)
+                # for dirname, subdirs, files in os.walk(dest):
+            # for file in files:
+            #     zip_file.write(os.path.join(dirname, file), file)
+            # if (dirname.endswith(self.JORG_RESULT_DIRECTORY)):
+            #     baseDir = os.path.basename(dirname)
+            #     for file in files:
+
         files = os.listdir(os.path.abspath(self.scratch))
         for f in files:
             if (f.startswith("iterations") or \
@@ -720,11 +734,12 @@ class JorgUtil:
                 f.endswith("clean.fasta") or \
                 f.endswith("combined_assembly.fna") or \
                 f.endswith(".reduced") or \
+                f.endswith(".zip") or \
                 f.endswith(".tbl")):
                 shutil.move(f, dest)
-            if f.startswith("Iteration") and (task_params['save_iterations_fasta'] == 1):
-                log("This triggered")
-                shutil.move(os.path.join(os.path.abspath(self.scratch), "Iterations") , dest)
+
+
+
         log('End move_jorg_output_files_to_output_dir')
 
     def run_jorg_and_circos_workflow(self, task_params, jorg_working_coverage):
@@ -794,6 +809,7 @@ class JorgUtil:
                     for file in files:
                         full = os.path.join(dirname, file)
                         zip_file.write(full, os.path.join(baseDir, file))
+
         output_files.append({'path': result_file,
                              'name': os.path.basename(result_file),
                              'label': os.path.basename(result_file),

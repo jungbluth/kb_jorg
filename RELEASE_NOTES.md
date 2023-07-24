@@ -3,6 +3,7 @@
 
 0.4.0
 -----
+* Added minimap2 and bwa as selectable read mappers
 * Option to keep all Iterations folder fna files
 
 0.3.0
