@@ -724,7 +724,7 @@ class JorgUtil:
                 shutil.move(f, dest)
             if f.startswith("Iteration") and (task_params['save_iterations_fasta'] == 1):
                 log("This triggered")
-                shutil.move(f, dest)
+                shutil.move(os.path.join(os.path.abspath(self.scratch), "Iterations") , dest)
         log('End move_jorg_output_files_to_output_dir')
 
     def run_jorg_and_circos_workflow(self, task_params, jorg_working_coverage):
@@ -738,7 +738,7 @@ class JorgUtil:
         min_coverage = jorg_working_coverage
         num_iterations = task_params['num_iterations']
         parameter_high_contig_num = self.fix_generate_jorg_command_ui_bug(task_params)
-
+        self.copy_required_jorg_input_files_to_cwd()
         log("\n\nRunning run_jorg_and_circos_workflow")
         command = 'bash {}/jorg_light '.format(self.JORG_BASE_PATH)
         command += '--bin_fasta_file {} '.format(assembly_ref)
@@ -749,7 +749,6 @@ class JorgUtil:
         command += '--runtime_cap 6 ' # runtime limit (in days) for running on KBase
         command += ' {}'.format(parameter_high_contig_num)
         log('Generated jorg command: {}'.format(command))
-        self.copy_required_jorg_input_files_to_cwd()
         log("start running Jorg command")
         self._run_command(command)
         log("end running Jorg command")
