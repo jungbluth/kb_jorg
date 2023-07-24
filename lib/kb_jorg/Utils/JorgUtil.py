@@ -48,19 +48,6 @@ class JorgUtil:
         self.au = AssemblyUtil(self.callback_url)
         self.mgu = MetagenomeUtils(self.callback_url)
 
-    def _validate_run_jorg_params(self, task_params):
-        """
-        _validate_run_jorg_params:
-                validates params passed to run_jorg method
-        """
-        log('Start validating run_jorg params')
-
-        # check for required parameters
-        for p in ['assembly_ref', 'reads_file', 'output_assembly_name', 'read_mapping_tool', 'kmer_size', 'min_coverage', 'num_iterations', 'high_contig_num', 'assembly_selection_criteria', 'save_iterations_fasta', 'circle_min_overlap_length', 'workspace_name']:
-            if p not in task_params:
-                raise ValueError('"{}" parameter is required, but missing'.format(p))
-        log('End validating run_jorg params')
-
 
     def _mkdir_p(self, path):
         """
@@ -97,6 +84,20 @@ class JorgUtil:
             sys.exit(1)
         return (output, stderr)
 
+    def _validate_run_jorg_params(self, task_params):
+        """
+        _validate_run_jorg_params:
+                validates params passed to run_jorg method
+        """
+        log('Start validating run_jorg params')
+
+        # check for required parameters
+        for p in ['assembly_ref', 'reads_file', 'output_assembly_name', 'read_mapping_tool', 'kmer_size', 'min_coverage', 'num_iterations', 'high_contig_num', 'assembly_selection_criteria', 'save_iterations_fasta', 'circle_min_overlap_length', 'workspace_name']:
+            if p not in task_params:
+                raise ValueError('"{}" parameter is required, but missing'.format(p))
+        log('End validating run_jorg params')
+
+
     def _get_contig_file(self, assembly_ref):
         """
         _get_contig_file: get contig file from GenomeAssembly object
@@ -127,7 +128,7 @@ class JorgUtil:
         # Exporting to fa
         # adding '>' for accessions
         df['Accession'] = '>' + df['Accession']
-        combined_assembly = 'jorg_input_combined_assembly.fna'
+        combined_assembly = 'combined_assembly.fna'
         df.to_csv(os.path.join(self.scratch, combined_assembly), sep='\n', index=None, header=None)
         log('End combine_fasta_file')
         return combined_assembly
@@ -140,7 +141,7 @@ class JorgUtil:
             seq_record.id = seq_record.id[:20] + "_" + str(n)
             seq_record.description = ''
             n = n + 1
-            file_output = fasta.split('.fasta')[0] + "_renamed.fna"
+            file_output = fasta.split('.fna')[0] + "_renamed.fna"
             with open(file_output, 'a') as myfile:
                 SeqIO.write(seq_record, myfile,"fasta")
         handle.close()
@@ -148,8 +149,8 @@ class JorgUtil:
         return file_output
 
     def get_assembly_files(self, task_params):
-        log('Start get_assembly_files')
         assembly_set = []
+
         for i in range(0, len(task_params['assembly_ref'])):
             if len(task_params['assembly_ref']) > 1:
                 log("Pulling assembly files ")
@@ -158,6 +159,7 @@ class JorgUtil:
                 if i == (len(task_params['assembly_ref']) - 1):  # all fasta files should be local
                     log("Merging assembly files")
                     contig_file = self.combine_fasta_file(assembly_set)
+                    log(os.listdir(self.scratch))
                     task_params['contig_file_path'] = contig_file
             else:
                 log(task_params['assembly_ref'])
@@ -167,17 +169,19 @@ class JorgUtil:
                 # assembly = self.retrieve_assembly(task_params, i)
                 # log(assembly)
                 # task_params['contig_file_path'] = assembly
-        fasta = contig_file
+
+        fasta = os.path.join(self.scratch, contig_file)
         file = open(fasta)
         # getting the starting line of the file
         start_line = file.readline()
-        log(start_line)
-        if (len(start_line) > 20): # 30 is cutoff, 20 to be safe with longer IDs in file not represented by first ID
-            contig_file = self.rename_fasta_ids(fasta)
-            task_params['contig_file_path'] = contig_file
         file.close()
-        log('End get_assembly_files')
+
+        #if (len(start_line) > 20): # 30 is cutoff, 20 to be safe with longer IDs in file not represented by first ID
+        contig_file = self.rename_fasta_ids(fasta)
+        task_params['contig_file_path'] = contig_file
+        log('--->\nEnd assembly\n')
         return contig_file
+
 
     # this function has been customized to return read_type variable (interleaved vs single-end library)
     def stage_reads_file(self, reads_file):
@@ -210,17 +214,20 @@ class JorgUtil:
         log('End processing reads objects')
         return result_file_path, read_type
 
-
-    # def retrieve_assembly(self, task_params, i):
-    #     if os.path.exists(task_params['contig_file_path']):
-    #         assembly = task_params['contig_file_path']
-    #         log("FOUND ASSEMBLY ON LOCAL SCRATCH")
-    #         log("task_params['contig_file_path'] is {}".format(task_params['contig_file_path']))
-    #     else:
-    #         # we are on njsw so lets copy it over to scratch
-    #         log("task_params['assembly_ref'] is {}".format(task_params['assembly_ref'][i]))
-    #         assembly = self._get_contig_file(task_params['assembly_ref'][i])
-    #     return assembly
+    def rename_fastq_ids(self, fastq):
+        log('Start fastq ID rename')
+        handle = open(fastq,"rU")
+        n = 1
+        for seq_record in SeqIO.parse(handle,"fastq"):
+            seq_record.id = seq_record.id[:20] + "_" + str(n)
+            seq_record.description = ''
+            n = n + 1
+            file_output = fastq.split('.fastq')[0] + "_renamed.fastq"
+            with open(file_output, 'a') as myfile:
+                SeqIO.write(seq_record, myfile,"fastq")
+        handle.close()
+        log('End fastq ID rename')
+        return file_output
 
     def deinterlace_raw_reads(self, fastq):
         log('Start deinterlacing reads')
@@ -368,32 +375,15 @@ class JorgUtil:
         log('End convert_sam_to_sorted_and_indexed_bam')
         return sorted_bam
 
-
-
-    def rename_fastq_ids(self, fastq):
-        log('Start fastq ID rename')
-        handle = open(fastq,"rU")
-        n = 1
-        for seq_record in SeqIO.parse(handle,"fastq"):
-            seq_record.id = seq_record.id[:20] + "_" + str(n)
-            seq_record.description = ''
-            n = n + 1
-            file_output = fastq.split('.fastq')[0] + "_renamed.fastq"
-            with open(file_output, 'a') as myfile:
-                SeqIO.write(seq_record, myfile,"fastq")
-        handle.close()
-        log('End fastq ID rename')
-        return file_output
-
-    def generate_alignment_bams(self, task_params, assembly):
+    def generate_alignment_bams(self, task_params, assembly, read_scratch_path, read_type):
         """
             This function runs the selected read mapper and creates the
             sorted and indexed bam files from sam files using samtools.
         """
         log('Start generate_alignment_bams')
-        reads_file = task_params['reads_file']
+        #reads_file = task_params['reads_file']
 
-        (read_scratch_path, read_type) = self.stage_reads_file(reads_file)
+        #(read_scratch_path, read_type) = self.stage_reads_file(reads_file)
 
         # list of reads files, can be 1 or more. assuming reads are either type unpaired or interleaved
         # will not handle unpaired forward and reverse reads input as seperate (non-interleaved) files
@@ -406,6 +396,7 @@ class JorgUtil:
             # getting the starting line of the file
             start_line = file.readline()
             log(start_line)
+            # may want to rename everything at some point if more errors, but con is it takes longer
             if (len(start_line) > 20): # 30 is cutoff, 20 to be safe with longer IDs in file not represented by first ID
                 fastq = self.rename_fastq_ids(fastq)
             file.close()
@@ -560,6 +551,64 @@ class JorgUtil:
         log('End select_jorg_output_genome')
         return output_jorg_assembly, output_jorg_assembly_name, num_contigs
 
+    def run_circle_check_using_last(self, output_jorg_assembly):
+        log('Start run_circle_check_using_last')
+        command = 'bash {}/lib/circle_check_using_last '.format(self.JORG_BASE_PATH)
+        command += 'Iterations/{} '.format(output_jorg_assembly)
+        self._run_command(command)
+        path_to_last_output = output_jorg_assembly.split(".fasta")[0] + ".reduced"
+        log('End run_circle_check_using_last')
+        return path_to_last_output
+
+    def process_last_output(self, task_params, path_to_last_output):
+        log('Start process_last_output')
+        file1 = open(path_to_last_output, 'r')
+        remember_query = ""
+        forward_circle_match = ""
+        reverse_circle_match = ""
+        lines = file1.readlines()
+        circularized_contigs = []
+        query_start = 0
+        query_end = 0
+        subject_start = 0
+        subject_end = 0
+        minimum_length_threshold = task_params['circle_min_overlap_length']
+        for line in lines:
+            if line.startswith('#'):
+                pass
+            else:
+                if not remember_query == line.split()[0]: # clear this variable if different contig
+                    remember_query = ""
+                    longest_contig_length = 0
+                remember_query = line.split()[0]
+                if line.split()[0] == line.split()[1]: # if query and subject the same
+                    if int(line.split()[14]) >= minimum_length_threshold: # if the match is above the minimum length threshold
+                        if line.split()[2] == "100.00": # if a 100% match identified
+                            if float(line.split()[10]) <= 10e-5: # if the expected value is significant
+                                if line.split()[13] == line.split()[14]: # if length of query equals length of reference
+                                    longest_contig_length = int(line.split()[14])
+                                if forward_circle_match == "TRUE":
+                                    if (query_start == line.split()[8]) and (query_end == line.split()[9]) and (subject_start == line.split()[6]) and (subject_end == line.split()[7]) and (int(subject_end) == int(longest_contig_length)) and (int(line.split()[7]) == int(longest_contig_length)):
+                                        reverse_circle_match = "TRUE"
+                                        circularized_contigs.append(line.split()[0])
+                                elif line.split()[13] != line.split()[14]: # if length of query not equal to length of reference
+                                    if (int(line.split()[7]) - int(line.split()[6])) == (int(line.split()[9]) - int(line.split()[8])): # if query start/end length equal to subject start/end length
+                                        forward_circle_match = "TRUE"
+                                        remember_query = line.split()[0]
+                                        query_start = line.split()[6]
+                                        query_end = line.split()[7]
+                                        subject_start = line.split()[8]
+                                        subject_end = line.split()[9]
+        if len(circularized_contigs) >= 1:
+            output_circle_text = "Yes! Contig(s): "
+            for i in range(len(circularized_contigs)):
+                output_circle_text = output_circle_text + str(circularized_contigs[i])
+                if i != (len(circularized_contigs) - 1):
+                    output_circle_text = output_circle_text + ","
+        else:
+            output_circle_text = "No"
+        log('End process_last_output')
+        return circularized_contigs, output_circle_text
 
     def uppercase_fastq_file(self, reads_file):
         log('Start uppercase_fastq_file')
@@ -652,65 +701,6 @@ class JorgUtil:
         self.draw_circos_plot()
         log('End make_circos_plot')
         return output_jorg_assembly_clean_sorted, max_cov, min_cov, std_cov, mean_cov
-
-    def run_circle_check_using_last(self, output_jorg_assembly):
-        log('Start run_circle_check_using_last')
-        command = 'bash {}/lib/circle_check_using_last '.format(self.JORG_BASE_PATH)
-        command += 'Iterations/{} '.format(output_jorg_assembly)
-        self._run_command(command)
-        path_to_last_output = output_jorg_assembly.split(".fasta")[0] + ".reduced"
-        log('End run_circle_check_using_last')
-        return path_to_last_output
-
-    def process_last_output(self, task_params, path_to_last_output):
-        log('Start process_last_output')
-        file1 = open(path_to_last_output, 'r')
-        remember_query = ""
-        forward_circle_match = ""
-        reverse_circle_match = ""
-        lines = file1.readlines()
-        circularized_contigs = []
-        query_start = 0
-        query_end = 0
-        subject_start = 0
-        subject_end = 0
-        minimum_length_threshold = task_params['circle_min_overlap_length']
-        for line in lines:
-            if line.startswith('#'):
-                pass
-            else:
-                if not remember_query == line.split()[0]: # clear this variable if different contig
-                    remember_query = ""
-                    longest_contig_length = 0
-                remember_query = line.split()[0]
-                if line.split()[0] == line.split()[1]: # if query and subject the same
-                    if int(line.split()[14]) >= minimum_length_threshold: # if the match is above the minimum length threshold
-                        if line.split()[2] == "100.00": # if a 100% match identified
-                            if float(line.split()[10]) <= 10e-5: # if the expected value is significant
-                                if line.split()[13] == line.split()[14]: # if length of query equals length of reference
-                                    longest_contig_length = int(line.split()[14])
-                                if forward_circle_match == "TRUE":
-                                    if (query_start == line.split()[8]) and (query_end == line.split()[9]) and (subject_start == line.split()[6]) and (subject_end == line.split()[7]) and (int(subject_end) == int(longest_contig_length)) and (int(line.split()[7]) == int(longest_contig_length)):
-                                        reverse_circle_match = "TRUE"
-                                        circularized_contigs.append(line.split()[0])
-                                elif line.split()[13] != line.split()[14]: # if length of query not equal to length of reference
-                                    if (int(line.split()[7]) - int(line.split()[6])) == (int(line.split()[9]) - int(line.split()[8])): # if query start/end length equal to subject start/end length
-                                        forward_circle_match = "TRUE"
-                                        remember_query = line.split()[0]
-                                        query_start = line.split()[6]
-                                        query_end = line.split()[7]
-                                        subject_start = line.split()[8]
-                                        subject_end = line.split()[9]
-        if len(circularized_contigs) >= 1:
-            output_circle_text = "Yes! Contig(s): "
-            for i in range(len(circularized_contigs)):
-                output_circle_text = output_circle_text + str(circularized_contigs[i])
-                if i != (len(circularized_contigs) - 1):
-                    output_circle_text = output_circle_text + ","
-        else:
-            output_circle_text = "No"
-        log('End process_last_output')
-        return circularized_contigs, output_circle_text
 
     def move_jorg_output_files_to_output_dir(self, task_params):
         log('Start move_jorg_output_files_to_output_dir')
@@ -874,6 +864,7 @@ class JorgUtil:
                 'description': description
                 }
             return dir_shockInfo
+
         html_shockInfo = dir_to_shock(output_directory, 'report.html', 'HTML report for Jorg')
         """
         html_report.append({'path': result_file_path,
@@ -931,7 +922,7 @@ class JorgUtil:
         self._mkdir_p(result_directory)
 
         # map reads to determine input coverage
-        sorted_bam = self.generate_alignment_bams(task_params, contig_file)
+        sorted_bam = self.generate_alignment_bams(task_params, contig_file, read_scratch_path, read_type)
 
         # extract depth information from bam files
         depth_file_path = self.generate_make_coverage_table_command(task_params, sorted_bam)
@@ -942,13 +933,14 @@ class JorgUtil:
         # run jorg and circos
         output_jorg_assembly_clean_sorted, output_jorg_assembly_name, num_contigs, output_circle_text, max_cov, min_cov, std_cov, mean_cov = self.run_jorg_and_circos_workflow(task_params, jorg_working_coverage)
 
-        # generate assembly stats for report output
-        assembly_stats = {'iteration': output_jorg_assembly_name, 'num_contigs': num_contigs, 'mean_cov': mean_cov, 'std_cov': std_cov, 'min_cov': min_cov, 'max_cov': max_cov, 'circle_or_not': output_circle_text}
+        # generate stats for report
+        assembly_stats = {'iteration' : output_jorg_assembly_name, 'num_contigs' : num_contigs, 'mean_cov' : mean_cov, 'std_cov' : std_cov, 'min_cov' : min_cov, 'max_cov' : max_cov, 'circle_or_not' : output_circle_text}
 
-        # prep assembly fasta file for kbase upload
+        # prep assembly for upload to kbase
         dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
         assembly_ref_obj = self.au.save_assembly_from_fasta(
             {'file': {'path': dest + '/' + output_jorg_assembly_clean_sorted},
+#            {'file': {'path': os.path.abspath(output_jorg_assembly_clean_sorted)},
              'workspace_name': task_params['workspace_name'],
              'assembly_name': task_params['output_assembly_name']
              })
@@ -959,5 +951,6 @@ class JorgUtil:
             'result_directory': result_directory,
             'assembly_obj_ref': assembly_ref_obj
         }
+
         returnVal.update(reportVal)
         return returnVal

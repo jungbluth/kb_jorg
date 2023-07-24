@@ -208,7 +208,7 @@ class kb_jorgTest(unittest.TestCase):
         print ("RUNNING "+method_name+"()")
         print ("=================================================================\n")
 
-        # jorg should run to completion here
+        #jorg should run to completion here
         ret = self.getImpl().run_kb_jorg(self.getContext(),
                                             {'workspace_name': self.getWsName(),
                                              'assembly_ref': [self.assembly_ref1],
@@ -224,45 +224,45 @@ class kb_jorgTest(unittest.TestCase):
                                              'reads_file': self.int1_oldstyle_reads_ref })
 
 
-    # def test_run_jorg_longIDs(self):
-    #     method_name = 'test_run_jorg_default'
-    #     print ("\n=================================================================")
-    #     print ("RUNNING "+method_name+"()")
-    #     print ("=================================================================\n")
+    def test_run_jorg_longIDs(self):
+        method_name = 'test_run_jorg_default'
+        print ("\n=================================================================")
+        print ("RUNNING "+method_name+"()")
+        print ("=================================================================\n")
 
-    #     # jorg should run to completion here
-    #     ret = self.getImpl().run_kb_jorg(self.getContext(),
-    #                                         {'workspace_name': self.getWsName(),
-    #                                          'assembly_ref': [self.assembly_ref2],
-    #                                          'output_assembly_name': 'test.assembly',
-    #                                          'read_mapping_tool': 'bowtie2_default',
-    #                                          'kmer_size': 33,
-    #                                          'min_coverage': 5,
-    #                                          'num_iterations': 1,
-    #                                          'circle_min_overlap_length': 100,
-    #                                          'save_iterations_fasta': 1,
-    #                                          'high_contig_num': '--high_contig_num no',
-    #                                          'assembly_selection_criteria': 'longest_single_fragment',
-    #                                          'reads_file': self.int2_oldstyle_reads_ref })
+        # jorg should run to completion here
+        ret = self.getImpl().run_kb_jorg(self.getContext(),
+                                            {'workspace_name': self.getWsName(),
+                                             'assembly_ref': [self.assembly_ref2],
+                                             'output_assembly_name': 'test.assembly',
+                                             'read_mapping_tool': 'bowtie2_default',
+                                             'kmer_size': 33,
+                                             'min_coverage': 5,
+                                             'num_iterations': 1,
+                                             'circle_min_overlap_length': 100,
+                                             'save_iterations_fasta': 1,
+                                             'high_contig_num': '--high_contig_num no',
+                                             'assembly_selection_criteria': 'longest_single_fragment',
+                                             'reads_file': self.int2_oldstyle_reads_ref })
 
 
-    # def test_run_jorg_multiple_assembly_input(self):
-    #     method_name = 'test_run_jorg_multiple_assembly_input'
-    #     print ("\n=================================================================")
-    #     print ("RUNNING "+method_name+"()")
-    #     print ("=================================================================\n")
+    def test_run_jorg_multiple_assembly_input(self):
+        method_name = 'test_run_jorg_multiple_assembly_input'
+        print ("\n=================================================================")
+        print ("RUNNING "+method_name+"()")
+        print ("=================================================================\n")
 
-    #     # jorg should run to completion here
-    #     ret = self.getImpl().run_kb_jorg(self.getContext(),
-    #                                         {'workspace_name': self.getWsName(),
-    #                                          'assembly_ref': [self.assembly_ref1, self.assembly_ref1],
-    #                                          'output_assembly_name': 'test.assembly',
-    #                                          'read_mapping_tool': 'bowtie2_default',
-    #                                          'kmer_size': 33,
-    #                                          'min_coverage': 5,
-    #                                          'num_iterations': 1,
-    #                                          'circle_min_overlap_length': 100,
-    #                                          'save_iterations_fasta': 1,
-    #                                          'high_contig_num': '--high_contig_num no',
-    #                                          'assembly_selection_criteria': 'longest_single_fragment',
-    #                                          'reads_file': self.int1_oldstyle_reads_ref })
+        # jorg should run to completion here
+        ret = self.getImpl().run_kb_jorg(self.getContext(),
+                                            {'workspace_name': self.getWsName(),
+                                             'assembly_ref': [self.assembly_ref1, self.assembly_ref1],
+                                             'output_assembly_name': 'test.assembly',
+                                             'read_mapping_tool': 'bowtie2_default',
+                                             'kmer_size': 33,
+                                             'min_coverage': 5,
+                                             'num_iterations': 1,
+                                             'circle_min_overlap_length': 100,
+                                             'save_iterations_fasta': 1,
+                                             'high_contig_num': '--high_contig_num no',
+                                             'assembly_selection_criteria': 'longest_single_fragment',
+                                             'reads_file': self.int1_oldstyle_reads_ref })
