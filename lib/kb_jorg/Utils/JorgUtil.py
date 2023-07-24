@@ -279,6 +279,7 @@ class JorgUtil:
             command += '--threads {} '.format(self.MAPPING_THREADS)
             command += '-S {}'.format(sam)
         elif task_params['read_mapping_tool'] == 'minimap2':
+            log("Warning: Minimap2 does not support setting random seeds, so results are not reproducible.")
             (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
             command = 'minimap2 -ax sr -t {} '.format(self.MAPPING_THREADS)
             command += '--seed {} '.format(random_seed_int)
@@ -286,72 +287,18 @@ class JorgUtil:
             command += '{} '.format(fastq_forward)
             command += '{} > '.format(fastq_reverse)
             command += '{}'.format(sam)
-        elif task_params['read_mapping_tool'] == 'hisat2':
+        elif task_params['read_mapping_tool'] == 'bwa-mem':
+            log("Warning: BWA-MEM does not support setting random seeds, so results are not reproducible.")
             (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
-            ht2index = os.path.basename(assembly) + '.ht2'
-            command = 'hisat2-build {} '.format(assembly)
-            command += '{} && '.format(ht2index)
-            command += 'hisat2 -x {} '.format(ht2index)
-            command += '-1 {} '.format(fastq_forward)
-            command += '-2 {} '.format(fastq_reverse)
-            command += '-S {} '.format(sam)
-            command += '--seed {} '.format(random_seed_int)
-            command += '--threads {}'.format(self.MAPPING_THREADS)
+            command = 'bwa index {} && '.format(assembly)
+            command += 'bwa mem {} '.format(assembly)
+            command += '-t {}'.format(self.MAPPING_THREADS)
+            command += '{} '.format(fastq_forward)
+            command += '{} '.format(fastq_reverse)
+            command += '> {} '.format(sam)
         log('running alignment command: {}'.format(command))
         out, err = self._run_command(command)
         log('Done running alignment')
-    # not used right now because Jorg does not support single-end mode
-    # def run_read_mapping_unpaired_mode(self, task_params, assembly, fastq, sam):
-    #     read_mapping_tool = task_params['read_mapping_tool']
-    #     log("running {} mapping in single-end (unpaired) mode.".format(read_mapping_tool))
-    #     random_seed_int = randint(0, 999999999)
-    #     log("randomly selected seed (integer) used for read mapping is: {}".format(random_seed_int))
-    #     if task_params['read_mapping_tool'] == 'bbmap':
-    #         log("Warning: bbmap does not support setting random seeds, so results are not reproducible.")
-    #         command = 'bbmap.sh -Xmx{} '.format(self.BBMAP_MEM)
-    #         command += 'threads={} '.format(self.MAPPING_THREADS)
-    #         command += 'ref={} '.format(assembly)
-    #         command += 'in={} '.format(fastq)
-    #         command += 'out={} '.format(sam)
-    #         command += 'fast interleaved=false mappedonly nodisk overwrite'
-    #         # BBMap is deterministic without the deterministic flag if using single-ended reads
-    #     elif task_params['read_mapping_tool'] == 'bowtie2_default':
-    #         bt2index = os.path.basename(assembly) + '.bt2'
-    #         command = 'bowtie2-build -f {} '.format(assembly)
-    #         command += '--threads {} '.format(self.MAPPING_THREADS)
-    #         command += '--seed {} '.format(random_seed_int)
-    #         command += '{} && '.format(bt2index)
-    #         command += 'bowtie2 -x {} '.format(bt2index)
-    #         command += '-U {} '.format(fastq)
-    #         command += '--threads {} '.format(self.MAPPING_THREADS)
-    #         command += '-S {}'.format(sam)
-    #     elif task_params['read_mapping_tool'] == 'bowtie2_very_sensitive':
-    #         bt2index = os.path.basename(assembly) + '.bt2'
-    #         command = 'bowtie2-build -f {} '.format(assembly)
-    #         command += '--threads {} '.format(self.MAPPING_THREADS)
-    #         command += '--seed {} '.format(random_seed_int)
-    #         command += '{} && '.format(bt2index)
-    #         command += 'bowtie2 --very-sensitive -x {} '.format(bt2index)
-    #         command += '-U {} '.format(fastq)
-    #         command += '--threads {} '.format(self.MAPPING_THREADS)
-    #         command += '-S {}'.format(sam)
-    #     elif task_params['read_mapping_tool'] == 'minimap2':
-    #         command = 'minimap2 -ax sr -t {} '.format(self.MAPPING_THREADS)
-    #         command += '--seed {} '.format(random_seed_int)
-    #         command += '{} '.format(assembly)
-    #         command += '{} > '.format(fastq)
-    #         command += '{}'.format(sam)
-    #     elif task_params['read_mapping_tool'] == 'hisat2':
-    #         ht2index = os.path.basename(assembly) + '.ht2'
-    #         command = 'hisat2-build {} '.format(assembly)
-    #         command += '{} && '.format(ht2index)
-    #         command += 'hisat2 -x {} '.format(ht2index)
-    #         command += '-U {} '.format(fastq)
-    #         command += '-S {} '.format(sam)
-    #         command += '--seed {} '.format(random_seed_int)
-    #         command += '--threads {}'.format(self.MAPPING_THREADS)
-    #     log('running alignment command: {}'.format(command))
-    #     out, err = self._run_command(command)
 
     def convert_sam_to_sorted_and_indexed_bam(self, sam):
         # create bam files from sam files

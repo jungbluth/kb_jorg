@@ -45,8 +45,8 @@ parameters :
 
     read_mapping_tool :
         ui-name : Read Mapping Tool
-        short-hint : tool to use for read mapping (default BBmap)
-        long-hint  : tool to use for read mapping - options BBmap, Bowtie2 (default), Bowtie2 (very-sensitive) - (default BBmap)
+        short-hint : tool to use for read mapping (default Bowtie2 (default))
+        long-hint  : tool to use for read mapping - options BBmap, Bowtie2 (default), Bowtie2 (very-sensitive), BWA-MEM, Minimap2 - (default BBmap)
 
     kmer_size :
         ui-name : Kmer Length
