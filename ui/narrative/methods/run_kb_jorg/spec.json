@@ -73,16 +73,16 @@
                         "ui_name": "Bowtie2 (very-sensitive)"
                     },
                     {
-                        "value": "bwa-mem",
-                        "display": "bwa-mem",
-                        "id": "bwa-mem",
-                        "ui_name": "bwa-mem"
+                        "value": "bwa_mem",
+                        "display": "BWA-MEM",
+                        "id": "bwa_mem",
+                        "ui_name": "BWA-MEM"
                     }, 
                     {
                         "value": "minimap2",
-                        "display": "minimap2",
+                        "display": "Minimap2",
                         "id": "minimap2",
-                        "ui_name": "minimap2"
+                        "ui_name": "Minimap2"
                     } 
                 ]
             }

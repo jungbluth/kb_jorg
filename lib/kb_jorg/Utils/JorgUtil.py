@@ -287,7 +287,7 @@ class JorgUtil:
             command += '{} '.format(fastq_forward)
             command += '{} > '.format(fastq_reverse)
             command += '{}'.format(sam)
-        elif task_params['read_mapping_tool'] == 'bwa-mem':
+        elif task_params['read_mapping_tool'] == 'bwa_mem':
             log("Warning: BWA-MEM does not support setting random seeds, so results are not reproducible.")
             (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
             command = 'bwa index {} && '.format(assembly)
