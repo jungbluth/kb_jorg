@@ -1,2 +1,4 @@
 test_local
 sdk.cfg
+test/data/SRR1636515.inter.fastq
+test/data/GCA_002294005.1_ASM229400v1_genomic.fna
