@@ -1,7 +1,7 @@
 test_local
 sdk.cfg
 test/data/bin.186.fastq
-test/data/SRR1636515.inter.fastq
+test/data/SRR1636515.inter_sample.fastq
 test/data/GCA_002294005.1_ASM229400v1_genomic.fna
 .DS_Store
 .DS_Store
