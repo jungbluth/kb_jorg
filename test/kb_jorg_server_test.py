@@ -98,24 +98,24 @@ class kb_jorgTest(unittest.TestCase):
         cls.int1_oldstyle_reads_ref = cls.ru.upload_reads(int1_reads_params)['obj_ref']
 
         
-        # READS 2
-        # building paired-end library
-        pe2_reads_filename = 'SRR1636515.inter.fastq'
-        pe2_reads_path = os.path.join(cls.scratch, pe2_reads_filename)
+        # # READS 2
+        # # building paired-end library
+        # pe2_reads_filename = 'SRR1636515.inter_sample.fastq'
+        # pe2_reads_path = os.path.join(cls.scratch, pe2_reads_filename)
         
-        # gets put on scratch. "work/tmp" is scratch
-        shutil.copy(os.path.join("data", pe2_reads_filename), pe2_reads_path)
+        # # gets put on scratch. "work/tmp" is scratch
+        # shutil.copy(os.path.join("data", pe2_reads_filename), pe2_reads_path)
         
-        int2_reads_params = {
-            'fwd_file': pe2_reads_path,
-            'sequencing_tech': 'Unknown',
-            'wsname': cls.ws_info[1],
-            'name': 'MyInterleavedLibrary2',
-            'interleaved': 'true'
-        }
+        # int2_reads_params = {
+        #     'fwd_file': pe2_reads_path,
+        #     'sequencing_tech': 'Unknown',
+        #     'wsname': cls.ws_info[1],
+        #     'name': 'MyInterleavedLibrary2',
+        #     'interleaved': 'true'
+        # }
         
-        #from scratch upload to workspace
-        cls.int2_oldstyle_reads_ref = cls.ru.upload_reads(int2_reads_params)['obj_ref']
+        # #from scratch upload to workspace
+        # cls.int2_oldstyle_reads_ref = cls.ru.upload_reads(int2_reads_params)['obj_ref']
         
         # # READS 3
         # # building paired-end library
@@ -202,39 +202,18 @@ class kb_jorgTest(unittest.TestCase):
     def getContext(self):
         return self.__class__.ctx
 
-    # def test_run_jorg_default1(self):
-    #     method_name = 'test_run_jorg_default'
-    #     print ("\n=================================================================")
-    #     print ("RUNNING "+method_name+"()")
-    #     print ("=================================================================\n")
-
-    #     #jorg should run to completion here
-    #     ret = self.getImpl().run_kb_jorg(self.getContext(),
-    #                                         {'workspace_name': self.getWsName(),
-    #                                          'assembly_ref': [self.assembly_ref1],
-    #                                          'output_assembly_name': 'test.assembly',
-    #                                          'read_mapping_tool': 'bwa-mem',
-    #                                          'kmer_size': 33,
-    #                                          'min_coverage': 5,
-    #                                          'num_iterations': 1,
-    #                                          'circle_min_overlap_length': 100,
-    #                                          'save_iterations_fasta': 1,
-    #                                          'high_contig_num': '--high_contig_num no',
-    #                                          'assembly_selection_criteria': 'longest_single_fragment',
-    #                                          'reads_file': self.int1_oldstyle_reads_ref })
-
-    def test_run_jorg_longIDs(self):
+    def test_run_jorg_default1(self):
         method_name = 'test_run_jorg_default'
         print ("\n=================================================================")
         print ("RUNNING "+method_name+"()")
         print ("=================================================================\n")
 
-        # jorg should run to completion here
+        #jorg should run to completion here
         ret = self.getImpl().run_kb_jorg(self.getContext(),
                                             {'workspace_name': self.getWsName(),
-                                             'assembly_ref': [self.assembly_ref2],
+                                             'assembly_ref': [self.assembly_ref1],
                                              'output_assembly_name': 'test.assembly',
-                                             'read_mapping_tool': 'bowtie2_default',
+                                             'read_mapping_tool': 'bwa_mem',
                                              'kmer_size': 33,
                                              'min_coverage': 5,
                                              'num_iterations': 1,
@@ -242,7 +221,28 @@ class kb_jorgTest(unittest.TestCase):
                                              'save_iterations_fasta': 1,
                                              'high_contig_num': '--high_contig_num no',
                                              'assembly_selection_criteria': 'longest_single_fragment',
-                                             'reads_file': self.int2_oldstyle_reads_ref })
+                                             'reads_file': self.int1_oldstyle_reads_ref })
+
+    # def test_run_jorg_longIDs(self):
+    #     method_name = 'test_run_jorg_default'
+    #     print ("\n=================================================================")
+    #     print ("RUNNING "+method_name+"()")
+    #     print ("=================================================================\n")
+
+    #     # jorg should run to completion here
+    #     ret = self.getImpl().run_kb_jorg(self.getContext(),
+    #                                         {'workspace_name': self.getWsName(),
+    #                                          'assembly_ref': [self.assembly_ref2],
+    #                                          'output_assembly_name': 'test.assembly',
+    #                                          'read_mapping_tool': 'bowtie2_default',
+    #                                          'kmer_size': 33,
+    #                                          'min_coverage': 5,
+    #                                          'num_iterations': 1,
+    #                                          'circle_min_overlap_length': 100,
+    #                                          'save_iterations_fasta': 1,
+    #                                          'high_contig_num': '--high_contig_num no',
+    #                                          'assembly_selection_criteria': 'longest_single_fragment',
+    #                                          'reads_file': self.int2_oldstyle_reads_ref })
 
 
     # def test_run_jorg_multiple_assembly_input(self):

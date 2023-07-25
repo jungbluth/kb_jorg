@@ -110,13 +110,6 @@ if [[ $(grep -c "^>" "$bin_fasta_file") -gt 2500 ]] && [[ ! "$high_contig_num" =
     exit 1
 fi
 
-# Until single-end mode developed and tested, Jorg should exist when it encounters single-end reads
-if [[ ! $(echo "$single_end_reads") == "no" ]]; then
-    echo "Jorg is not compatible for single-end reads - this feature is under active development." | tee -a "$jorg_logfile"
-    echo "Exiting." | tee -a "$jorg_logfile"
-    exit 1
-fi
-
 fafilepath=${bin_fasta_file}
 echo "fafilepath is $fafilepath" | tee -a "$jorg_logfile"
 
@@ -162,7 +155,7 @@ cp "$bin_fasta_file" "$outfile"
 
 # Make manifest file for MIRA
 echo "Start: make manifest file for MIRA" | tee -a "$jorg_logfile"
-cat manifest_template.conf | sed "s/XXX/$binID/g" > manifest.conf
+cat manifest_template_pe.conf | sed "s/XXX/$binID/g" > manifest.conf
 echo "End: make manifest file for MIRA" | tee -a "$jorg_logfile"
 
 # Create file for contig stats of iterations

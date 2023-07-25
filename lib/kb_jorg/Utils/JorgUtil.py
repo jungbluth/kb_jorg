@@ -87,15 +87,26 @@ class JorgUtil:
     def _validate_run_jorg_params(self, task_params):
         """
         _validate_run_jorg_params:
-                validates params passed to run_jorg method
+                validates params passed to run_jorg_wf method
         """
-        log('Start validating run_jorg params')
+        log('Start validating run_jorg_wf params')
 
         # check for required parameters
-        for p in ['assembly_ref', 'reads_file', 'output_assembly_name', 'read_mapping_tool', 'kmer_size', 'min_coverage', 'num_iterations', 'high_contig_num', 'assembly_selection_criteria', 'save_iterations_fasta', 'circle_min_overlap_length', 'workspace_name']:
+        for p in ['assembly_ref', \
+                  'reads_file', \
+                  'output_assembly_name', \
+                  'read_mapping_tool', \
+                  'kmer_size', \
+                  'min_coverage', \
+                  'num_iterations', \
+                  'high_contig_num', \
+                  'assembly_selection_criteria', \
+                  'save_iterations_fasta', \
+                  'circle_min_overlap_length', \
+                  'workspace_name']:
             if p not in task_params:
                 raise ValueError('"{}" parameter is required, but missing'.format(p))
-        log('End validating run_jorg params')
+        log('End validating run_jorg_wf params')
 
 
     def _get_contig_file(self, assembly_ref):
@@ -116,7 +127,6 @@ class JorgUtil:
         fasta_df = pd.read_csv(file, sep='>', lineterminator='>', header=None)
         fasta_df[['Accession', 'Sequence']] = fasta_df[0].str.split('\n', 1, expand=True)
         fasta_df['Accession'] = fasta_df['Accession'].astype(str) + '_assembly' + str(i+1)  # need to keep assembly names distinct upon merging
-        log(print(fasta_df['Accession']))
         fasta_df.drop(0, axis=1, inplace=True)
         fasta_df['Sequence'] = fasta_df['Sequence'].replace('\n', '', regex=True)
         log('End fasta_reader')
@@ -149,26 +159,20 @@ class JorgUtil:
         return file_output
 
     def get_assembly_files(self, task_params):
+        log('Start get_assembly_files')
         assembly_set = []
 
         for i in range(0, len(task_params['assembly_ref'])):
             if len(task_params['assembly_ref']) > 1:
                 log("Pulling assembly files ")
-                log(len(task_params['assembly_ref']))
                 assembly_set.append(self._get_contig_file(task_params['assembly_ref'][i]))
                 if i == (len(task_params['assembly_ref']) - 1):  # all fasta files should be local
                     log("Merging assembly files")
                     contig_file = self.combine_fasta_file(assembly_set)
-                    log(os.listdir(self.scratch))
-                    task_params['contig_file_path'] = contig_file
+                    #task_params['contig_file_path'] = contig_file
             else:
-                log(task_params['assembly_ref'])
                 contig_file = self._get_contig_file(task_params['assembly_ref'][i])
-                log(contig_file)
-                task_params['contig_file_path'] = contig_file
-                # assembly = self.retrieve_assembly(task_params, i)
-                # log(assembly)
-                # task_params['contig_file_path'] = assembly
+                #task_params['contig_file_path'] = contig_file
 
         fasta = os.path.join(self.scratch, contig_file)
         file = open(fasta)
@@ -178,10 +182,24 @@ class JorgUtil:
 
         #if (len(start_line) > 20): # 30 is cutoff, 20 to be safe with longer IDs in file not represented by first ID
         contig_file = self.rename_fasta_ids(fasta)
-        task_params['contig_file_path'] = contig_file
-        log('--->\nEnd assembly\n')
+        #task_params['contig_file_path'] = contig_file
+        log('End get_assembly_files')
         return contig_file
 
+    def jorg_v2_check_input_assembly_contig_number(self, task_params, contig_file):
+        log('Start jorg_v2_check_input_assembly_contig_number')
+        handle = open(contig_file,"rU")
+        n = 0
+        for seq_record in SeqIO.parse(handle,"fasta"):
+            n = n + 1
+        handle.close()
+        log('There are {} contigs in the input assembly.'.format(n))
+        if (task_params['high_contig_num'] == '--high_contig_num no') and \
+           (n > 2500):
+           log("Number of contigs found in bin_fasta_file greater than 2500.")
+           log("Are you certain this is a single genome? If yes, rerun with --high_contig_num 'no' flag")
+           raise Exception("Too many contigs in input assembly. See log messages. Exiting.")
+        log('End jorg_v2_check_input_assembly_contig_number')
 
     # this function has been customized to return read_type variable (interleaved vs single-end library)
     def stage_reads_file(self, reads_file):
@@ -189,7 +207,7 @@ class JorgUtil:
         stage_reads_file: download fastq file associated to reads to scratch area
                           and return result_file_path
         """
-        log('Start processing reads object list: {}'.format(reads_file))
+        log('Start stage_reads_file')
         result_file_path = []
         read_type = []
         reads_file_check = isinstance(reads_file, list)
@@ -211,7 +229,7 @@ class JorgUtil:
             read_type.append(files['type'])
             if 'rev' in files and files['rev'] is not None:
                 result_file_path.append(files['rev'])
-        log('End processing reads objects')
+        log('End stage_reads_file')
         return result_file_path, read_type
 
     def rename_fastq_ids(self, fastq):
@@ -242,6 +260,7 @@ class JorgUtil:
         return (fastq_forward, fastq_reverse)
 
     def run_read_mapping_interleaved_pairs_mode(self, task_params, assembly, fastq, sam):
+        log('Start run_read_mapping_interleaved_pairs_mode')
         read_mapping_tool = task_params['read_mapping_tool']
         log("running {} mapping in interleaved mode.".format(read_mapping_tool))
         random_seed_int = randint(0, 999999999)
@@ -296,9 +315,11 @@ class JorgUtil:
             command += '{} '.format(fastq_forward)
             command += '{} '.format(fastq_reverse)
             command += '> {} '.format(sam)
+        else:
+            raise Exception("Selected a read mapping method that doesn't exist!")
         log('running alignment command: {}'.format(command))
         out, err = self._run_command(command)
-        log('Done running alignment')
+        log('End run_read_mapping_interleaved_pairs_mode')
 
     def convert_sam_to_sorted_and_indexed_bam(self, sam):
         # create bam files from sam files
@@ -328,13 +349,8 @@ class JorgUtil:
             sorted and indexed bam files from sam files using samtools.
         """
         log('Start generate_alignment_bams')
-        #reads_file = task_params['reads_file']
-
-        #(read_scratch_path, read_type) = self.stage_reads_file(reads_file)
-
         # list of reads files, can be 1 or more. assuming reads are either type unpaired or interleaved
         # will not handle unpaired forward and reverse reads input as seperate (non-interleaved) files
-
         for i in range(len(read_scratch_path)):
             fastq = read_scratch_path[i]
             fastq_type = read_type[i]
@@ -342,7 +358,6 @@ class JorgUtil:
             file = open(fastq)
             # getting the starting line of the file
             start_line = file.readline()
-            log(start_line)
             # may want to rename everything at some point if more errors, but con is it takes longer
             if (len(start_line) > 20): # 30 is cutoff, 20 to be safe with longer IDs in file not represented by first ID
                 fastq = self.rename_fastq_ids(fastq)
@@ -408,8 +423,8 @@ class JorgUtil:
 
     def copy_required_jorg_input_files_to_cwd(self):
         log('Start copy_required_jorg_input_files_to_cwd')
-        manifest_template_file_source = "/kb/module/lib/kb_jorg/bin/Jorg/manifest_template.conf"
-        manifest_template_file_destination = os.path.join(self.scratch, str('manifest_template.conf'))
+        manifest_template_file_source = "/kb/module/lib/kb_jorg/bin/Jorg/manifest_template_pe.conf"
+        manifest_template_file_destination = os.path.join(self.scratch, str('manifest_template_pe.conf'))
         shutil.move(manifest_template_file_source,manifest_template_file_destination)
         log('End copy_required_jorg_input_files_to_cwd')
 
@@ -498,6 +513,39 @@ class JorgUtil:
         log('End select_jorg_output_genome')
         return output_jorg_assembly, output_jorg_assembly_name, num_contigs
 
+    def run_jorg_tools(self, task_params, jorg_working_coverage, contig_file, read_scratch_path):
+        """
+        generate_command: jorg
+        """
+        log('Start run_jorg_tools')
+        assembly_ref = contig_file
+        reads_file = read_scratch_path[0]
+        kmer_size = task_params['kmer_size']
+        min_coverage = jorg_working_coverage
+        num_iterations = task_params['num_iterations']
+        parameter_high_contig_num = self.fix_generate_jorg_command_ui_bug(task_params)
+        self.copy_required_jorg_input_files_to_cwd()
+        log("\n\nRunning run_jorg_and_circos_workflow")
+        command = 'bash {}/jorg_light '.format(self.JORG_BASE_PATH)
+        command += '--bin_fasta_file {} '.format(assembly_ref)
+        command += '--reads_file {} '.format(reads_file)
+        command += '--kmer_length {} '.format(kmer_size)
+        command += '--min_coverage {} '.format(min_coverage)
+        command += '--iterations {} '.format(num_iterations)
+        command += '--runtime_cap 6 ' # runtime limit (in days) for running on KBase
+        command += ' {}'.format(parameter_high_contig_num)
+        log('Generated jorg command: {}'.format(command))
+        log("start running Jorg command")
+        self._run_command(command)
+        log("end running Jorg command")
+
+        # process and select jorg output and calculate statistics
+        running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
+        output_jorg_assembly, output_jorg_assembly_name, num_contigs = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
+
+        log('End run_jorg_tools')
+        return output_jorg_assembly, output_jorg_assembly_name, num_contigs
+
     def run_circle_check_using_last(self, output_jorg_assembly):
         log('Start run_circle_check_using_last')
         command = 'bash {}/lib/circle_check_using_last '.format(self.JORG_BASE_PATH)
@@ -555,6 +603,13 @@ class JorgUtil:
         else:
             output_circle_text = "No"
         log('End process_last_output')
+        return circularized_contigs, output_circle_text
+
+    def circularized_contig_checker(self, task_params, output_jorg_assembly):
+        log('Start circularized_contig_checker')
+        path_to_last_output = self.run_circle_check_using_last(output_jorg_assembly)
+        circularized_contigs, output_circle_text = self.process_last_output(task_params, path_to_last_output)
+        log('End circularized_contig_checker')
         return circularized_contigs, output_circle_text
 
     def uppercase_fastq_file(self, reads_file):
@@ -634,9 +689,9 @@ class JorgUtil:
         self._run_command(command)
         log('End draw_circos_plot')
 
-    def make_circos_plot(self, task_params, reads_file, output_jorg_assembly):
+    def make_circos_plot(self, task_params, read_scratch_path, output_jorg_assembly):
         log('Start make_circos_plot')
-        output_fastq = self.uppercase_fastq_file(reads_file)
+        output_fastq = self.uppercase_fastq_file(read_scratch_path[0])
         output_jorg_assembly_clean = self.clean_input_fasta(output_jorg_assembly)
         output_jorg_assembly_clean_sorted = self.sort_fasta_by_length(output_jorg_assembly_clean)
         sam = os.path.basename(output_fastq).split('.fastq')[0] + ".sam"
@@ -649,11 +704,10 @@ class JorgUtil:
         log('End make_circos_plot')
         return output_jorg_assembly_clean_sorted, max_cov, min_cov, std_cov, mean_cov
 
-    def move_jorg_output_files_to_output_dir(self, task_params):
-        log('Start move_jorg_output_files_to_output_dir')
+    def move_files_to_output_dir(self, task_params):
+        log('Start move_files_to_output_dir')
         dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
         if task_params['save_iterations_fasta'] == 1:
-            log("This triggered")
             shutil.move(os.path.join(os.path.abspath(self.scratch), "Iterations") , dest)
             full = os.path.join(dest, "Iterations")
             result_file = os.path.join(dest, 'Iterations')
@@ -679,54 +733,7 @@ class JorgUtil:
                 f.endswith(".zip") or \
                 f.endswith(".tbl")):
                 shutil.move(f, dest)
-        log('End move_jorg_output_files_to_output_dir')
-
-    def run_jorg_and_circos_workflow(self, task_params, jorg_working_coverage):
-        """
-        generate_command: jorg
-        """
-        log('Start run_jorg_and_circos_workflow')
-        assembly_ref = task_params['contig_file_path']
-        reads_file = task_params['reads_list_file'][0]
-        kmer_size = task_params['kmer_size']
-        min_coverage = jorg_working_coverage
-        num_iterations = task_params['num_iterations']
-        parameter_high_contig_num = self.fix_generate_jorg_command_ui_bug(task_params)
-        self.copy_required_jorg_input_files_to_cwd()
-        log("\n\nRunning run_jorg_and_circos_workflow")
-        command = 'bash {}/jorg_light '.format(self.JORG_BASE_PATH)
-        command += '--bin_fasta_file {} '.format(assembly_ref)
-        command += '--reads_file {} '.format(reads_file)
-        command += '--kmer_length {} '.format(kmer_size)
-        command += '--min_coverage {} '.format(min_coverage)
-        command += '--iterations {} '.format(num_iterations)
-        command += '--runtime_cap 6 ' # runtime limit (in days) for running on KBase
-        command += ' {}'.format(parameter_high_contig_num)
-        log('Generated jorg command: {}'.format(command))
-        log("start running Jorg command")
-        self._run_command(command)
-        log("end running Jorg command")
-
-        # process jorg output and calculate statistics
-        running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
-
-        #output_jorg_assembly = 'Iterations/1.fasta'
-        output_jorg_assembly, output_jorg_assembly_name, num_contigs = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
-
-        # run check for circularity
-        path_to_last_output = self.run_circle_check_using_last(output_jorg_assembly)
-
-        circularized_contigs, output_circle_text = self.process_last_output(task_params, path_to_last_output)
-
-        # make circos plot
-        output_jorg_assembly_clean_sorted, max_cov, min_cov, std_cov, mean_cov = self.make_circos_plot(task_params, reads_file, output_jorg_assembly)
-
-        # move relevant files to output directory provided to user
-        self.move_jorg_output_files_to_output_dir(task_params)
-
-        log('End run_jorg_and_circos_workflow')
-        return output_jorg_assembly_clean_sorted, output_jorg_assembly_name, num_contigs, output_circle_text, max_cov, min_cov, std_cov, mean_cov
-
+        log('End move_files_to_output_dir')
 
     def generate_output_file_list(self, result_directory):
         """
@@ -755,7 +762,6 @@ class JorgUtil:
                              'description': 'Files generated by Jorg App'})
         log('End generate_output_file_list')
         return output_files
-
 
     def generate_html_report(self, output_assembly_name, assembly_ref, assembly_stats):
         """
@@ -852,24 +858,81 @@ class JorgUtil:
         return report_output
 
 
-    def run_jorg(self, task_params):
+    def jorg_v2_text_banner(self):
+        log("        _                               __    __    __    __            ")
+        log("       | | ___  _ __ __ _              /  \  /  \  /  \  /  \           ")
+        log("___ _  | |/ _ \| '__/ _  |____________/  __\/  __\/  __\/  __\__________")
+        log("___| |_| | (_) | | | (_| |___________/  /__/  /__/  /__/  /_____________")
+        log("    \___/ \___/|_|  \__, |       | / \   / \   / \   / \  \____         ")
+        log("                    |___/        |/   \_/   \_/   \_/   \    o \        ")
+        log("                                                         \_____/--<     ")
+        log("                                                                        ")
+        log("Jorg - Circularization and improvement of metagenomic bins              ")
+        log("                                                                        ")
+        log("Authors: Lauren Lui , Torben Nielsen, Sean Jungbluth, Adam Arkin        ")
+
+    def jorg_v2_mira_version(self):
+        log('Start jorg_v2_mira_version')
+        command = "mira --version | grep MIRA | sed 's/MIRA //' 2>&1"
+        try:
+            mira_version_stdout, mira_version_stderr = self._run_command(command)
+        except:
+            raise Exception("Cannot find mira installation!")
+        #mira_version_stdout = mira_version_stdout.split('\n')[0]
+        log('MIRA version is: {}'.format(mira_version_stdout))
+        log('End jorg_v2_mira_version')
+
+    def jorg_v2_mirabait_version(self):
+        log('Start jorg_v2_mirabait_version')
+        command = "mirabait --version | grep MIRA | sed 's/MIRABAIT //' 2>&1"
+        try:
+            mirabait_version_stdout, mirabait_version_stderr = self._run_command(command)
+        except:
+            raise Exception("Cannot find mirabait installation!")
+        #mirabait_version_stdout = mirabait_version_stdout.split('\n')[0]
+        log('MIRABAIT version is: {}'.format(mirabait_version_stdout))
+        log('End jorg_v2_mirabait_version')
+
+    # def jorg_v2_seqtk_version(self):
+    #     log('Start jorg_v2_seqtk_version')
+    #     command = "which seqtk"
+    #     try:
+    #         seqtk_version_stdout, seqtk_version_stderr = self._run_command(command)
+    #     except:
+    #         raise Exception("Cannot find seqtk installation!")
+    #     #seqtk_version_stdout = seqtk_version_stdout.split('\n')[0]
+    #     log('Seqtk version is: {}'.format(seqtk_version_stdout))
+    #     log('End jorg_v2_seqtk_version')
+
+    def jorg_v2_versions(self):
+        self.jorg_v2_mira_version()
+        self.jorg_v2_mirabait_version()
+        #self.jorg_v2_seqtk_version()
+
+    def jorg_v2(self):
+        self.jorg_v2_text_banner()
+        self.jorg_v2_versions()
+
+
+    def run_jorg_wf(self, task_params):
         """
-        run_jorg: jorg app
+        run_jorg_wf: jorg workflow
         """
-        log('--->\nrunning JorgUtil.run_jorg\n' +
+        log('Start run_jorg_wf')
+        log('--->\nrunning JorgUtil.run_jorg_wf\n' +
             'task_params:\n{}'.format(json.dumps(task_params, indent=1)))
+
+        self.jorg_v2()
 
         # light validation on input parameters
         self._validate_run_jorg_params(task_params)
 
-        # get assembly
-        task_params['contig_file_path'] = self.get_assembly_files(task_params)
-        contig_file = task_params['contig_file_path']
+        # get assembly and run checks
+        contig_file = self.get_assembly_files(task_params)
+        self.jorg_v2_check_input_assembly_contig_number(task_params, contig_file)
 
         # get reads
         (read_scratch_path, read_type) = self.stage_reads_file(task_params['reads_file'])
-        task_params['read_type'] = read_type
-        task_params['reads_list_file'] = read_scratch_path
 
         # prep result directory
         result_directory = os.path.join(self.scratch, self.JORG_RESULT_DIRECTORY)
@@ -884,27 +947,42 @@ class JorgUtil:
         # check to make sure input contigs have required coverage
         jorg_working_coverage = self.check_input_assembly_for_minimum_coverage(task_params)
 
-        # run jorg and circos
-        output_jorg_assembly_clean_sorted, output_jorg_assembly_name, num_contigs, output_circle_text, max_cov, min_cov, std_cov, mean_cov = self.run_jorg_and_circos_workflow(task_params, jorg_working_coverage)
+        # run jorg workflow
+        output_jorg_assembly, output_jorg_assembly_name, num_contigs = self.run_jorg_tools(task_params, jorg_working_coverage, contig_file, read_scratch_path)
+
+        # check for circularity
+        (circularized_contigs, output_circle_text) = self.circularized_contig_checker(task_params, output_jorg_assembly)
+
+        # make circos plot
+        output_jorg_assembly_clean_sorted, max_cov, min_cov, std_cov, mean_cov = self.make_circos_plot(task_params, read_scratch_path, output_jorg_assembly)
+
+        # move relevant files to output directory provided to user
+        self.move_files_to_output_dir(task_params)
 
         # generate stats for report
-        assembly_stats = {'iteration' : output_jorg_assembly_name, 'num_contigs' : num_contigs, 'mean_cov' : mean_cov, 'std_cov' : std_cov, 'min_cov' : min_cov, 'max_cov' : max_cov, 'circle_or_not' : output_circle_text}
+        assembly_stats = {'iteration' : output_jorg_assembly_name, \
+                          'num_contigs' : num_contigs, \
+                          'mean_cov' : mean_cov, \
+                          'std_cov' : std_cov, \
+                          'min_cov' : min_cov, \
+                          'max_cov' : max_cov, \
+                          'circle_or_not' : output_circle_text \
+                          }
 
         # prep assembly for upload to kbase
         dest = os.path.abspath(self.JORG_RESULT_DIRECTORY)
         assembly_ref_obj = self.au.save_assembly_from_fasta(
             {'file': {'path': dest + '/' + output_jorg_assembly_clean_sorted},
-#            {'file': {'path': os.path.abspath(output_jorg_assembly_clean_sorted)},
              'workspace_name': task_params['workspace_name'],
              'assembly_name': task_params['output_assembly_name']
              })
 
         # generate report
         reportVal = self.generate_report(assembly_ref_obj, task_params, assembly_stats)
-        returnVal = {
-            'result_directory': result_directory,
-            'assembly_obj_ref': assembly_ref_obj
-        }
+        returnVal = {'result_directory': result_directory, \
+                     'assembly_obj_ref': assembly_ref_obj \
+                     }
 
         returnVal.update(reportVal)
+        log('End run_jorg_wf')
         return returnVal

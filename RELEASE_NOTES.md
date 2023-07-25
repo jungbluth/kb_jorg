@@ -1,6 +1,12 @@
 # kb_jorg release notes
 =========================================
 
+0.4.1
+-----
+* Reorganized main jorg function
+* Decluttered variable usage throughout
+* Start Jorg python re-write
+
 0.4.0
 -----
 * Added minimap2 and bwa as selectable read mappers
@@ -31,3 +37,13 @@
 0.0.0
 -----
 * Module created by kb-sdk init
+
+ToDo
+_____
+* re-write Jorg in python for log accessibility and increased verbosity
+* review Jorg repo for more workflow additions
+* save circularized contig information in assembly object
+* fix new error in Desulforudis narrative
+* single-end read mode
+* make Jorg tutorial
+* write a manuscript

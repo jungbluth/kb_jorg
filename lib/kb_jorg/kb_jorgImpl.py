@@ -79,7 +79,7 @@ class kb_jorg:
 
         jorg_runner = JorgUtil(self.config)
 
-        returnVal = jorg_runner.run_jorg(params)
+        returnVal = jorg_runner.run_jorg_wf(params)
 
         #END run_kb_jorg
 
