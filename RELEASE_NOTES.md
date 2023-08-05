@@ -1,6 +1,12 @@
 # kb_jorg release notes
 =========================================
 
+
+0.5.0
+-----
+* Jorg re-written in python to assist future KBase development
+* Added multi-threading to MIRA
+
 0.4.1
 -----
 * Reorganized main jorg function

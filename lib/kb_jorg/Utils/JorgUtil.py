@@ -35,7 +35,8 @@ def log(message, prefix_newline=False):
 class JorgUtil:
     JORG_BASE_PATH = '/kb/module/lib/kb_jorg/bin/Jorg'
     JORG_RESULT_DIRECTORY = 'jorg_output_dir'
-    MAPPING_THREADS = 16
+    MAPPING_THREADS = 4
+    #MAPPING_THREADS = 16
     BBMAP_MEM = '30g'
 
     def __init__(self, config):
@@ -186,8 +187,8 @@ class JorgUtil:
         log('End get_assembly_files')
         return contig_file
 
-    def jorg_v2_check_input_assembly_contig_number(self, task_params, contig_file):
-        log('Start jorg_v2_check_input_assembly_contig_number')
+    def jorg_py_check_input_assembly_contig_number(self, task_params, contig_file):
+        log('Start jorg_py_check_input_assembly_contig_number')
         handle = open(contig_file,"rU")
         n = 0
         for seq_record in SeqIO.parse(handle,"fasta"):
@@ -199,7 +200,7 @@ class JorgUtil:
            log("Number of contigs found in bin_fasta_file greater than 2500.")
            log("Are you certain this is a single genome? If yes, rerun with --high_contig_num 'no' flag")
            raise Exception("Too many contigs in input assembly. See log messages. Exiting.")
-        log('End jorg_v2_check_input_assembly_contig_number')
+        log('End jorg_py_check_input_assembly_contig_number')
 
     # this function has been customized to return read_type variable (interleaved vs single-end library)
     def stage_reads_file(self, reads_file):
@@ -421,12 +422,22 @@ class JorgUtil:
         log("End fix_generate_jorg_command_ui_bug")
         return parameter_high_contig_num
 
-    def copy_required_jorg_input_files_to_cwd(self):
-        log('Start copy_required_jorg_input_files_to_cwd')
+    def prepare_jorg_input_files(self, assembly_ref, reads_file):
+        log('Start prepare_jorg_input_files')
         manifest_template_file_source = "/kb/module/lib/kb_jorg/bin/Jorg/manifest_template_pe.conf"
         manifest_template_file_destination = os.path.join(self.scratch, str('manifest_template_pe.conf'))
         shutil.move(manifest_template_file_source,manifest_template_file_destination)
-        log('End copy_required_jorg_input_files_to_cwd')
+        binID = '.'.join(os.path.basename(assembly_ref).split('.')[:-1])
+        fqbinID = '.'.join(os.path.basename(reads_file).split('.')[:-1])
+        if binID == fqbinID:
+            raise Exception("Jorg error: the fastq file prefix needs to NOT be named the same as fasta file. Exiting.")
+        jorg_outfile = binID + '.out.fasta'
+        shutil.copyfile(os.path.abspath(assembly_ref), os.path.abspath(jorg_outfile))
+        os.system('cat manifest_template_pe.conf | sed "s/XXX/{}/g" > manifest.conf'.format(binID))
+        os.system('printf "contig_name\tlength\tGC_percent\tcumulative_length\n" > iterations.txt')
+        self._mkdir_p("Iterations")
+        log('End prepare_jorg_input_files')
+        return binID, jorg_outfile
 
 ## not working correctly in narrative
     def process_jorg_iteration_output_and_calc_stats(self):
@@ -436,15 +447,6 @@ class JorgUtil:
 
         file1 = open(path_to_iterations_file, 'r')
         lines = file1.readlines()
-
-        # used during debugging
-        # log("start printing Jorg log")
-        # datafile = glob.glob('Jorg*.log')[0]
-        # z = open(datafile, "r")  # the a opens it in append mode
-        # text = z.read()
-        # log(text)
-        # z.close()
-        # log("end printing Jorg log")
 
         genome_num_fasta = []
         last_circle_check = []
@@ -513,37 +515,130 @@ class JorgUtil:
         log('End select_jorg_output_genome')
         return output_jorg_assembly, output_jorg_assembly_name, num_contigs
 
-    def run_jorg_tools(self, task_params, jorg_working_coverage, contig_file, read_scratch_path):
-        """
-        generate_command: jorg
-        """
-        log('Start run_jorg_tools')
+    def run_mirabait(self, task_params, read_scratch_path, jorg_outfile, binID, i):
+        log('Start run_mirabait')
+        kmer_size = task_params['kmer_size']
+        reads_file = read_scratch_path[0]
+        command = 'mirabait '
+        command += '-k {} '.format(kmer_size)
+        command += '-b {} '.format(jorg_outfile)
+        command += '-P {} '.format(reads_file)
+        command += '-t {} '.format(self.MAPPING_THREADS)
+        command += '-o {}.fastq &> '.format(binID)
+        command += 'mirabait_iteration_{}.log '.format(i)
+        log('Generated mirabait command: {}'.format(command))
+        log("start running mirabait command")
+        self._run_command(command)
+        if os.stat("{}.fastq".format(binID)).st_size == 0:
+            raise Exception("Error: fastq file empty after mirabait step.")
+        log("end running mirabait command")
+        log('End run_mirabait')
+
+    def run_seqtk_renaming(self, binID):
+        log('Start run_seqtk_renaming')
+        command = 'bash {}/jorg_light_p1.sh '.format(self.JORG_BASE_PATH)
+        command += '{} '.format(binID)
+        log('Generated seqtk renaming command: {}'.format(command))
+        log("start running seqtk renaming command")
+        self._run_command(command)
+        log("end running seqtk renaming command")
+        log('End run_seqtk_renaming')
+
+    def run_mira(self, binID, i):
+        log('Start run_mira')
+        command = 'mira -t {} '.format(self.MAPPING_THREADS)
+        command += 'manifest.conf &> mira_iteration_{}.log'.format(i)
+        log('Generated mira assembler command: {}'.format(command))
+        log("start running mira assembler command")
+        self._run_command(command)
+        log("end running mira assembler command")
+        shutil.copyfile(os.path.abspath('{}_assembly/{}_d_results/{}_out.unpadded.fasta'.format(binID, binID, binID)), os.path.abspath('{}_MIRA.fasta'.format(binID)))
+        log('End run_mira')
+
+    def run_screen_mira_contig_length_and_coverage(self, jorg_working_coverage, binID):
+        log('Start run_screen_mira_contig_length_and_coverage')
+        command = 'bash {}/jorg_light_p2.sh '.format(self.JORG_BASE_PATH)
+        command += '{} '.format(jorg_working_coverage)
+        command += '{} '.format(binID)
+        log('Generated contig screening command: {}'.format(command))
+        log("start running contig screening command")
+        self._run_command(command)
+        log("end running contig screening command")
+        file=os.path.abspath("list.txt")
+        if (len(file.split('\n')) < 1):
+            raise Exception("Zero contigs passed criteria for minimum length and minimum coverage. Exiting.")
+        else:
+            log("At least one contig passed criteria for minimum length and minimum coverage - will continue attempting to close genome.")
+        log('End run_screen_mira_contig_length_and_coverage')
+
+    def run_select_next_contigs(self, jorg_outfile, binID):
+        log('Start run_select_next_contigs')
+        if os.stat(jorg_outfile).st_size == 0:
+            raise Exception("Error: fasta outfile empty.")
+        command = 'bash {}/jorg_light_p3.sh '.format(self.JORG_BASE_PATH)
+        command += '{} '.format(binID)
+        command += '{} '.format(jorg_outfile)
+        log('Generated contig selection command: {}'.format(command))
+        log("start running contig selection command")
+        self._run_command(command)
+        log("end running contig selection command")
+        log('End run_select_next_contigs')
+
+    def run_select_next_contigs(self, jorg_outfile, binID):
+        log('Start run_select_next_contigs')
+        if os.stat(jorg_outfile).st_size == 0:
+            raise Exception("Error: fasta outfile empty.")
+        command = 'bash {}/jorg_light_p3.sh '.format(self.JORG_BASE_PATH)
+        command += '{} '.format(binID)
+        command += '{} '.format(jorg_outfile)
+        log('Generated contig selection command: {}'.format(command))
+        log("start running contig selection command")
+        self._run_command(command)
+        log("end running contig selection command")
+        log('End run_select_next_contigs')
+
+    def run_generate_seqtk_stats(self, jorg_outfile, binID):
+        log('Start run_generate_seqtk_stats')
+        if os.stat(jorg_outfile).st_size == 0:
+            raise Exception("Error: fasta outfile empty after second round.")
+        command = 'bash {}/jorg_light_p4.sh '.format(self.JORG_BASE_PATH)
+        command += '{} '.format(binID)
+        log('Generated seqtk stats command: {}'.format(command))
+        log("start running seqtk stats command")
+        self._run_command(command)
+        log("end running seqtk stats command")
+        log('End run_generate_seqtk_stats')
+
+    def run_jorg_py(self, task_params, jorg_working_coverage, contig_file, read_scratch_path):
+        log('Start run_jorg_py')
         assembly_ref = contig_file
         reads_file = read_scratch_path[0]
         kmer_size = task_params['kmer_size']
         min_coverage = jorg_working_coverage
         num_iterations = task_params['num_iterations']
         parameter_high_contig_num = self.fix_generate_jorg_command_ui_bug(task_params)
-        self.copy_required_jorg_input_files_to_cwd()
-        log("\n\nRunning run_jorg_and_circos_workflow")
-        command = 'bash {}/jorg_light '.format(self.JORG_BASE_PATH)
-        command += '--bin_fasta_file {} '.format(assembly_ref)
-        command += '--reads_file {} '.format(reads_file)
-        command += '--kmer_length {} '.format(kmer_size)
-        command += '--min_coverage {} '.format(min_coverage)
-        command += '--iterations {} '.format(num_iterations)
-        command += '--runtime_cap 6 ' # runtime limit (in days) for running on KBase
-        command += ' {}'.format(parameter_high_contig_num)
-        log('Generated jorg command: {}'.format(command))
-        log("start running Jorg command")
-        self._run_command(command)
-        log("end running Jorg command")
+        binID, jorg_outfile = self.prepare_jorg_input_files(assembly_ref, reads_file)
+        log("\n\nRunning run_jorg")
+        for i in range(1,int(num_iterations)+1):
+            log("Starting Jorg iteration #{}".format(i))
+            os.system('echo "Iteration {}" >> iterations.txt'.format(i))
+            self.run_mirabait(task_params, read_scratch_path, jorg_outfile, binID, i)
+            self.run_seqtk_renaming(binID)
+            self.run_mira(binID, i)
+            self.run_screen_mira_contig_length_and_coverage(jorg_working_coverage, binID)
+            self.run_select_next_contigs(jorg_outfile, binID)
+            self.run_generate_seqtk_stats(jorg_outfile, binID)
+            shutil.copyfile(os.path.abspath('{}.out.fasta'.format(binID)), os.path.abspath('Iterations/{}.fasta'.format(i)))
+            #shutil.copyfile(os.path.abspath('{}.out.fasta'.format(binID)), os.path.abspath('Iterations/Jorg_iteration_{}.fasta'.format(i)))
+            log("Ending Jorg iteration #{}".format(i))
+        log('End run_jorg_py')
 
+    def process_jorg_py_output(self, task_params):
         # process and select jorg output and calculate statistics
+        log('Start process_jorg_py_output')
         running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly = self.process_jorg_iteration_output_and_calc_stats()
         output_jorg_assembly, output_jorg_assembly_name, num_contigs = self.select_jorg_output_genome(task_params, running_longest_single_fragment, assembly_with_longest_single_fragment, assembly_with_longest_cumulative_assembly_length, final_iteration_assembly)
-
-        log('End run_jorg_tools')
+        log('End process_jorg_py_output')
         return output_jorg_assembly, output_jorg_assembly_name, num_contigs
 
     def run_circle_check_using_last(self, output_jorg_assembly):
@@ -858,7 +953,7 @@ class JorgUtil:
         return report_output
 
 
-    def jorg_v2_text_banner(self):
+    def jorg_py_text_banner(self):
         log("........_...............................__....__....__....__............")
         log(".......|.|.___.._.__.__._............../..\../..\../..\../..\...........")
         log("___._..|.|/._.\|.'__/._..|____________/..__\/..__\/..__\/..__\__________")
@@ -871,8 +966,8 @@ class JorgUtil:
         log("Authors: Lauren Lui, Torben Nielsen, Sean Jungbluth, Adam Arkin.........")
         log("........................................................................")
 
-    def jorg_v2_mira_version(self):
-        log('Start jorg_v2_mira_version')
+    def jorg_py_mira_version(self):
+        log('Start jorg_py_mira_version')
         command = "mira --version | grep MIRA | sed 's/MIRA //' 2>&1"
         try:
             mira_version_stdout, mira_version_stderr = self._run_command(command)
@@ -880,10 +975,10 @@ class JorgUtil:
             raise Exception("Cannot find mira installation!")
         #mira_version_stdout = mira_version_stdout.split('\n')[0]
         log('MIRA version is: {}'.format(mira_version_stdout))
-        log('End jorg_v2_mira_version')
+        log('End jorg_py_mira_version')
 
-    def jorg_v2_mirabait_version(self):
-        log('Start jorg_v2_mirabait_version')
+    def jorg_py_mirabait_version(self):
+        log('Start jorg_py_mirabait_version')
         command = "mirabait --version | grep MIRA | sed 's/MIRABAIT //' 2>&1"
         try:
             mirabait_version_stdout, mirabait_version_stderr = self._run_command(command)
@@ -891,10 +986,10 @@ class JorgUtil:
             raise Exception("Cannot find mirabait installation!")
         #mirabait_version_stdout = mirabait_version_stdout.split('\n')[0]
         log('MIRABAIT version is: {}'.format(mirabait_version_stdout))
-        log('End jorg_v2_mirabait_version')
+        log('End jorg_py_mirabait_version')
 
-    # def jorg_v2_seqtk_version(self):
-    #     log('Start jorg_v2_seqtk_version')
+    # def jorg_py_seqtk_version(self):
+    #     log('Start jorg_py_seqtk_version')
     #     command = "which seqtk"
     #     try:
     #         seqtk_version_stdout, seqtk_version_stderr = self._run_command(command)
@@ -902,16 +997,16 @@ class JorgUtil:
     #         raise Exception("Cannot find seqtk installation!")
     #     #seqtk_version_stdout = seqtk_version_stdout.split('\n')[0]
     #     log('Seqtk version is: {}'.format(seqtk_version_stdout))
-    #     log('End jorg_v2_seqtk_version')
+    #     log('End jorg_py_seqtk_version')
 
-    def jorg_v2_versions(self):
-        self.jorg_v2_mira_version()
-        self.jorg_v2_mirabait_version()
-        #self.jorg_v2_seqtk_version()
+    def jorg_py_versions(self):
+        self.jorg_py_mira_version()
+        self.jorg_py_mirabait_version()
+        #self.jorg_py_seqtk_version()
 
-    def jorg_v2(self):
-        self.jorg_v2_text_banner()
-        self.jorg_v2_versions()
+    def jorg_py(self):
+        self.jorg_py_text_banner()
+        self.jorg_py_versions()
 
 
     def run_jorg_wf(self, task_params):
@@ -922,14 +1017,14 @@ class JorgUtil:
         log('--->\nrunning JorgUtil.run_jorg_wf\n' +
             'task_params:\n{}'.format(json.dumps(task_params, indent=1)))
 
-        self.jorg_v2()
+        self.jorg_py()
 
         # light validation on input parameters
         self._validate_run_jorg_params(task_params)
 
         # get assembly and run checks
         contig_file = self.get_assembly_files(task_params)
-        self.jorg_v2_check_input_assembly_contig_number(task_params, contig_file)
+        self.jorg_py_check_input_assembly_contig_number(task_params, contig_file)
 
         # get reads
         (read_scratch_path, read_type) = self.stage_reads_file(task_params['reads_file'])
@@ -947,8 +1042,11 @@ class JorgUtil:
         # check to make sure input contigs have required coverage
         jorg_working_coverage = self.check_input_assembly_for_minimum_coverage(task_params)
 
-        # run jorg workflow
-        output_jorg_assembly, output_jorg_assembly_name, num_contigs = self.run_jorg_tools(task_params, jorg_working_coverage, contig_file, read_scratch_path)
+        # run jorg tool
+        self.run_jorg_py(task_params, jorg_working_coverage, contig_file, read_scratch_path)
+
+        # process jorg output
+        output_jorg_assembly, output_jorg_assembly_name, num_contigs = self.process_jorg_py_output(task_params)
 
         # check for circularity
         (circularized_contigs, output_circle_text) = self.circularized_contig_checker(task_params, output_jorg_assembly)
