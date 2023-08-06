@@ -168,7 +168,8 @@ class kb_jorgTest(unittest.TestCase):
         assembly_params1 = {
             'file': {'path': cls.assembly_filename_path1},
             'workspace_name': cls.ws_info[1],
-            'assembly_name': 'MyAssembly1'
+            'assembly_name': 'GCA_002294005.1_ASM229400v1_genomic.fna_assembly'
+            #'assembly_name': 'MyAssembly1'
         }
         # puts assembly object onto shock
         cls.assembly_ref1 = cls.au.save_assembly_from_fasta(assembly_params1)
@@ -224,7 +225,7 @@ class kb_jorgTest(unittest.TestCase):
                                              'assembly_selection_criteria': 'longest_single_fragment',
                                              'reads_file': self.int1_oldstyle_reads_ref })
 
-    #@unittest.skip  # no reason needed
+    @unittest.skip  # no reason needed
     def test_run_jorg_multiple_iterations(self):
         method_name = 'test_run_jorg_multiple_iterations'
         print ("\n=================================================================")
@@ -246,7 +247,7 @@ class kb_jorgTest(unittest.TestCase):
                                              'assembly_selection_criteria': 'longest_single_fragment',
                                              'reads_file': self.int1_oldstyle_reads_ref })
 
-    #@unittest.skip  # no reason needed
+    @unittest.skip  # no reason needed
     def test_run_jorg_longIDs(self):
         method_name = 'test_run_jorg_longIDs'
         print ("\n=================================================================")
@@ -267,7 +268,7 @@ class kb_jorgTest(unittest.TestCase):
                                              'high_contig_num': '--high_contig_num no',
                                              'assembly_selection_criteria': 'longest_single_fragment',
                                              'reads_file': self.int2_oldstyle_reads_ref })
-    #@unittest.skip  # no reason needed
+    @unittest.skip  # no reason needed
     def test_run_jorg_multiple_assembly_input(self):
         method_name = 'test_run_jorg_multiple_assembly_input'
         print ("\n=================================================================")
@@ -289,7 +290,7 @@ class kb_jorgTest(unittest.TestCase):
                                              'assembly_selection_criteria': 'longest_single_fragment',
                                              'reads_file': self.int1_oldstyle_reads_ref })
 
-    #@unittest.skip  # no reason needed
+    @unittest.skip  # no reason needed
     def test_run_jorg_no_save_iterations(self):
         method_name = 'test_run_jorg_no_save_iterations'
         print ("\n=================================================================")

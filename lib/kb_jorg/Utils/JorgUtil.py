@@ -524,11 +524,19 @@ class JorgUtil:
         command += '-b {} '.format(jorg_outfile)
         command += '-P {} '.format(reads_file)
         command += '-t {} '.format(self.MAPPING_THREADS)
-        command += '-o {}.fastq &> '.format(binID)
-        command += 'mirabait_iteration_{}.log '.format(i)
+        command += '-o {}.fastq '.format(binID)
+        #command += '-o {}.fastq &> '.format(binID)
+        #command += 'mirabait_iteration_{}.log '.format(i)
         log('Generated mirabait command: {}'.format(command))
         log("start running mirabait command")
-        self._run_command(command)
+        try:
+            stdout,stderr = self._run_command(command)
+            # log("stdout is {}".format(stdout))
+            # log("stderr is {}".format(stderr))
+        except:
+            # log("stdout is {}".format(stdout))
+            # log("stderr is {}".format(stderr))
+            raise Exception("Error running Mirabait read recruitment!")
         if os.stat("{}.fastq".format(binID)).st_size == 0:
             raise Exception("Error: fastq file empty after mirabait step.")
         log("end running mirabait command")
@@ -544,13 +552,27 @@ class JorgUtil:
         log("end running seqtk renaming command")
         log('End run_seqtk_renaming')
 
+    # def print_log_tail(self, inputlog, tailsize):
+    #     len(inputlog.split("\n"))
+    #     for i in range(0,len(inputlog.split("\n"))):
+    #         if i > (len(inputlog.split("\n")) - 100):
+    #             log("log line is: {}".format(inputlog.split("\n")[i]))
+
     def run_mira(self, binID, i):
         log('Start run_mira')
         command = 'mira -t {} '.format(self.MAPPING_THREADS)
-        command += 'manifest.conf &> mira_iteration_{}.log'.format(i)
+        command += 'manifest.conf'
+        #command += 'manifest.conf &> mira_iteration_{}.log'.format(i)
         log('Generated mira assembler command: {}'.format(command))
         log("start running mira assembler command")
-        self._run_command(command)
+        try:
+            stdout,stderr = self._run_command(command)
+            log("stdout is {}".format(stdout))
+            log("stderr is {}".format(stderr))
+        except:
+            # log("stdout is {}".format(stdout))
+            # log("stderr is {}".format(stderr))
+            raise Exception("Error running Mira assembler!")
         log("end running mira assembler command")
         shutil.copyfile(os.path.abspath('{}_assembly/{}_d_results/{}_out.unpadded.fasta'.format(binID, binID, binID)), os.path.abspath('{}_MIRA.fasta'.format(binID)))
         log('End run_mira')

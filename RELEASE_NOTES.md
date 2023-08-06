@@ -4,6 +4,7 @@
 
 0.5.0
 -----
+* Relaxed MIRA naming stringency
 * Jorg re-written in python to assist future KBase development
 * Added multi-threading to MIRA
 
