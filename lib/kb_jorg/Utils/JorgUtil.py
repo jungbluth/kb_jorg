@@ -567,8 +567,8 @@ class JorgUtil:
         log("start running mira assembler command")
         try:
             stdout,stderr = self._run_command(command)
-            log("stdout is {}".format(stdout))
-            log("stderr is {}".format(stderr))
+            # log("stdout is {}".format(stdout))
+            # log("stderr is {}".format(stderr))
         except:
             # log("stdout is {}".format(stdout))
             # log("stderr is {}".format(stderr))
