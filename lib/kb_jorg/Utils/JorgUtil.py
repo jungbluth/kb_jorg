@@ -144,20 +144,20 @@ class JorgUtil:
         log('End combine_fasta_file')
         return combined_assembly
 
-    def rename_fasta_ids(self, fasta):
-        log('Start fasta ID rename')
-        handle = open(fasta,"rU")
-        n = 1
-        for seq_record in SeqIO.parse(handle,"fasta"):
-            seq_record.id = seq_record.id[:20] + "_" + str(n)
-            seq_record.description = ''
-            n = n + 1
-            file_output = fasta.split('.fna')[0] + "_renamed.fna"
-            with open(file_output, 'a') as myfile:
-                SeqIO.write(seq_record, myfile,"fasta")
-        handle.close()
-        log('End fasta ID rename')
-        return file_output
+    # def rename_fasta_ids(self, fasta):
+    #     log('Start fasta ID rename')
+    #     handle = open(fasta,"rU")
+    #     n = 1
+    #     for seq_record in SeqIO.parse(handle,"fasta"):
+    #         seq_record.id = seq_record.id[:20] + "_" + str(n)
+    #         seq_record.description = ''
+    #         n = n + 1
+    #         file_output = fasta.split('.fna')[0] + "_renamed.fna"
+    #         with open(file_output, 'a') as myfile:
+    #             SeqIO.write(seq_record, myfile,"fasta")
+    #     handle.close()
+    #     log('End fasta ID rename')
+    #     return file_output
 
     def get_assembly_files(self, task_params):
         log('Start get_assembly_files')
@@ -175,14 +175,14 @@ class JorgUtil:
                 contig_file = self._get_contig_file(task_params['assembly_ref'][i])
                 #task_params['contig_file_path'] = contig_file
 
-        fasta = os.path.join(self.scratch, contig_file)
-        file = open(fasta)
-        # getting the starting line of the file
-        start_line = file.readline()
-        file.close()
+        # fasta = os.path.join(self.scratch, contig_file)
+        # file = open(fasta)
+        # # getting the starting line of the file
+        # start_line = file.readline()
+        # file.close()
 
         #if (len(start_line) > 20): # 30 is cutoff, 20 to be safe with longer IDs in file not represented by first ID
-        contig_file = self.rename_fasta_ids(fasta)
+        #contig_file = self.rename_fasta_ids(fasta)
         #task_params['contig_file_path'] = contig_file
         log('End get_assembly_files')
         return contig_file
@@ -233,20 +233,20 @@ class JorgUtil:
         log('End stage_reads_file')
         return result_file_path, read_type
 
-    def rename_fastq_ids(self, fastq):
-        log('Start fastq ID rename')
-        handle = open(fastq,"rU")
-        n = 1
-        for seq_record in SeqIO.parse(handle,"fastq"):
-            seq_record.id = seq_record.id[:20] + "_" + str(n)
-            seq_record.description = ''
-            n = n + 1
-            file_output = fastq.split('.fastq')[0] + "_renamed.fastq"
-            with open(file_output, 'a') as myfile:
-                SeqIO.write(seq_record, myfile,"fastq")
-        handle.close()
-        log('End fastq ID rename')
-        return file_output
+    # def rename_fastq_ids(self, fastq):
+    #     log('Start fastq ID rename')
+    #     handle = open(fastq,"rU")
+    #     n = 1
+    #     for seq_record in SeqIO.parse(handle,"fastq"):
+    #         seq_record.id = seq_record.id[:20] + "_" + str(n)
+    #         seq_record.description = ''
+    #         n = n + 1
+    #         file_output = fastq.split('.fastq')[0] + "_renamed.fastq"
+    #         with open(file_output, 'a') as myfile:
+    #             SeqIO.write(seq_record, myfile,"fastq")
+    #     handle.close()
+    #     log('End fastq ID rename')
+    #     return file_output
 
     def deinterlace_raw_reads(self, fastq):
         log('Start deinterlacing reads')
@@ -356,13 +356,13 @@ class JorgUtil:
             fastq = read_scratch_path[i]
             fastq_type = read_type[i]
 
-            file = open(fastq)
-            # getting the starting line of the file
-            start_line = file.readline()
-            # may want to rename everything at some point if more errors, but con is it takes longer
-            if (len(start_line) > 20): # 30 is cutoff, 20 to be safe with longer IDs in file not represented by first ID
-                fastq = self.rename_fastq_ids(fastq)
-            file.close()
+            # file = open(fastq)
+            # # getting the starting line of the file
+            # start_line = file.readline()
+            # # may want to rename everything at some point if more errors, but con is it takes longer
+            # if (len(start_line) > 20): # 30 is cutoff, 20 to be safe with longer IDs in file not represented by first ID
+            #     fastq = self.rename_fastq_ids(fastq)
+            # file.close()
 
             sam = os.path.basename(fastq).split('.fastq')[0] + ".sam"
             #sam = os.path.join(self.JORG_RESULT_DIRECTORY, sam)

@@ -5,8 +5,8 @@
 0.5.0
 -----
 * Relaxed MIRA naming stringency
-* Jorg re-written in python to assist future KBase development
-* Added multi-threading to MIRA
+* Major Jorg re-write in python for improved KBase logging
+* Added multi-threading parameter to MIRA
 
 0.4.1
 -----
@@ -47,10 +47,11 @@
 
 ToDo
 _____
-* re-write Jorg in python for log accessibility and increased verbosity
+* reinstate runtime cap
+* fix tests so can be run in sequence, required intermittent file deletion
+* reinstate mira and mirabait logs
 * review Jorg repo for more workflow additions
 * save circularized contig information in assembly object
-* fix new error in Desulforudis narrative
 * single-end read mode
 * make Jorg tutorial
 * write a manuscript
